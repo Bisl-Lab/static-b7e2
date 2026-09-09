@@ -150,6 +150,7 @@
     <div class="topbtns">
       <button class="small-btn" id="codexBtn" type="button">도감</button>
       <button class="small-btn" id="copyBtn" type="button">로그 복사</button>
+      <button class="small-btn" id="saveBtn" type="button" title="로그 파일 다운로드(백업)">로그 저장</button>
       <button class="small-btn" id="restartBtn" type="button" title="새 회차 (도감·로그 유지)">재시작</button>
       <button class="small-btn" id="wipeBtn" type="button" title="저장본·로그·도감 전부 삭제" style="border-color:#5a2e2e">전부 삭제</button>
     </div>
@@ -159,6 +160,7 @@
   <div id="startScreen">
     <div>
       <h1>괴담게임 — 플레이테스트</h1>
+      <p class="desc" style="color:#c9b98a">플레이 기록이 테스트 목적으로 수집됩니다.</p>
       <p class="desc">성별을 고르고 시작한다. 저장본이 있으면 이어할 수 있다.
       이 화면은 개발용이며 최종 UI가 아니다.</p>
     </div>
@@ -376,6 +378,84 @@
   // ── 회차 간 도감 유지 (05 §1 "둘째 판부터 진엔딩 가능"의 전제) ──
   // 새 게임 = sm·조각·플래그·시드 초기화(새 Story 인스턴스), 도감(codex)만 이전 회차에서 이어받는다.
   var CODEX_KEY = "gwidam_codex_v1";
+
+  // ── 플레이 로그 자동 수집 (Google Apps Script 웹앱) ──
+  // LOG_ENDPOINT: GAS 웹앱 배포 URL(…/exec). 비어 있으면 전송·큐 모두 하지 않는다.
+  var LOG_ENDPOINT = "";
+  var DEVICE_KEY = "gwidam_device_v1";
+  var QUEUE_KEY = "gwidam_queue_v1";
+  var deviceId = null;
+  function getDeviceId(){
+    if (deviceId) return deviceId;
+    try{ deviceId = localStorage.getItem(DEVICE_KEY); }catch(e){}
+    if (!deviceId){
+      var a = new Uint8Array(8);
+      try{ crypto.getRandomValues(a); }catch(e){ for (var i = 0; i < 8; i++) a[i] = Math.floor(Math.random() * 256); }
+      deviceId = "d-" + Array.prototype.map.call(a, function(b){ return ("0" + b.toString(16)).slice(-2); }).join("");
+      try{ localStorage.setItem(DEVICE_KEY, deviceId); }catch(e){}
+    }
+    return deviceId;
+  }
+  function loadQueue(){ try{ return JSON.parse(localStorage.getItem(QUEUE_KEY) || "[]"); }catch(e){ return []; } }
+  function saveQueue(q){ try{ localStorage.setItem(QUEUE_KEY, JSON.stringify(q.slice(-30))); }catch(e){} }
+
+  function buildPayload(kind){
+    var runEvents = log.filter(function(e){ return e.run === runNo; });
+    var seedEv = runEvents.filter(function(e){ return e.event === "seed"; })[0];
+    var deaths = runEvents.filter(function(e){ return e.event === "death"; }).length;
+    var endEv = runEvents.filter(function(e){ return e.event === "ending"; })[0];
+    var summary = kind + " | space " + (lastSpace || "-") + " | sm " + currentSM() + " | 사망 " + deaths +
+                  (endEv ? " | 엔딩 " + endEv.ending : "") + " | 이벤트 " + runEvents.length;
+    return {
+      t: nowIso(), kind: kind, seed: seedEv ? seedEv.seed : null, run: runNo,
+      device: getDeviceId(), summary: summary, events: runEvents
+    };
+  }
+
+  // 전송: fetch(no-cors, text/plain — GAS는 preflight 를 못 받는다). 네트워크 실패면 큐에.
+  function postPayload(payload, useBeacon){
+    if (!LOG_ENDPOINT || LOG_ENDPOINT.indexOf("http") !== 0) return Promise.resolve(false);
+    var body = JSON.stringify(payload);
+    if (useBeacon && navigator.sendBeacon){
+      try{
+        var ok = navigator.sendBeacon(LOG_ENDPOINT, new Blob([body], { type: "text/plain" }));
+        return Promise.resolve(!!ok);
+      }catch(e){ return Promise.resolve(false); }
+    }
+    return fetch(LOG_ENDPOINT, { method: "POST", mode: "no-cors", keepalive: true,
+                                 headers: { "Content-Type": "text/plain" }, body: body })
+      .then(function(){ return true; }).catch(function(){ return false; });
+  }
+  function sendLog(kind, useBeacon){
+    if (!LOG_ENDPOINT || LOG_ENDPOINT.indexOf("http") !== 0) return;
+    var payload = buildPayload(kind);
+    postPayload(payload, useBeacon).then(function(ok){
+      if (!ok){ var q = loadQueue(); q.push(payload); saveQueue(q); }
+    });
+  }
+  // 기동 시 큐 재시도
+  function flushQueue(){
+    var q = loadQueue();
+    if (!q.length || !LOG_ENDPOINT || LOG_ENDPOINT.indexOf("http") !== 0) return;
+    saveQueue([]);
+    var failed = [];
+    var chain = Promise.resolve();
+    q.forEach(function(payload){
+      chain = chain.then(function(){ return postPayload(payload, false).then(function(ok){ if (!ok) failed.push(payload); }); });
+    });
+    chain.then(function(){ if (failed.length){ var q2 = loadQueue(); saveQueue(q2.concat(failed)); } });
+  }
+  // 이어하기 이탈: 탭을 닫거나 숨길 때(진행 중인 회차가 있을 때만)
+  var leaveSent = false;
+  function onLeave(){
+    if (!story || leaveSent) return;
+    if ($("storyScreen").classList.contains("hidden")) return;
+    leaveSent = true;
+    sendLog("leave", true);
+    setTimeout(function(){ leaveSent = false; }, 5000);
+  }
+  document.addEventListener("visibilitychange", function(){ if (document.visibilityState === "hidden") onLeave(); });
+  window.addEventListener("pagehide", onLeave);
   function codexPersist(){
     try{ localStorage.setItem(CODEX_KEY, JSON.stringify(codexNames())); }catch(e){}
   }
@@ -641,6 +721,7 @@
       endingLogged = true;
       logEvent("ending", { space: lastSpace, sm: currentSM(), ending: reached });
       codexPersist();
+      sendLog("ending", false);
       $("endingNote").textContent = "— 이 회차는 여기서 끝났습니다. 상단 '재시작'으로 새로 시작할 수 있습니다. —";
       $("endingNote").classList.remove("hidden");
     }
@@ -703,6 +784,7 @@
         reason: firstParagraph(joined),
         weight: Math.round((beforeSM - afterSM) * 100) / 100
       });
+      sendLog("death", false);
     }
 
     codexPersist();   // 도감은 회차를 넘어 유지 — 사망·클리어마다 저장
@@ -876,7 +958,21 @@
   }
 
   // ── 초기화 ───────────────────────────────────────────────────────
+  function saveLogFile(){
+    var text = buildLogText();
+    var blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "gwidam_log_" + getDeviceId() + "_" + new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19) + ".txt";
+    document.body.appendChild(a); a.click();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+    logEvent("log_saved", {});
+  }
+
   function initUI(){
+    $("saveBtn").addEventListener("click", saveLogFile);
+    getDeviceId();
+    flushQueue();
     $("rulesBtn").addEventListener("click", openRules);
     $("rulesCloseBtn").addEventListener("click", closeRules);
     $("rulesOverlay").addEventListener("click", function(e){ if (e.target === $("rulesOverlay")) closeRules(); });
