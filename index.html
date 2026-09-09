@@ -528,6 +528,7 @@
 
   // ── 본문 진행 ────────────────────────────────────────────────────
   var lastLineTags = [];   // continueAll 이 채움: lines[i] 의 ink 태그 배열
+  var pendingDeath = null; // 마지막 death 이벤트 — 다음 enter 에서 next_space 를 채운다
   function continueAll(){
     var lines = [];
     lastLineTags = [];
@@ -773,17 +774,20 @@
     if (newSpace !== lastSpace){
       lastSpace = newSpace;
       logEvent("enter", { space: newSpace });
+      // 직전 사망의 next_space 는 재배정이 실제로 일어난 지금 채운다(전환 장면 동안은 이전 공간이 유지됨)
+      if (pendingDeath){ pendingDeath.next_space = newSpace; pendingDeath = null; persistLog(); }
     }
 
     var afterSM = currentSM();
     if (afterChoiceText !== null && beforeSM !== null && afterSM !== null && afterSM < beforeSM){
       logEvent("death", {
         space: spaceBefore,
-        next_space: lastSpace,
+        next_space: null,   // 재배정 뒤 enter 에서 채움
         choice_text: afterChoiceText,
         reason: firstParagraph(joined),
         weight: Math.round((beforeSM - afterSM) * 100) / 100
       });
+      pendingDeath = log[log.length - 1];
       sendLog("death", false);
     }
 
