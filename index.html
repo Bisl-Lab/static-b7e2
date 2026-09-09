@@ -150,7 +150,8 @@
     <div class="topbtns">
       <button class="small-btn" id="codexBtn" type="button">도감</button>
       <button class="small-btn" id="copyBtn" type="button">로그 복사</button>
-      <button class="small-btn" id="restartBtn" type="button">재시작</button>
+      <button class="small-btn" id="restartBtn" type="button" title="새 회차 (도감·로그 유지)">재시작</button>
+      <button class="small-btn" id="wipeBtn" type="button" title="저장본·로그·도감 전부 삭제" style="border-color:#5a2e2e">전부 삭제</button>
     </div>
   </div>
 
@@ -230,6 +231,9 @@
 
   var SAVE_KEY = "gwidam_save_v1";
   var LOG_KEY = "gwidam_log_v1";
+  var RUN_KEY = "gwidam_run_v1";
+  var runNo = 0;
+  try{ runNo = parseInt(localStorage.getItem(RUN_KEY) || "0", 10) || 0; }catch(e){ runNo = 0; }
 
   var $ = function(id){ return document.getElementById(id); };
 
@@ -253,6 +257,7 @@
       t: nowIso(),
       elapsed_ms: Date.now() - startTime,
       event: eventName,
+      run: runNo,
       space: lastSpace,
       sm: currentSM()
     };
@@ -390,7 +395,8 @@
     story = newStoryInstance();
     try{ story.variablesState["gender"] = selectedGender; }catch(e){}
     startTime = Date.now();
-    log = [];
+    runNo += 1;
+    try{ localStorage.setItem(RUN_KEY, String(runNo)); }catch(e){}
     // 회차 시드: 비앵커 셔플(ink SEED_RANDOM). 로그 첫 줄에 기록 — 같은 시드면 같은 배정 순서.
     var seed = Math.floor(Date.now() % 1000000);
     try{ story.variablesState["run_seed"] = seed; }catch(e){}
@@ -810,10 +816,11 @@
 
   function buildLogText(){
     var header = buildSummary();
-    var seedEv = log.filter(function(e){ return e.event === "seed"; })[0];
-    header = "시드: " + (seedEv ? seedEv.seed : "(없음)") + (seedEv && seedEv.gender ? " / 성별: " + seedEv.gender : "") + "\n" + header;
+    var seedEvs = log.filter(function(e){ return e.event === "seed"; });
+    var seedLine = seedEvs.length ? seedEvs.map(function(e){ return "run " + e.run + ": 시드 " + e.seed + (e.gender ? "/" + e.gender : ""); }).join(", ") : "(없음)";
+    header = "회차: " + seedLine + "\n" + header;
     var lines = log.map(function(e){
-      var known = ["t","elapsed_ms","event","space","sm"];
+      var known = ["t","elapsed_ms","event","run","space","sm"];
       var extra = [];
       Object.keys(e).forEach(function(k){
         if (known.indexOf(k) === -1) extra.push(k + "=" + e[k]);
@@ -845,10 +852,23 @@
 
   // ── 재시작 ───────────────────────────────────────────────────────
   function restartGame(){
-    if (!confirm("현재 진행과 저장본을 지우고 처음부터 다시 시작할까요?")) return;
+    if (!confirm("새 회차를 시작할까요? (기억·조각·플래그·시드 초기화. 도감과 로그는 유지)")) return;
+    try{ localStorage.removeItem(SAVE_KEY); }catch(e){}
+    logEvent("run_end", { reason: "restart" });
+    $("storyScreen").classList.add("hidden");
+    $("topbar").classList.add("hidden");
+    $("continueBtn").disabled = true;
+    $("startScreen").classList.remove("hidden");
+  }
+
+  function wipeAll(){
+    if (!confirm("전부 삭제: 저장본·로그·도감·회차 번호를 모두 지웁니다. 계속할까요?")) return;
+    if (!confirm("정말 지웁니다. 되돌릴 수 없습니다. 로그를 아직 복사하지 않았다면 취소하세요.")) return;
     try{ localStorage.removeItem(SAVE_KEY); }catch(e){}
     try{ localStorage.removeItem(LOG_KEY); }catch(e){}
-    log = [];
+    try{ localStorage.removeItem(CODEX_KEY); }catch(e){}
+    try{ localStorage.removeItem(RUN_KEY); }catch(e){}
+    log = []; runNo = 0;
     $("storyScreen").classList.add("hidden");
     $("topbar").classList.add("hidden");
     $("continueBtn").disabled = true;
@@ -869,6 +889,7 @@
     $("copyBtn").addEventListener("click", copyLog);
     $("copyModalClose").addEventListener("click", function(){ $("copyModal").classList.add("hidden"); });
     $("restartBtn").addEventListener("click", restartGame);
+    $("wipeBtn").addEventListener("click", wipeAll);
 
     var hasSave = false;
     try{ hasSave = !!localStorage.getItem(SAVE_KEY); }catch(e){}
