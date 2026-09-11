@@ -501,7 +501,7 @@
 
   // build_web.py 가 주입: BUILD_ID = YYYYMMDD-HHMM-<주입 ink 소스 sha1 앞 8자>, SM0 = ink VAR sibling_memory 시작값.
   // /*MARKER*/fallback 형식(INK_JSON 과 동일 관례) — 템플릿을 안 거치고 그냥 열어도 여기서 문법·런타임 오류가 나지 않는다.
-  var BUILD_ID = "20260911-1219-90d06211";
+  var BUILD_ID = "20260911-1227-90d06211";
   var SM0 = 26;
   var DEBUG = /[?&]debug\b/.test(location.search);
 
@@ -3370,19 +3370,28 @@
     var payload = buildPayload(kind);
     postPayload(payload, useBeacon).then(function(ok){
       if (!ok){ var q = loadQueue(); q.push(payload); saveQueue(q); }
+      // 성공 = 엔드포인트가 살아 있다는 신호. 밀려 있던 것을 이때 같이 내보낸다.
+      else { flushQueue(useBeacon); }
     });
   }
-  // 기동 시 큐 재시도
-  function flushQueue(){
+  // 큐 재시도 — 기동 / 전송 성공 직후 / 새 회차 시작 / 이탈. (2026-09-11 실측: 로드에서만 비우면
+  // 엔드포인트가 잠깐 느려진 회차의 `ending` 이 통째로 유실된다. 한 번만 들어온 플레이어는 영영 안 올라온다.)
+  var flushing = false;
+  function flushQueue(useBeacon){
+    if (flushing) return;
     var q = loadQueue();
     if (!q.length || !LOG_ENDPOINT || LOG_ENDPOINT.indexOf("http") !== 0) return;
+    flushing = true;
     saveQueue([]);
     var failed = [];
     var chain = Promise.resolve();
     q.forEach(function(payload){
-      chain = chain.then(function(){ return postPayload(payload, false).then(function(ok){ if (!ok) failed.push(payload); }); });
+      chain = chain.then(function(){ return postPayload(payload, !!useBeacon).then(function(ok){ if (!ok) failed.push(payload); }); });
     });
-    chain.then(function(){ if (failed.length){ var q2 = loadQueue(); saveQueue(q2.concat(failed)); } });
+    chain.then(function(){
+      if (failed.length){ var q2 = loadQueue(); saveQueue(q2.concat(failed)); }
+      flushing = false;
+    });
   }
   // 이어하기 이탈: 탭을 닫거나 숨길 때(진행 중인 회차가 있을 때만)
   var leaveSent = false;
@@ -3391,6 +3400,7 @@
     if ($("storyScreen").classList.contains("hidden")) return;
     leaveSent = true;
     sendLog("leave", true);
+    flushQueue(true);   // 언로드 중에는 sendBeacon 만 확실히 나간다
     setTimeout(function(){ leaveSent = false; }, 5000);
   }
   document.addEventListener("visibilitychange", function(){ if (document.visibilityState === "hidden") onLeave(); });
@@ -3424,6 +3434,7 @@
       story.variablesState["item_last"] = 0;
     }catch(e){}
     itemUsedSeen = 0;
+    flushQueue();   // 재시작은 리로드가 아니라 initUI 를 안 탄다 — 밀린 전송을 여기서 한 번 더 민다
     // sm 시작값(?debug 전용): 비었거나 무효하면 ink VAR sibling_memory 기본값을 그대로 둔다.
     var debugSmStart = DEBUG ? parseSmValue($("debugSmStartInput") ? $("debugSmStartInput").value : "") : null;
     if (debugSmStart !== null){
@@ -3858,7 +3869,7 @@
       recordEnded(reached, !batchDied && lastSpace === "A12");   // A12 를 사망 없이 끝냈으면 A12 클리어
       codexPersist();
       sendLog("ending", false);
-      $("endingNote").textContent = "— 이 회차는 여기서 끝났습니다. 상단 '재시작'으로 새로 시작할 수 있습니다. —";
+      $("endingNote").textContent = "— 이 회차는 여기서 끝났습니다. 핸드폰 설정에서 다시 시작할 수 있습니다. —";
       $("endingNote").classList.remove("hidden");
     }
   }
@@ -4636,7 +4647,7 @@
 
   // ── 재시작 ───────────────────────────────────────────────────────
   function restartGame(){
-    if (!confirm("새 회차를 시작할까요? (기억·조각·플래그·시드 초기화. 도감과 로그는 유지)")) return;
+    if (!confirm("새 회차를 시작할까요? 지도와 사진은 처음으로 돌아갑니다. 메모·기억·끝은 남습니다.")) return;
     try{ localStorage.removeItem(SAVE_KEY); }catch(e){}
     try{ localStorage.removeItem(SCREEN_KEY); }catch(e){}   // 저장본과 짝 — 남으면 다음 이어하기가 남의 화면을 그린다
     logEvent("run_end", { reason: "restart" });
@@ -4651,8 +4662,8 @@
   // 나머지는 전부 지운다. 특히 DEATHREC_KEY·CODEXCNT_KEY 를 남기면 "전부 삭제" 뒤 첫 사망인데도
   // 도감 2층 규칙(2회째 공개)이 이미 채워진 카운터를 보고 해금본을 띄운다.
   function wipeAll(){
-    if (!confirm("전부 삭제: 저장본·로그·도감(해금·사망 기록)·전송 대기 큐·회차 번호를 모두 지웁니다. 계속할까요?")) return;
-    if (!confirm("정말 지웁니다. 되돌릴 수 없습니다. 로그를 아직 복사하지 않았다면 취소하세요.")) return;
+    if (!confirm("전부 삭제: 메모·기억·끝·지도·저장본·로그를 모두 지웁니다. 계속할까요?")) return;
+    if (!confirm("정말 지웁니다. 되돌릴 수 없습니다.")) return;
     // 키가 빌드 ID 접미사를 갖게 된 뒤로 목록을 나열하면 다른 빌드분이 남는다 — 접두사로 순회한다.
     // BUILD_MARK_KEY 는 남긴다: 지우면 다음 기동이 "새 버전"으로 오인돼 안내가 또 뜬다.
     try{
