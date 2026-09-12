@@ -526,7 +526,7 @@
 
   // build_web.py 가 주입: BUILD_ID = YYYYMMDD-HHMM-<주입 ink 소스 sha1 앞 8자>, SM0 = ink VAR sibling_memory 시작값.
   // /*MARKER*/fallback 형식(INK_JSON 과 동일 관례) — 템플릿을 안 거치고 그냥 열어도 여기서 문법·런타임 오류가 나지 않는다.
-  var BUILD_ID = "20260912-0859-cfe87ea6";
+  var BUILD_ID = "20260912-0914-cfe87ea6";
   var SM0 = 26;
   var DEBUG = /[?&]debug\b/.test(location.search);
 
@@ -3364,7 +3364,7 @@
 
   // ── 플레이 로그 자동 수집 (Google Apps Script 웹앱) ──
   // LOG_ENDPOINT: GAS 웹앱 배포 URL(…/exec). 비어 있으면 전송·큐 모두 하지 않는다.
-  var LOG_ENDPOINT = "https://script.google.com/macros/s/AKfycbzMfXeX3BTc7IHlFUqRU55IKh4o_TfoaWiy0pU4CLQYuv9dRqLqy4jmNt5mzvXtUaYzYg/exec";
+  var LOG_ENDPOINT = "https://script.google.com/macros/s/AKfycby4rrgNdXGb41bgr4IxwXNM8_PLNipORuUDpxlC2iamQu6fYENv7_3VvGLCE-i7wSzfZQ/exec";
   // DEVICE_KEY 는 위 빌드 전환 블록에서 선언한다 — 빌드가 바뀌어도 지우지 않는 유일한 키다.
   var QUEUE_KEY = K("gwidam_queue_v1");
   var deviceId = null;
