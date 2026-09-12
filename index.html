@@ -526,7 +526,7 @@
 
   // build_web.py 가 주입: BUILD_ID = YYYYMMDD-HHMM-<주입 ink 소스 sha1 앞 8자>, SM0 = ink VAR sibling_memory 시작값.
   // /*MARKER*/fallback 형식(INK_JSON 과 동일 관례) — 템플릿을 안 거치고 그냥 열어도 여기서 문법·런타임 오류가 나지 않는다.
-  var BUILD_ID = "20260911-2005-cfe87ea6";
+  var BUILD_ID = "20260912-0859-cfe87ea6";
   var SM0 = 26;
   var DEBUG = /[?&]debug\b/.test(location.search);
 
@@ -630,8 +630,13 @@
     return Math.round(n * 2) / 2;   // 0.5 단위로 스냅
   }
 
+  // 업로드는 **누적**이다 — 한 회차의 이벤트 전부를 매번 다시 싣는다. 그래서 집계 쪽에서 중복을 지워야 하는데
+  // `t` 가 같은 초에 여러 개 찍히면 (t, event, space) 만으로는 안 갈린다. 회차 안에서 1씩 오르는 `i` 를 붙여
+  // 중복 제거를 정확하게 만든다 (사용자 지시 2026-09-12).
+  var eventSeq = 0;
   function logEvent(eventName, extra){
     var rec = {
+      i: eventSeq++,
       t: nowIso(),
       elapsed_ms: Date.now() - startTime,
       event: eventName,
@@ -656,6 +661,10 @@
       var raw = localStorage.getItem(LOG_KEY);
       if (raw) log = JSON.parse(raw);
     }catch(e){ log = []; }
+    // 이어하기로 돌아온 회차도 번호가 겹치지 않게 이어 센다(옛 저장본은 i 가 없다 — 길이로 받는다).
+    var mx = -1;
+    for (var j = 0; j < log.length; j++){ if (typeof log[j].i === "number" && log[j].i > mx) mx = log[j].i; }
+    eventSeq = (mx >= 0) ? mx + 1 : log.length;
   }
 
   // ── inkjs LIST → 이름 배열 ───────────────────────────────────────
@@ -4221,8 +4230,12 @@
     updateTopbar(pageSM, sp);
     renderPocket();
     renderChoices();
-    // 엔딩 판정은 마지막 페이지에서만 — 중간 페이지에서는 아직 선택지가 안 왔을 뿐이다.
-    if (pageIdx >= pages.length - 1) checkEnding((pg.lines || []).join(""), pg.ending || null);
+    // 엔딩 판정 (사용자 지시 2026-09-12): `#ending:` 태그를 **만난 그 페이지에서** 찍는다.
+    // 마지막 페이지 조건만 두면, 태그가 배치 중간 페이지에 오는 날 엔딩이 탭 하나만큼 늦게 찍히고
+    // 그 사이에 플레이어가 창을 닫으면 통째로 유실된다. 태그가 있으면 위치와 무관하게 즉시 찍는다.
+    // (태그 없는 끝 판정은 종전대로 마지막 페이지에서만 — 중간 페이지는 선택지가 아직 안 온 것뿐이다.)
+    if (pg.ending) checkEnding((pg.lines || []).join(""), pg.ending);
+    else if (pageIdx >= pages.length - 1) checkEnding((pg.lines || []).join(""), null);
     saveGame();
   }
 
