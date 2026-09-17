@@ -663,8 +663,11 @@
 
   // build_web.py 가 주입: BUILD_ID = YYYYMMDD-HHMM-<주입 ink 소스 sha1 앞 8자>, SM0 = ink VAR sibling_memory 시작값.
   // /*MARKER*/fallback 형식(INK_JSON 과 동일 관례) — 템플릿을 안 거치고 그냥 열어도 여기서 문법·런타임 오류가 나지 않는다.
-  var BUILD_ID = "20260917-1343-c59481b6";
+  var BUILD_ID = "20260917-1415-c59481b6";
   var SM0 = 26;
+  // sm 경계 — 물소리 단계(TASK_08)가 조언자 band 경계를 쓴다. build_web.py 가 ink `CONST SM_TRUE/SM_ALONE` 에서 주입.
+  var SM_TRUE = 17;
+  var SM_ALONE = 11;
   var DEBUG = /[?&]debug\b/.test(location.search);
   // `?fresh` — 이 기기의 저장분을 **열기 전에** 전부 지우고 시작한다(기기 식별자만 남긴다).
   // 완전 새 프로필로 메모를 검사하려면 필요하다: 새 항목이 0개인지, 안 배운 항목의 제목이 새는지
@@ -4135,9 +4138,10 @@
   // 이 스냅샷이 있어야 사망 화면이 죽은 공간·깎인 sm 을, 전환 화면이 아직 이전 공간을 보여준다.
   var lastLineSpaces = [];
   var lastLineSMs = [];
+  var lastLinePaths = [];   // 줄마다 ink 경로(knot) — A12 처럼 한 공간 안에서 장소가 바뀌는 곳의 소리를 가른다 (TASK_08)
   function continueAll(){
     var lines = [];
-    lastLineTags = []; lastLineSpaces = []; lastLineSMs = [];
+    lastLineTags = []; lastLineSpaces = []; lastLineSMs = []; lastLinePaths = [];
     while (story.canContinue){
       var line = story.Continue();
       lines.push(line);
@@ -4146,6 +4150,9 @@
       lastLineTags.push(tg);
       lastLineSpaces.push(safeVar("current_space", null));
       lastLineSMs.push(currentSM());
+      var pth = "";
+      try{ pth = story.state.currentPathString || ""; }catch(e){ pth = ""; }
+      lastLinePaths.push(pth);
     }
     return lines;
   }
@@ -4155,10 +4162,10 @@
   // 그 태그는 **다음 줄에 붙어서** 온다(자기 줄로 비어서 올 때도 있다 — 둘 다 실측). 어느 쪽이든
   // 규칙은 하나다: `page` 태그가 달린 줄에서 새 페이지를 연다.
   // 보이는 글자가 없는 페이지는 버린다 — 선택지 직후의 빈 줄 하나가 유령 화면이 되지 않게.
-  function splitPages(lines, tags, spaces, sms){
+  function splitPages(lines, tags, spaces, sms, paths){
     var pages = [];
     var cur = null;
-    function fresh(){ return { lines: [], tags: [], space: null, sm: null, death: false, frag: false, item: false, kind: "space", ending: null, _tr: 0, _ot: 0 }; }
+    function fresh(){ return { lines: [], tags: [], space: null, sm: null, path: null, death: false, frag: false, item: false, kind: "space", ending: null, _tr: 0, _ot: 0 }; }
     function flush(){
       if (cur && cur.lines.some(function(l){ return String(l).replace(/\s+/g, "") !== ""; })){
         // kind: death(사망 화면) / transit(전환 — 보이는 줄이 전부 #transit) / space(공간)
@@ -4177,6 +4184,7 @@
       // 공간·sm 은 그 페이지의 **마지막** 값으로 잡는다(전환 중에는 이전 공간이 유지된다).
       if (spaces && spaces[i] != null) cur.space = spaces[i];
       if (sms && sms[i] != null) cur.sm = sms[i];
+      if (paths && paths[i]) cur.path = paths[i];
       if (tg.indexOf("death_reason") !== -1) cur.death = true;
       // 조각 페이지 표식 (TASK_06 Phase 1) — merge_ink.py 가 `fragment(n)` 머리에 `# fragment` 를 세운다.
       // 배터리 상승 줄은 **이 페이지**에 붙는다. 폰을 열 때가 아니라(사용자 지시 2026-09-13).
@@ -4810,6 +4818,7 @@
         sl.className = "choice-btn"; sl.type = "button";
         sl.textContent = "여기서 눈을 붙인다";
         sl.addEventListener("click", function(){
+          Snd.play("select");
           if (!itemPicked()){ openItemScreenMidRun(sleepHere); return; }
           sleepHere();
         });
@@ -4860,6 +4869,7 @@
       ui: isDeathScreen ? "death_continue" : "continue_tap"
     });
     finalizeRulesDwell();
+    Snd.play("tap");
     showPage(pageIdx + 1, false);
   }
 
@@ -5105,7 +5115,7 @@
     var lines = continueAll();
     var joined = lines.join("");
     // 배치를 장면 단위로 자른다. 자를 데가 없으면(모두 한 화면) 통째로 한 장.
-    pages = splitPages(lines, lastLineTags, lastLineSpaces, lastLineSMs);
+    pages = splitPages(lines, lastLineTags, lastLineSpaces, lastLineSMs, lastLinePaths);
     if (!pages.length){
       pages = [{ lines: lines, tags: lastLineTags, space: safeVar("current_space", null),
                  sm: currentSM(), death: false }];
@@ -5213,6 +5223,7 @@
         var bNow = batteryPct();
         appendSysNote("기억이 하나 돌아왔다. 배터리 " + (bNow - 3) + "% → <b class=\"sn-up\">" + bNow + "%</b>");
         gained = true;
+        Snd.play("fragment");
       }
       // 앵커 클리어 — 노선도에 불이 들어오는 순간. 전환(버스) 페이지가 그 순간이다.
       // 지도를 열어야만 알 수 있던 것을 스토리 화면으로 끌어올렸다.
@@ -5232,6 +5243,7 @@
       if (pg.item && pendingItemDelta){
         appendSysNote("주머니 — " + escapeHtml(pendingItemDelta.name) + " " + pendingItemDelta.from +
                       " → <b class=\"sn-down\">" + pendingItemDelta.to + "</b>");
+        Snd.play("item");
         var pk = $("pocket");
         if (pk){ pk.classList.remove("bump"); void pk.offsetWidth; pk.classList.add("bump");
                  setTimeout(function(){ pk.classList.remove("bump"); }, 600); }
@@ -5240,7 +5252,7 @@
     }
 
     // 사망 화면: 도감 인라인 줄은 폐지됐다(Phase C §2 — 메모로 갔다). 상단바 사진만 한 번 튄다.
-    if (isDeathScreen && !silent){ flashLockPhoto(); pulsePhone(); }
+    if (isDeathScreen && !silent){ flashLockPhoto(); pulsePhone(); Snd.play("death"); }
     paintBadges();
 
     updateTopbar(pageSM, sp);
@@ -5254,6 +5266,11 @@
     // (태그 없는 끝 판정은 종전대로 마지막 페이지에서만 — 중간 페이지는 선택지가 아직 안 온 것뿐이다.)
     if (pg.ending) checkEnding((pg.lines || []).join(""), pg.ending);
     else if (pageIdx >= pages.length - 1) checkEnding((pg.lines || []).join(""), null);
+    // 소리 (TASK_08) — 이 페이지의 바탕 앰비언트·물 단계로 옮긴다. 사망 페이지는 끊고(0.12초),
+    // 사망 뒤 첫 페이지는 천천히 돌아온다. 이어하기 복원(silent)도 소리는 되살린다 — 효과음만 안 낸다.
+    var snd = soundSceneFor(pg, fragsAtPage(pageIdx));
+    Snd.scene(snd, snd.cut ? 0.12 : (sceneWasCut ? 2.4 : 1.6));
+    sceneWasCut = !!snd.cut;
     saveGame();
   }
 
@@ -5314,10 +5331,270 @@
     // 계속 탭은 여기 오지 않는다 — 페이지 넘김은 onPageTap 이 맡고, 이쪽은 실제 분기 선택뿐이다.
     logEvent("choice", extra);
     finalizeRulesDwell();
+    Snd.play("select");
     // 화면에 남기지 않고, 다음 블록 최상단 한 줄로만 넘긴다.
     pendingChoiceEcho = choiceText;
     story.ChooseChoiceIndex(idx);
     advance(choiceText);
+  }
+
+  // ══ 사운드 (TASK_08) ═══════════════════════════════════════════════
+  // 물소리가 이 게임의 실이다(05 §3 실 표). 소리는 그 실을 귀로 옮기는 것이지 분위기 장식이 아니다.
+  // · 앰비언트 넷 — 버스 안 / 실내 정적(형광등) / 물 / 바깥 밤(바람). 첫 탭에 **넷 다** 돌려 두고 게인만 옮긴다.
+  //   페이지가 바뀌어도 소스를 멈췄다 켜지 않으니 끊기지 않고, 크로스페이드는 게인 둘이 엇갈려 움직이는 것뿐이다.
+  // · 물은 바탕과 따로 한 겹 더 깔린다. 조각 수·sm 으로 3단계(멀리 → 가까이) — 크기와 저역통과를 같이 옮긴다.
+  // · 사망은 소리를 크게 내지 않는다. 앰비언트를 **끊고**(0.12초) 안으로 부풀다 끊기는 작은 소리 하나만 둔다.
+  // · 효과 여섯 — 탭 / 선택 / 조각 / 사망 / 아이템 / 폰 열기. 더 늘리지 않는다.
+  // 음원은 scripts/make_audio.py 가 직접 합성한다(CC0 — reports/audio_license.md). 파일은 RMS -20dBFS(효과는 피크 -1dBFS)로
+  // 구워져 있고, 섞는 크기는 아래 dB 표가 정한다. 자동재생 차단: 첫 탭(포인터·키)에서 컨텍스트를 연다.
+  var SOUND_KEY = "gwidam_sound_v1";   // 빌드가 바뀌어도 남긴다(K() 접미사 없음). "off" 일 때만 끈다 — 기본은 켜짐
+  var AUDIO_DIR = "assets/audio/";
+  var AMB_LOOP_SEC = 24;                // make_audio.py LOOP
+  var AMB_FILE = { bus: "amb_bus.mp3", room: "amb_room.mp3", night: "amb_night.mp3", water: "amb_water.mp3" };
+  var SFX_FILE = { tap: "sfx_tap.mp3", select: "sfx_select.mp3", fragment: "sfx_fragment.mp3",
+                   death: "sfx_death.mp3", item: "sfx_item.mp3", phone: "sfx_phone.mp3" };
+  var AMB_DB = { bus: -9, room: -15, night: -10 };
+  // 물: 0 없음(프롤로그 — 실 표 A01 「·」) · 1 멀리(배경, 거의 저음만) · 2 가까워짐 · 3 발밑
+  var WATER_STEP = [null, { db: -22, lp: 520 }, { db: -15, lp: 1800 }, { db: -8, lp: 11000 }];
+  var SFX_DB = { tap: -27, select: -23, fragment: -14, death: -20, item: -18, phone: -24 };
+  // 공간 → 바탕 [이름, dB 보정]. 없으면 실내(형광등). 판정 근거는 본문 도입 — reports/TASK_08_release.md.
+  var AMB_SPACE = { B03: ["night", 0], B06: ["night", 0], B13: ["night", 0], C43: ["night", 0], C44: ["night", 0],
+                    B14: ["night", -6], B15: ["night", -7], C42: ["night", -6], B16: ["bus", 0] };
+  // A12 는 한 공간 안에서 대합실 → 첫 차 → 강 → 둑·국도 → 대합실로 옮겨 간다. knot 머리로 가른다(없으면 실내).
+  // "water" = 바탕 없이 물만, 가장 가까이 — 가라앉는 장면.
+  var AMB_KNOT = [["a12_board", "bus"], ["a12_t4", "bus"], ["a12_window", "bus"], ["a12_eyes", "bus"], ["a12_tilt", "bus"],
+                  ["a12_death_bus_again", "bus"], ["a12_t5", "water"], ["a12_death_deep", "water"],
+                  ["a12_wade", "night"], ["a12_t6", "night"], ["a12_meet", "night"], ["a12_t7", "night"],
+                  ["a12_alone_walk", "night"], ["a12_t8", "night"], ["a12_t9", "night"], ["a12_ending", "night"]];
+  var sceneWasCut = false;
+
+  // 물 단계 — 조각 수로 가까워지고(실 표: A02 시작 · A05~A09 집 안의 물 · A11 발밑 · A12 강), sm 이 조언자 band
+  // 경계를 넘으면 그만큼 당겨진다(흐림 → 2, 침묵 → 3). 둘 중 가까운 쪽. 회차 안에서는 멀어지지 않는다(조각은 늘고 sm 은 준다).
+  function waterStage(frags, sm){
+    var f = frags >= 10 ? 3 : (frags >= 5 ? 2 : (frags >= 1 ? 1 : 0));
+    var s = (typeof sm !== "number") ? 0 : (sm < SM_ALONE ? 3 : (sm < SM_TRUE ? 2 : 0));
+    return Math.max(f, s);
+  }
+  // 그 페이지가 **보일 때**의 조각 수 — 배치가 조각 페이지를 품고 오면 ink 의 현재 값은 이미 올라가 있다.
+  function fragsAtPage(i){
+    var later = 0;
+    for (var j = i + 1; j < pages.length; j++) if (pages[j] && pages[j].frag) later++;
+    return Math.max(0, fragCount() - later);
+  }
+  function soundSceneFor(pg, frags){
+    if (!pg) return { base: null, water: 0 };
+    if (pg.kind === "death") return { base: null, water: 0, cut: true };
+    var water = waterStage(frags, (typeof pg.sm === "number") ? pg.sm : null);
+    if (pg.kind === "transit") return { base: "bus", mul: 0, water: water };
+    var sp = pg.space || safeVar("current_space", null);
+    if (sp === "A12"){
+      var path = String(pg.path || "");
+      if (!path){ try{ path = story.state.currentPathString || ""; }catch(e){ path = ""; } }
+      for (var i = 0; i < AMB_KNOT.length; i++){
+        if (path.indexOf(AMB_KNOT[i][0]) !== 0) continue;
+        return AMB_KNOT[i][1] === "water" ? { base: null, water: 3 } : { base: AMB_KNOT[i][1], mul: 0, water: water };
+      }
+    }
+    var m = AMB_SPACE[sp];
+    return { base: m ? m[0] : "room", mul: m ? m[1] : 0, water: water };
+  }
+
+  var Snd = (function(){
+    var AC = window.AudioContext || window.webkitAudioContext;
+    var ctx = null, master = null, ambBus = null, sfxBus = null, lp = null;
+    var amb = {}, sfx = {}, ready = false, loading = false, errors = [], loops = {}, played = {};
+    var want = { base: null, mul: 0, water: 0, cut: false };
+    var on = true;
+    try{ on = localStorage.getItem(SOUND_KEY) !== "off"; }catch(e){ on = true; }
+
+    function say(){
+      if (!DEBUG) return;
+      try{ console.log.apply(console, ["[audio]"].concat([].slice.call(arguments))); }catch(e){}
+    }
+    function fromDb(d){ return Math.pow(10, d / 20); }
+    function hold(p, t){
+      if (p.cancelAndHoldAtTime){ p.cancelAndHoldAtTime(t); }
+      else { var v = p.value; p.cancelScheduledValues(t); p.setValueAtTime(v, t); }
+    }
+    function decode(ab){
+      return new Promise(function(res, rej){
+        var r = ctx.decodeAudioData(ab, res, function(e){ rej(e || new Error("decode")); });   // 구 Safari 는 콜백형만
+        if (r && typeof r.then === "function") r.then(res, rej);
+      });
+    }
+    function get(file){
+      return fetch(AUDIO_DIR + file).then(function(r){
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        return r.arrayBuffer();
+      }).then(decode);
+    }
+    // 루프 시작점 — 파일은 한 바퀴 + 앞머리 1초다. MP3 는 인코더 지연이 앞에 붙고, 그걸 걷는지는 브라우저마다 다르다.
+    // 그래서 **찾는다**: 한 바퀴 떨어진 두 구간이 같아지는 첫 자리에서 한 바퀴를 잘라 쓴다(주기 신호라 어디서 잘라도 이어진다).
+    function loopOf(name, buf){
+      var sr = buf.sampleRate, n = Math.round(AMB_LOOP_SEC * sr), d = buf.getChannelData(0), W = 1024;
+      var maxOff = Math.min(8000, d.length - n - W);
+      if (maxOff < 0){ loops[name] = { off: 0, rel: null, len: d.length }; return buf; }
+      var pick = -1, pickRel = null, best = 0, bestRel = Infinity;
+      for (var o = 0; o <= maxOff; o++){
+        var e = 0, en = 0;
+        for (var i = 0; i < W; i += 4){ var a = d[o + i], b = d[o + n + i]; e += (a - b) * (a - b); en += a * a; }
+        var rel = en > 1e-9 ? e / en : Infinity;
+        if (rel < bestRel){ bestRel = rel; best = o; }
+        if (rel < 0.02){ pick = o; pickRel = rel; break; }
+      }
+      if (pick < 0){ pick = best; pickRel = bestRel; }
+      var out = ctx.createBuffer(1, n, sr);
+      out.getChannelData(0).set(d.subarray(pick, pick + n));
+      loops[name] = { off: pick, rel: Math.round(pickRel * 10000) / 10000, len: d.length, loop: n };
+      return out;
+    }
+    // 효과음 앞의 무음(인코더 지연)을 걷는다 — 탭 소리가 한 박자 늦게 나지 않게.
+    function trimLead(buf){
+      var d = buf.getChannelData(0), o = 0, lim = Math.min(d.length, Math.round(0.08 * buf.sampleRate));
+      while (o < lim && Math.abs(d[o]) < 1e-4) o++;
+      if (o < 8) return buf;
+      var out = ctx.createBuffer(1, d.length - o, buf.sampleRate);
+      out.getChannelData(0).set(d.subarray(o));
+      return out;
+    }
+    function load(){
+      if (loading) return;
+      loading = true;
+      var t0 = Date.now();
+      var jobs = Object.keys(AMB_FILE).map(function(k){
+        return get(AMB_FILE[k]).then(function(b){ amb[k] = { buf: loopOf(k, b) }; })
+          .catch(function(e){ errors.push(AMB_FILE[k] + " — " + ((e && e.message) || e)); });
+      }).concat(Object.keys(SFX_FILE).map(function(k){
+        return get(SFX_FILE[k]).then(function(b){ sfx[k] = trimLead(b); })
+          .catch(function(e){ errors.push(SFX_FILE[k] + " — " + ((e && e.message) || e)); });
+      }));
+      Promise.all(jobs).then(function(){
+        start();
+        ready = true;
+        var total = Object.keys(AMB_FILE).length + Object.keys(SFX_FILE).length;
+        say("준비 " + (Object.keys(amb).length + Object.keys(sfx).length) + "/" + total + " · 오류 " + errors.length +
+            " · " + (Date.now() - t0) + "ms · 루프 " + JSON.stringify(loops));
+        if (errors.length) try{ console.warn("[audio] 불러오기 실패: " + errors.join(" | ")); }catch(e){}
+        apply(0.8);
+      });
+    }
+    function start(){
+      ["bus", "room", "night", "water"].forEach(function(k){
+        if (!amb[k]) return;
+        var src = ctx.createBufferSource();
+        src.buffer = amb[k].buf; src.loop = true;
+        var g = ctx.createGain(); g.gain.value = 0;
+        if (k === "water"){
+          lp = ctx.createBiquadFilter(); lp.type = "lowpass"; lp.Q.value = 0.4; lp.frequency.value = WATER_STEP[1].lp;
+          src.connect(lp); lp.connect(g);
+        } else {
+          src.connect(g);
+        }
+        g.connect(ambBus);
+        src.start(0, Math.random() * AMB_LOOP_SEC);   // 넷이 같은 자리에서 시작하지 않게
+        amb[k].src = src; amb[k].g = g;
+      });
+    }
+    function apply(fade){
+      if (!ready) return;
+      var t = ctx.currentTime, tc = Math.max(0.02, fade / 3);   // setTargetAtTime: 3τ 에 95%
+      ["bus", "room", "night"].forEach(function(k){
+        if (!amb[k] || !amb[k].g) return;
+        var target = (!want.cut && want.base === k) ? fromDb(AMB_DB[k] + (want.mul || 0)) : 0;
+        var p = amb[k].g.gain; hold(p, t); p.setTargetAtTime(target, t, tc);
+      });
+      if (amb.water && amb.water.g){
+        var st = want.cut ? null : WATER_STEP[want.water || 0];
+        var pw = amb.water.g.gain; hold(pw, t); pw.setTargetAtTime(st ? fromDb(st.db) : 0, t, tc);
+        if (st){ var pf = lp.frequency; hold(pf, t); pf.setTargetAtTime(st.lp, t, Math.max(tc, 0.4)); }
+      }
+    }
+    function scene(s, fade){
+      want = { base: (s && s.base) || null, mul: (s && s.mul) || 0, water: (s && s.water) || 0, cut: !!(s && s.cut) };
+      if (ready) apply(typeof fade === "number" ? fade : 1.6);
+    }
+    function play(name){
+      if (!ready || !on || !sfx[name] || ctx.state !== "running") return false;
+      var s = ctx.createBufferSource();
+      s.buffer = sfx[name];
+      var g = ctx.createGain(); g.gain.value = fromDb(SFX_DB[name] || -20);
+      s.connect(g); g.connect(sfxBus);
+      s.onended = function(){ try{ g.disconnect(); }catch(e){} };
+      s.start(0);
+      played[name] = (played[name] || 0) + 1;
+      return true;
+    }
+    function unlock(){
+      if (!AC) return;
+      if (!ctx){
+        try{ ctx = new AC(); }catch(e){ errors.push("AudioContext — " + e); return; }
+        master = ctx.createGain(); master.gain.value = on ? 1 : 0; master.connect(ctx.destination);
+        ambBus = ctx.createGain(); ambBus.connect(master);
+        sfxBus = ctx.createGain(); sfxBus.connect(master);
+        // 구 iOS: 제스처 안에서 소리 하나를 틀어야 풀린다 — 한 샘플짜리 무음
+        try{ var z = ctx.createBufferSource(); z.buffer = ctx.createBuffer(1, 1, ctx.sampleRate); z.connect(ctx.destination); z.start(0); }catch(e){}
+        say("컨텍스트 " + ctx.state + " · " + ctx.sampleRate + "Hz");
+        load();
+      }
+      if (on && ctx.state !== "running" && !document.hidden){
+        try{
+          var r = ctx.resume();
+          if (r && r.then) r.then(function(){ say("재개 " + ctx.state); }, function(){});
+        }catch(e){}
+      }
+    }
+    ["pointerdown", "touchend", "mousedown", "keydown"].forEach(function(ev){
+      document.addEventListener(ev, unlock, { capture: true, passive: true });
+    });
+    document.addEventListener("visibilitychange", function(){
+      if (!ctx) return;
+      try{ if (document.hidden) ctx.suspend(); else if (on) ctx.resume(); }catch(e){}
+    });
+    function setOn(v){
+      on = !!v;
+      try{ localStorage.setItem(SOUND_KEY, on ? "on" : "off"); }catch(e){}
+      if (!ctx){ if (on) unlock(); return; }
+      var t = ctx.currentTime;
+      hold(master.gain, t); master.gain.setTargetAtTime(on ? 1 : 0, t, 0.06);
+      try{
+        if (on) ctx.resume();
+        else setTimeout(function(){ if (!on && ctx) ctx.suspend(); }, 400);
+      }catch(e){}
+    }
+    function state(){
+      var g = {};
+      ["bus", "room", "night", "water"].forEach(function(k){
+        g[k] = (amb[k] && amb[k].g) ? Math.round(amb[k].g.gain.value * 10000) / 10000 : null;
+      });
+      return { ctx: ctx ? ctx.state : "none", ready: ready, on: on, errors: errors.slice(), want: want, gains: g,
+               lp: lp ? Math.round(lp.frequency.value) : null, master: master ? master.gain.value : null,
+               loops: loops, played: played, amb: Object.keys(amb).length, sfx: Object.keys(sfx).length };
+    }
+    return { unlock: unlock, scene: scene, play: play, setOn: setOn, isOn: function(){ return on; }, state: state };
+  })();
+
+  // ?debug=1 전용 — 헤드리스 검사가 쓴다. 조각 수·sm 을 **실제 ink 상태**에 넣고 지금 페이지를 다시 그려
+  // 물 단계가 showPage 경로로 오르는지 본다(스크린샷 대신 콘솔 로그로 — 사용자 지시).
+  if (DEBUG){
+    window.__sound = {
+      state: Snd.state, stage: waterStage, play: Snd.play,
+      scene: function(s, f){ Snd.scene(s, f); return Snd.state().want; },
+      sceneFor: function(pg, frags){ return soundSceneFor(pg, frags); },
+      page: function(){ var p = pages[pageIdx] || {}; return { idx: pageIdx, kind: p.kind, space: p.space, path: p.path, sm: p.sm, frags: fragsAtPage(pageIdx) }; },
+      setFrags: function(n){
+        var L = new inkjs.InkList("fragments", story);
+        for (var i = 1; i <= n; i++) L.AddItem("fragment_" + i);
+        story.variablesState["fragments"] = L;
+        showPage(pageIdx, true);
+        return fragCount();
+      },
+      setSM: function(v){
+        story.variablesState["sibling_memory"] = v;
+        if (pages[pageIdx]) pages[pageIdx].sm = v;
+        showPage(pageIdx, true);
+        return currentSM();
+      }
+    };
   }
 
   // ══ 핸드폰 (Phase C §4-2~4-5) ═══════════════════════════════════════
@@ -5476,6 +5753,7 @@
     try{ localStorage.setItem(SLEEP_KEY, JSON.stringify({ idx: pageIdx, run: runNo })); }catch(e){}
     logEvent("day_sleep", { space: lastSpace, idx: pageIdx });
     sendLog("day_sleep", false);
+    Snd.scene(null, 3.5);   // 눈을 감았다 — 버스 소리가 천천히 빠진다
     var c = $("storyText");
     c.innerHTML = "";
     var b = document.createElement("div");
@@ -5512,9 +5790,12 @@
     tab.textContent = DEATH_CONTINUE_LABEL;
     tab.addEventListener("click", function(){
       logEvent("day_wake", { space: lastSpace });
+      Snd.play("tap");
       showPage(Math.min(pages.length - 1, (typeof raw.idx === "number" ? raw.idx : pageIdx) + 1), false);
     });
     box.appendChild(tab);
+    // 눈을 떴다. 버스 안이었다 — 첫 탭 전이라 컨텍스트가 아직 없으면 탭에서 열리며 이 장면으로 들어온다.
+    Snd.scene({ base: "bus", water: waterStage(fragCount(), currentSM()) }, 2.5);
     window.scrollTo(0, 0);
     return true;
   }
@@ -5532,6 +5813,7 @@
   function openPhone(){
     codexOpenAt = Date.now();
     logEvent("phone_open", { view: "lock", battery: batteryPct(), item: safeVar("item", "none") });
+    Snd.play("phone");
     phoneView = null;
     ["memoView", "mapView", "setView"].forEach(function(id){ $(id).classList.add("hidden"); });
     renderLock();
@@ -5863,6 +6145,13 @@
       box.appendChild(b);
       return b;
     }
+    // 소리 (TASK_08) — 기본값은 켜짐. 설명체: 지금 상태와, 누르면 무엇이 되는지.
+    row(Snd.isOn() ? "소리: 켜짐 — 누르면 끕니다" : "소리: 꺼짐 — 누르면 켭니다", "", function(){
+      var nv = !Snd.isOn();
+      Snd.setOn(nv);
+      logEvent("sound", { on: nv });
+      renderSettings();
+    });
     var n = document.createElement("p");
     n.className = "set-note";
     // 설명체 — 무엇이 남고 무엇이 돌아가는지 기능으로 적는다(사용자 지시 2026-09-12).
@@ -5953,6 +6242,7 @@
   // 지도에 첫 불이 들어온 뒤에야 통한다. 그래서 클리어·조각1·첫 점등을 본 다음이 제자리다.
   // 프롤로그에서 죽으면 뜨지 않는다 — 재진입해서 클리어한 그 시점에 한 번만.
   function chooseItem(which){
+    Snd.play("select");
     selectedItem = which;
     $("itemScreen").classList.add("hidden");
     if (pendingItemResume){
@@ -6069,6 +6359,7 @@
     try{ localStorage.removeItem(SAVE_KEY); }catch(e){}
     try{ localStorage.removeItem(SCREEN_KEY); }catch(e){}   // 저장본과 짝 — 남으면 다음 이어하기가 남의 화면을 그린다
     logEvent("run_end", { reason: "restart" });
+    Snd.scene(null, 1.2);
     $("phoneScreen").classList.add("hidden");
     $("storyScreen").classList.add("hidden");
     $("topbar").classList.add("hidden");
