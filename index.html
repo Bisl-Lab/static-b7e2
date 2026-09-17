@@ -4,6 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>괴담게임 — 플레이테스트 빌드</title>
+<!-- 파비콘 — **임시**: 강조색(--accent #8a6b4f) 단색 사각형 32px PNG. title 확정본이 나오면 거기서 뽑아 바꾼다(사용자 지시 2026-09-17).
+     데이터 URI 라 요청이 없다 — 링크가 없으면 브라우저가 사이트 루트의 /favicon.ico 를 찾다가 404 를 낸다(Pages 프로젝트 사이트는
+     그 루트에 파일을 둘 수 없다). SVG 가 아니라 PNG 인 까닭: Safari 는 SVG 파비콘을 못 읽고 /favicon.ico 로 되돌아간다. -->
+<link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAIAAAD8GO2jAAAAKklEQVR42mPoyvanKWIYtWDUglELRi0YtWDUglELRi0YtWDUglELhooFAMSdEEz18G91AAAAAElFTkSuQmCC">
 <style>
   :root{
     --bg:#0b0b0d;
@@ -663,7 +667,7 @@
 
   // build_web.py 가 주입: BUILD_ID = YYYYMMDD-HHMM-<주입 ink 소스 sha1 앞 8자>, SM0 = ink VAR sibling_memory 시작값.
   // /*MARKER*/fallback 형식(INK_JSON 과 동일 관례) — 템플릿을 안 거치고 그냥 열어도 여기서 문법·런타임 오류가 나지 않는다.
-  var BUILD_ID = "20260917-1415-c59481b6";
+  var BUILD_ID = "20260917-1429-c59481b6";
   var SM0 = 26;
   // sm 경계 — 물소리 단계(TASK_08)가 조언자 band 경계를 쓴다. build_web.py 가 ink `CONST SM_TRUE/SM_ALONE` 에서 주입.
   var SM_TRUE = 17;
