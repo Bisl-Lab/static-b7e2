@@ -48,11 +48,14 @@
      일러스트가 아니라 도형이다 — 원·사다리꼴·타원 몇 개. 긁힘 SVG 는 종전 그대로 **그 위에** 얹는다.
      구조: .lock-photo(인화지) > .photo-frame(사진 면) > svg.photo-img + svg.scratches
      바래는 필터는 **사진 면에만** 건다 — 테두리까지 흐려지면 인화지로 안 읽힌다. */
-  /* 테두리는 `padding:%` 로 준다 — CSS 에서 **퍼센트 패딩은 네 방향 모두 폭 기준**이라
-     52px 짜리에서도 270px 짜리에서도 테두리가 사방 같은 두께로 붙는다(inset:% 는 축마다 달라진다).
-     그래서 종이는 4:3 보다 아주 조금 세로로 길다 — 실제 인화지가 그렇다. */
-  .lock-photo{width:52px;flex:0 0 auto;border-radius:2px;position:relative;
-    background:#efe7d7;padding:6.5%;box-shadow:0 1px 3px rgba(0,0,0,.5);}
+  /* 테두리 — **2026-09-18 고침.** 원래 `padding:6.5%` 였다. 주석에는 "퍼센트 패딩은 네 방향 모두
+     폭 기준" 이라 적혀 있었는데, 그 폭은 **자기 폭이 아니라 담는 상자의 폭**이다.
+     상단바(폭 355px) 안의 52px 짜리에서 패딩이 사방 23px 이 되어 사진 면이 5.9px 로 눌려 있었다
+     (box-sizing:border-box 라 52 - 46 = 6). 도형 시절에는 작은 자국으로 보여 눈에 안 띄었고,
+     생성 사진을 넣자 "빈 종이"로 드러났다. 쓰는 곳이 셋뿐이라 **곳마다 px 로 준다.**
+     종이는 4:3 보다 아주 조금 세로로 길다 — 실제 인화지가 그렇다. */
+  .lock-photo{--pap:3px;width:52px;flex:0 0 auto;border-radius:2px;position:relative;
+    background:#efe7d7;padding:var(--pap);box-shadow:0 1px 3px rgba(0,0,0,.5);}
   .lock-photo .photo-frame{position:relative;aspect-ratio:4/3;overflow:hidden;background:#6b5540;}
   .lock-photo svg.photo-img{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:0;
     transition:filter .35s ease-out;}
@@ -109,8 +112,15 @@
   @keyframes battPulse{0%{box-shadow:0 0 0 rgba(200,180,143,0)}30%{box-shadow:0 0 10px 2px rgba(200,180,143,.8)}100%{box-shadow:0 0 0 rgba(200,180,143,0)}}
 
   /* ── 시작 화면 ── */
+  /* ── 시작 화면 배경 = 타이틀 그림 (2026-09-18) ──
+     08 §5 2번. 그림은 위 절반이 빈 하늘이라 제목과 버튼이 그 위에 선다.
+     글자가 읽혀야 하므로 **아래로 갈수록 짙어지는 막**을 한 겹 덮는다 — 그림은 위쪽만 살아 있다. */
   #startScreen{flex:1;display:flex;flex-direction:column;justify-content:center;
-    gap:22px;padding:32px 24px;}
+    gap:22px;padding:32px 24px;position:relative;isolation:isolate;
+    background:#0f0e12 url("assets/img/title.webp") center/cover no-repeat;}
+  #startScreen::before{content:"";position:absolute;inset:0;z-index:-1;
+    background:linear-gradient(180deg,rgba(15,14,18,.30) 0%,rgba(15,14,18,.62) 42%,rgba(15,14,18,.92) 100%);}
+  #startScreen h1{text-shadow:0 2px 10px rgba(0,0,0,.85);}
   #startScreen h1{font-size:18px;font-weight:600;margin:0 0 4px;letter-spacing:.02em;}
   #startScreen p.desc{font-size:12.5px;color:var(--muted);line-height:1.6;margin:0;}
   .gender-row{display:flex;gap:10px;}
@@ -131,12 +141,31 @@
   #continueBtn{background:#15181c;border-color:#33424c;}
 
   /* ── 본문 화면 ── */
+  /* ── 공간 배경 (2026-09-18) ──
+     앵커 12곳의 그림을 **본문 뒤에** 깐다. 본문이 읽히는 것이 먼저라 아주 어둡게 — opacity .16,
+     그 위에 세로 그라디언트 막. `position:fixed` 인 까닭: 스크롤해도 배경이 같이 흐르면
+     "공간"이 아니라 "긴 그림"으로 읽힌다. 공간이 바뀔 때 0.6초 페이드.
+     비앵커(B·C·전환)에는 그림이 없다 — 그때는 빈 배경으로 돌아간다. */
+  /* 넓은 화면에서도 #app 폭(390px) 안에만 깐다 — 창 전체로 번지면 앱이 아니라 벽지가 된다. */
+  #spaceBg{position:fixed;top:0;bottom:0;left:50%;transform:translateX(-50%);
+    width:100%;max-width:390px;z-index:0;pointer-events:none;
+    background-position:center;background-size:cover;background-repeat:no-repeat;
+    opacity:0;transition:opacity .6s ease-out;}
+  #spaceBg.on{opacity:.16;}
+  #spaceBg::after{content:"";position:absolute;inset:0;
+    background:linear-gradient(180deg,rgba(15,14,18,.55) 0%,rgba(15,14,18,.25) 30%,rgba(15,14,18,.75) 100%);}
+  #app > #topbar, #app > #startScreen, #app > #storyScreen{position:relative;z-index:1;}
   #storyScreen{flex:1;display:flex;flex-direction:column;}
   #storyText{padding:18px 16px 8px;font-size:15px;line-height:1.8;}
   p.para{margin:0 0 14px;}
+  /* 규칙서 블록 — 08 §5 18번 소품(모눈 종이) 위에 진짜 글자가 얹힌다 (2026-09-18).
+     종이는 밝으므로 어둡게 깔고(multiply 대신 낮은 opacity 레이어) 글자색은 그대로 둔다. */
   .doc-block{margin:8px 0 16px;padding:11px 12px;background:var(--rule-bg);
     border-left:3px solid var(--rule-border);font-family:"D2Coding","Consolas",monospace;
-    font-size:13.5px;color:#cfc7ad;white-space:pre-wrap;line-height:1.65;}
+    font-size:13.5px;color:#cfc7ad;white-space:pre-wrap;line-height:1.65;
+    position:relative;isolation:isolate;}
+  .doc-block::before{content:"";position:absolute;inset:0;z-index:-1;opacity:.13;
+    background:url("assets/img/prop_rulebook.webp") center/cover no-repeat;}
   #choices{padding:4px 16px 28px;display:flex;flex-direction:column;gap:8px;}
   .choice-btn{display:block;width:100%;text-align:left;background:var(--panel2);
     color:var(--text);border:1px solid var(--border);border-radius:6px;
@@ -170,7 +199,10 @@
      긁힘은 가로로 길어져도 그대로 보인다 — SVG 가 `preserveAspectRatio: slice` 로 가운데를 크롭한다. */
   /* Phase 4: 5:2 로 납작하게 늘여 두던 것을 되돌린다 — 사진이 4:3 인화지가 됐으므로 비율을 지키고
      대신 **폭을 줄여 가운데** 세운다. 사인·도감 줄·대가·상태·탭이 같은 화면에 들어오는 것은 그대로다. */
-  .lock-photo.death-photo{width:58%;max-width:212px;margin:8px auto 14px;border-radius:2px;}
+  .lock-photo.death-photo{--pap:13px;width:58%;max-width:212px;margin:8px auto 14px;border-radius:2px;}
+  /* 엔딩 그림 (2026-09-18) — 화면 폭 가득. 잠금화면 사진(58%)보다 크게 두어 "끝"이 커 보이게. */
+  .ending-art{display:block;width:100%;margin:16px 0 4px;border-radius:3px;
+    animation:deathIn .5s ease-out .2s both;}
   /* 사망 화면 한정으로 호흡을 조인다. 본문 화면의 리듬(14px)은 그대로 둔다. */
   .story-block.dying p.para{margin-bottom:10px;}
   .story-block.dying .doc-block{margin:6px 0 10px;}
@@ -246,7 +278,7 @@
      앞뒤로 크게 비우고, 사진 한 장을 세우고, 이름 한 줄로 닫는다. */
   .story-block.ending{padding:18px 0 26px;}
   .story-block.ending .para:last-of-type{margin-bottom:26px;}
-  .lock-photo.ending-photo{width:52%;max-width:190px;margin:0 auto;border-radius:2px;
+  .lock-photo.ending-photo{--pap:12px;width:52%;max-width:190px;margin:0 auto;border-radius:2px;
     box-shadow:0 8px 26px rgba(0,0,0,.6);}
   .ending-title{margin:26px 0 8px;text-align:center;font-size:15px;letter-spacing:.3em;text-indent:.3em;color:#c8b48f;}
   /* ── 한 화면 = 한 턴 ──
@@ -394,7 +426,10 @@
   #mapBody{padding-bottom:8px;}
 
   /* 메모 (§4-3) — 제목 없이 구분선만 */
-  .memo-sec{padding:2px 0 14px;}
+  /* 메모 「남은 것」 — 08 §5 20번 소품(민 종이). 도감이 메모로 합쳐졌으므로 여기가 그 자리다. */
+  .memo-sec{padding:2px 0 14px;position:relative;isolation:isolate;}
+  .memo-sec::before{content:"";position:absolute;inset:-2px 0;z-index:-1;opacity:.10;
+    background:url("assets/img/prop_codex.webp") center/cover no-repeat;}
   .memo-sec + .memo-sec{border-top:1px solid #26252b;padding-top:14px;}
   .memo-item{padding:8px 0;border-bottom:1px dashed #26252b;}
   .memo-item .mi-name{font-size:13.5px;color:#e8e6e1;}
@@ -435,6 +470,10 @@
   /* 지도 (§4-4) — 세로 노선도 SVG */
   /* 안전망: 어떤 이유로든 계산이 어긋나도 잘리지 않게 높이를 가둔다.
      preserveAspectRatio 기본값(meet)이라 높이를 묶으면 폭이 같이 줄며 가운데 정렬된다. */
+  /* 지도 — 08 §5 19번 소품(노선도 종이)을 SVG 뒤에 깐다. */
+  .routemap-paper{position:relative;isolation:isolate;}
+  .routemap-paper::before{content:"";position:absolute;inset:0;z-index:-1;opacity:.12;
+    background:url("assets/img/prop_map.webp") center/cover no-repeat;}
   .routemap{width:100%;display:block;max-height:100%;}
   .routemap .stop-name{font:12px "Pretendard","Malgun Gothic",sans-serif;fill:#cfc7ad;}
   .routemap .stop-name.dim{fill:#4e4c54;}
@@ -491,6 +530,8 @@
 </head>
 <body>
 <div id="app">
+  <!-- 공간 배경 (2026-09-18) — 앵커 12곳의 그림. setSpaceBg() 가 background-image 를 갈아 끼운다. -->
+  <div id="spaceBg" aria-hidden="true"></div>
 
   <div id="compileBanner" class="hidden"></div>
 
@@ -655,6 +696,29 @@
   var startTime = Date.now();
   var log = [];
   var lastSpace = null;
+
+  // ── 공간 배경 (2026-09-18) ──────────────────────────────────────────
+  // 앵커 12곳만 그림이 있다. B·C·전환은 배경 없이 — 그림이 있는 곳과 없는 곳이 갈리는 게
+  // 앵커를 "머무는 곳"으로 읽히게 한다(05 §2 앵커에서만 조각). 같은 공간을 다시 칠하지 않는다.
+  // **그림 목록은 여기 한 곳이다.** 빌드(scripts/build_web.py copy_art)가 이 배열을 읽어
+  // build/assets/img/ 를 채운다 — CSS 가 직접 부르는 것(photo·title·prop_*)은 경로에서 읽히지만
+  // 앵커·엔딩은 이름을 이어 붙여 쓰므로 경로로는 안 잡힌다. 여기에 없으면 빌드에 안 들어간다.
+  var ART_FILES = ["photo","title","prop_rulebook","prop_codex","prop_map",
+    "A01","A02","A03","A04","A05","A06","A07","A08","A09","A10","A11","A12",
+    "end_forgotten","end_alone","end_true"];
+  var ART_SPACES = {};
+  ART_FILES.forEach(function(n){ if (/^A\d\d$/.test(n)) ART_SPACES[n] = 1; });
+  var bgSpace = null;
+  function setSpaceBg(sp){
+    var el = document.getElementById("spaceBg");
+    if (!el) return;
+    var want = (sp && ART_SPACES[sp]) ? sp : null;
+    if (want === bgSpace) return;
+    bgSpace = want;
+    if (!want){ el.classList.remove("on"); return; }
+    el.style.backgroundImage = 'url("assets/img/' + want + '.webp")';
+    el.classList.add("on");
+  }
   var lastRenderedText = "";
   var rulesDwellStart = null;
   var rulesDwellSpace = null;
@@ -667,7 +731,7 @@
 
   // build_web.py 가 주입: BUILD_ID = YYYYMMDD-HHMM-<주입 ink 소스 sha1 앞 8자>, SM0 = ink VAR sibling_memory 시작값.
   // /*MARKER*/fallback 형식(INK_JSON 과 동일 관례) — 템플릿을 안 거치고 그냥 열어도 여기서 문법·런타임 오류가 나지 않는다.
-  var BUILD_ID = "20260917-1429-c59481b6";
+  var BUILD_ID = "20260918-1239-c59481b6";
   var SM0 = 26;
   // sm 경계 — 물소리 단계(TASK_08)가 조언자 band 경계를 쓴다. build_web.py 가 ink `CONST SM_TRUE/SM_ALONE` 에서 주입.
   var SM_TRUE = 17;
@@ -4043,6 +4107,7 @@
     var carried = codexRestore(story);
     if (carried) logEvent("codex_carry", { count: carried });
     lastSpace = null;
+    setSpaceBg(null);
     lastRenderedText = "";
     rulesDwellStart = null;
     endingLogged = false;
@@ -4775,6 +4840,16 @@
           et.textContent = ENDING_TITLES[reached];
           lastBlockEl.appendChild(et);
         }
+        // 엔딩 그림 (08 §5 15~17, 2026-09-18) — 엔딩 이름 **뒤**에 한 장.
+        // 잠금화면 사진이 앞, 엔딩 이름이 가운데, 그 엔딩의 그림이 마지막이다.
+        var ART_ENDING = { "true": "end_true", "alone": "end_alone", "forgotten": "end_forgotten" };
+        if (ART_ENDING[reached]){
+          var ei = document.createElement("img");
+          ei.className = "ending-art";
+          ei.alt = "";
+          ei.src = "assets/img/" + ART_ENDING[reached] + ".webp";
+          lastBlockEl.appendChild(ei);
+        }
       }
       logEvent("ending", { space: lastSpace, sm: currentSM(), ending: reached, tagged: !!taggedEnding });
       markEnding(reached);   // 메모 「끝」 3칸 (Phase C §4-3)
@@ -4935,28 +5010,23 @@
           '<stop offset=".55" stop-color="#82674b" stop-opacity=".93"/>' +
           '<stop offset="1" stop-color="#82674b" stop-opacity="0"/></radialGradient>' +
       '</defs>' +
+      // 2026-09-18: 도형 대신 **생성 이미지**(assets/img/photo.webp). 채택본은 08 §5 1번.
+      // 머리 빈자리는 넣지 않은 그림이다(사용자 지시 2026-09-15) — 아래 .face-void 가 그 자리를 맡는다.
+      // 이미지가 없거나 못 읽어도 SVG 는 그대로 그려진다: 뒤에 바탕 사각형을 남겨 둔다.
       '<rect width="320" height="240" fill="url(#' + u + 'g)"/>' +
-      // 뒤쪽 — 흐린 가로 띠 하나. 배경이 "어딘가"라는 것만 알려 준다.
-      '<rect y="126" width="320" height="4" fill="#4a3826" opacity=".3"/>' +
-      '<rect y="130" width="320" height="110" fill="#4e3b28" opacity=".22"/>' +
-      // 형체 A (왼쪽) — 어깨와 머리. 솔리드.
-      '<path d="M40 240 C40 180 68 152 112 152 C156 152 184 180 184 240 Z" fill="#2c2117"/>' +
-      '<circle cx="112" cy="120" r="32" fill="#2c2117"/>' +
-      // 형체 B (오른쪽) — 어깨는 A 와 겹친다(맞댄 것). 머리는 그리지 않는다.
-      '<path d="M138 240 C138 182 165 155 206 155 C247 155 274 182 274 240 Z" fill="#332619"/>' +
-      // 그 얼굴 자리 — 감광층이 뜯긴 자국. 종이 쪽 색이 그대로 드러난다.
-      // 손상이 깊어지면 이 자국마저 **배경색으로 수렴한다**(아래 .bleach) — 흉터조차 남지 않는 것이
-      // 03 §2 의 잊는 순서에서 "얼굴"이 지워진 상태다.
+      '<image href="assets/img/photo.webp" x="0" y="0" width="320" height="240" preserveAspectRatio="xMidYMid slice"/>' +
+      // 2026-09-18: 좌표를 **새 그림의 오른쪽 인물 머리**에 맞췄다 — 중심 (172,107), 머리 반지름 약 13.
+      // 예전 값(206,120 / rx30 ry34)은 도형 시절의 것이라 새 그림에서는 허공을 파냈다.
       '<g class="face-void" fill="#e7dcc4">' +
-        '<ellipse cx="206" cy="120" rx="30" ry="34"/>' +
-        '<ellipse cx="190" cy="104" rx="16" ry="13"/>' +
-        '<ellipse cx="223" cy="136" rx="14" ry="11"/>' +
-        '<ellipse cx="214" cy="98" rx="11" ry="9"/>' +
-        '<path d="M180 150 q26 -10 52 2" stroke="#cdbfa2" stroke-width="3" fill="none" opacity=".7"/>' +
+        '<ellipse cx="172" cy="107" rx="17" ry="19"/>' +
+        '<ellipse cx="163" cy="98" rx="9" ry="7"/>' +
+        '<ellipse cx="181" cy="116" rx="8" ry="6"/>' +
+        '<ellipse cx="177" cy="95" rx="6" ry="5"/>' +
+        '<path d="M159 124 q15 -6 29 1" stroke="#cdbfa2" stroke-width="2" fill="none" opacity=".7"/>' +
       '</g>' +
       // 탈색 — 오른쪽 형체의 얼굴에서 시작해 번진다. 가운데는 배경색 그대로, 가장자리는 투명.
       // 원 하나면 접시처럼 보여서 셋을 어긋나게 겹쳤다. 크기는 transform scale 하나로만 몬다.
-      '<g class="bleach" transform="translate(206 120) scale(0.2)" opacity="0">' +
+      '<g class="bleach" transform="translate(172 107) scale(0.2)" opacity="0">' +
         '<ellipse rx="58" ry="50" fill="url(#' + u + 'b)"/>' +
         '<ellipse cx="-22" cy="-14" rx="34" ry="30" fill="url(#' + u + 'b)"/>' +
         '<ellipse cx="20" cy="18" rx="30" ry="26" fill="url(#' + u + 'b)"/>' +
@@ -5209,10 +5279,12 @@
       if (!batchDied && !enterExtra.forced && batchSpaceBefore && batchSpaceBefore !== sp) recordClear(batchSpaceBefore);
       recordEnter(sp);
       lastSpace = sp;
+      setSpaceBg(sp);
       showRevisitBanner(sp);
       lastRevisitSpace = sp;
     } else if (sp && isSpacePage){
       lastSpace = sp;
+      setSpaceBg(sp);
     }
 
     isDaySettle = false;
@@ -5301,6 +5373,7 @@
       batchEnterDone = !!saved.batchEnterDone;
       pendingChoiceEcho = saved.echo || null;
       lastSpace = safeVar("current_space", null);   // silent 복원이라 enter 를 다시 남기지 않는다
+    setSpaceBg(lastSpace);
       showPage(typeof saved.idx === "number" ? saved.idx : 0, true);
       if (saved.revisit) showRevisitBanner(saved.revisit);   // 재방문 배너도 화면의 일부다
       return;
@@ -6105,7 +6178,11 @@
         c.addEventListener("click", function(){ mapDetail = sid; renderMap(); });
       })(n, id);
     }
-    box.appendChild(svg);
+    // 노선도 종이 (08 §5 19번 소품, 2026-09-18) — SVG 를 종이 한 장 위에 얹는다.
+    var paper = document.createElement("div");
+    paper.className = "routemap-paper";
+    paper.appendChild(svg);
+    box.appendChild(paper);
     mapLitPending = null;
     if (mapDetail){
       var d = document.createElement("div");
