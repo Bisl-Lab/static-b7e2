@@ -4,10 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>괴담게임 — 플레이테스트 빌드</title>
-<!-- 파비콘 — **임시**: 강조색(--accent #8a6b4f) 단색 사각형 32px PNG. title 확정본이 나오면 거기서 뽑아 바꾼다(사용자 지시 2026-09-17).
+<!-- 파비콘 — title 확정본(08 §5 2번, `assets/title/title.png`)에서 뽑았다(사용자 지시 2026-09-20).
+     크롭은 (30,600)-(310,880) → 32px: **불 켜진 정류장 한 채**. 타이틀 전체를 32px 로 줄이면 어두운
+     얼룩이 되고, 그 안에서 유일하게 형태가 남는 것이 처마 등과 그 빛이다.
      데이터 URI 라 요청이 없다 — 링크가 없으면 브라우저가 사이트 루트의 /favicon.ico 를 찾다가 404 를 낸다(Pages 프로젝트 사이트는
      그 루트에 파일을 둘 수 없다). SVG 가 아니라 PNG 인 까닭: Safari 는 SVG 파비콘을 못 읽고 /favicon.ico 로 되돌아간다. -->
-<link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAIAAAD8GO2jAAAAKklEQVR42mPoyvanKWIYtWDUglELRi0YtWDUglELRi0YtWDUglELhooFAMSdEEz18G91AAAAAElFTkSuQmCC">
+<link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,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">
 <style>
   :root{
     --bg:#0b0b0d;
@@ -731,7 +733,7 @@
 
   // build_web.py 가 주입: BUILD_ID = YYYYMMDD-HHMM-<주입 ink 소스 sha1 앞 8자>, SM0 = ink VAR sibling_memory 시작값.
   // /*MARKER*/fallback 형식(INK_JSON 과 동일 관례) — 템플릿을 안 거치고 그냥 열어도 여기서 문법·런타임 오류가 나지 않는다.
-  var BUILD_ID = "20260918-1239-c59481b6";
+  var BUILD_ID = "20260920-2215-c59481b6";
   var SM0 = 26;
   // sm 경계 — 물소리 단계(TASK_08)가 조언자 band 경계를 쓴다. build_web.py 가 ink `CONST SM_TRUE/SM_ALONE` 에서 주입.
   var SM_TRUE = 17;
