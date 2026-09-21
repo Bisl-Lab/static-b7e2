@@ -558,10 +558,10 @@
   <div id="startScreen">
     <div>
       <h1>괴담게임</h1>
-      <p class="desc" style="color:#c9b98a">플레이 기록이 테스트 목적으로 수집됩니다.</p>
-      <p class="desc">성별을 고릅니다. 이어할 저장본이 있으면 아래에서 이어갑니다.</p>
+      <p class="desc" style="color:#c9b98a">테스트 버전입니다. 플레이 기록이 수집됩니다.</p>
+      <p class="desc">성별을 고르고 「새로 시작」을 누릅니다. 하던 게임이 있으면 「이어하기」가 켜집니다.</p>
       <!-- 빌드 전환 안내 (사용자 지시 (4)). initUI 가 buildChanged 일 때만 hidden 을 푼다. -->
-      <p class="desc" id="buildNotice" hidden style="color:#c8b48f">새 버전입니다. 이전 기록을 지웁니다.</p>
+      <p class="desc" id="buildNotice" hidden style="color:#c8b48f">새 버전입니다. 이전 버전의 기록은 지워집니다.</p>
     </div>
     <div class="gender-row">
       <button class="gender-btn selected" id="genderM" type="button" data-g="m">남</button>
@@ -588,7 +588,7 @@
     <div id="pocket" hidden></div>
     <button id="rulesBtn" type="button" title="현재 공간의 규칙서">규칙서</button>
     <!-- 조언자 (TASK_06 Phase 2) — 한 공간에 한 번. 규칙서 반대쪽에 둔다(주머니 표시와 겹치지 않게). -->
-    <button id="listenBtn" type="button" hidden title="한 공간에 한 번 들을 수 있다">듣는다</button>
+    <button id="listenBtn" type="button" hidden title="선택지 중 안 죽는 것 하나를 알려줍니다. 장소마다 한 번만.">안 죽는 쪽 묻기</button>
   </div>
   <div id="rulesOverlay" class="hidden">
     <div class="rs-panel">
@@ -600,7 +600,7 @@
        Phase 1 의 "흐름을 끊지 않는다"(자동 팝업 금지)와 충돌하지 않는다. -->
   <div id="listenOverlay" class="hidden">
     <div class="rs-panel">
-      <div class="rs-bar"><span>듣는다</span><button class="small-btn" id="listenCloseBtn" type="button">닫기</button></div>
+      <div class="rs-bar"><span>안 죽는 쪽 묻기</span><button class="small-btn" id="listenCloseBtn" type="button">닫기</button></div>
       <div id="listenBody"></div>
     </div>
   </div>
@@ -609,29 +609,29 @@
   <div id="itemScreen" class="hidden">
     <div>
       <h2>주머니에 든 것</h2>
-      <p class="hint">하나를 고릅니다. 회차가 끝날 때까지 바꿀 수 없습니다.</p>
+      <p class="hint">하나만 고릅니다. 다시 시작하기 전에는 바꿀 수 없습니다.</p>
     </div>
     <div class="item-card" data-item="salt">
       <h3>소금</h3>
-      <p>작은 봉지. 반쯤 남아 있다.</p>
+      <p>죽는 선택을 골라도 두 번까지 살려줍니다.</p>
       <!-- 소금 재설계 2026-09-13: C 전용 → B·C. 문구도 범위에 맞춘다.
            플레이어가 쓰는 말로 "비앵커"는 **지도에 정류장이 서지 않는 곳**이다 —
            앵커를 클리어하면 「지도에 불이 들어왔다」가 뜨므로 이 구분은 플레이 중에 배워진다. -->
-      <p>정류장이 아닌 곳에서 죽을 선택을 해도 두 번까지 살려준다. 반드시.</p>
+      <p>지도에 정류장으로 뜨는 12곳 말고, 그 사이의 작은 곳에서만 효과가 있습니다. 실패 없이 반드시 됩니다.</p>
       <button type="button">가져간다</button>
     </div>
     <div class="item-card" data-item="charm">
       <h3>부적</h3>
-      <p>접힌 종이. 글씨는 번져 읽히지 않는다.</p>
+      <p>죽는 선택을 골라도 한 번 살려줍니다.</p>
       <!-- 부적 앵커 전용 2026-09-14: A·B → A. 소금과 짝이 되게 같은 말("정류장")로 범위를 가른다 —
            소금은 "정류장이 아닌 곳", 부적은 "정류장". 겹치는 자리가 없다. -->
-      <p>정류장에서 죽을 선택을 해도 한 번 살려준다. 열에 여섯.</p>
+      <p>지도에 정류장으로 뜨는 12곳에서만 효과가 있습니다. 성공률은 열 번 중 여섯 번입니다.</p>
       <button type="button">가져간다</button>
     </div>
     <div class="item-card" data-item="hunch">
       <h3>직감</h3>
-      <p>가진 것은 없다.</p>
-      <p>규칙서에서 가짜 하나가 흔들려 보인다. 규칙이 긴 곳에서는 안 된다.</p>
+      <p>물건은 없습니다. 대신 가짜 규칙을 알아봅니다.</p>
+      <p>규칙서를 열면 가짜 규칙 하나가 흔들려 보입니다. 규칙서가 긴 곳에서는 통하지 않습니다.</p>
       <button type="button">가져간다</button>
       <div class="locknote" hidden>메모 10</div>
     </div>
@@ -736,7 +736,7 @@
 
   // build_web.py 가 주입: BUILD_ID = YYYYMMDD-HHMM-<주입 ink 소스 sha1 앞 8자>, SM0 = ink VAR sibling_memory 시작값.
   // /*MARKER*/fallback 형식(INK_JSON 과 동일 관례) — 템플릿을 안 거치고 그냥 열어도 여기서 문법·런타임 오류가 나지 않는다.
-  var BUILD_ID = "20260921-1113-e90e09e2";
+  var BUILD_ID = "20260921-1129-e90e09e2";
   var SM0 = 26;
   // sm 경계 — 물소리 단계(TASK_08)가 조언자 band 경계를 쓴다. build_web.py 가 ink `CONST SM_TRUE/SM_ALONE` 에서 주입.
   var SM_TRUE = 17;
@@ -4716,7 +4716,7 @@
     if (!last.choice) return;
     var el = document.createElement("div");
     el.className = "revisit";
-    el.textContent = "지난번 여기서: 「" + last.choice + "」";
+    el.textContent = "지난번에 여기서 본 규칙서: 「" + last.choice + "」";
     // 직전 선택 줄이 있으면 그 바로 아래. 순서 고정: 직전 선택 → 재방문 배너 → 본문.
     var head = lastBlockEl.firstChild;
     var before = (head && head.nodeType === 1 && head.className === "last-choice") ? head.nextSibling : head;
@@ -4736,7 +4736,7 @@
     // 제목에 공간 ID 를 쓰지 않는다 (Phase C §4-1). 지명이 있으면 지명, 없으면 그냥 "규칙서".
     var pn = placeName(space);
     $("rulesOverlayTitle").textContent = pn ? "규칙서 — " + pn : "규칙서";
-    $("rulesOverlayBody").innerHTML = html || '<p class="para" style="color:var(--muted)">이 공간에는 아직 본 규칙서가 없다.</p>';
+    $("rulesOverlayBody").innerHTML = html || '<p class="para" style="color:var(--muted)">아직 이곳의 규칙서를 보지 못했습니다. 이야기에서 규칙서를 본 뒤에 여기서 다시 읽을 수 있습니다.</p>';
     $("rulesOverlay").classList.remove("hidden");
     rulesOpenAt = Date.now();
     logEvent("rules_open", { space: space, has_sheet: !!html });
@@ -4886,16 +4886,16 @@
     body.innerHTML = "";
     $("listenOverlay").classList.remove("hidden");
     if (askedHere()){
-      addAdvSys(body, "한 공간에 한 번 들을 수 있습니다. 여기서는 이미 들었습니다.");
+      addAdvSys(body, "장소마다 한 번만 물을 수 있습니다. 여기서는 이미 물었습니다.");
       return;
     }
     var btn = document.createElement("button");
     btn.className = "adv-ask";
     btn.type = "button";
-    btn.textContent = "「이 중에 아닌 것 하나만.」";
+    btn.textContent = "「이 중에 안 죽는 거 하나만 말해 줘.」";
     btn.addEventListener("click", function(){ doAsk(sp); });
     body.appendChild(btn);
-    addAdvSys(body, "한 공간에 한 번. 들리지 않으면 쓰이지 않습니다.");
+    addAdvSys(body, "지금 보이는 선택지 중 안 죽는 것 하나를 짚어 줍니다. 장소마다 한 번만. 답이 오지 않으면 그 한 번은 쓰이지 않습니다.");
   }
   function closeListen(){ $("listenOverlay").classList.add("hidden"); }
 
@@ -4925,14 +4925,14 @@
       // 03 §2: 부르려다 못 부른다. 호칭 자리가 빈다. **질문은 쓰이지 않는다.**
       addAdvLine(body, "……", true);
       addAdvLine(body, "무슨 말이 오려다 말았다. 그다음은 없었다.", true);
-      addAdvSys(body, "들리지 않았습니다. 질문은 그대로 남습니다.");
+      addAdvSys(body, "답이 오지 않았습니다. 이곳의 한 번은 쓰이지 않았으니 다시 물을 수 있습니다.");
       return;
     }
     if (res.nothing || res.idx < 0 || res.idx >= choices.length){
       // 판정 먼저 — "여긴 다 죽는다"가 판정이고, 못 짚는 것은 그 결과다.
       addAdvLine(body, "거긴 다야. 짚을 게 없어.");
       addAdvLine(body, "고르는 수밖에 없어.", true);
-      addAdvSys(body, "아무것도 가려내지 못했습니다. 질문은 그대로 남습니다.");
+      addAdvSys(body, "안 죽는 선택이 없어 짚지 못했습니다. 이곳의 한 번은 쓰이지 않았습니다.");
       return;
     }
 
@@ -4952,7 +4952,7 @@
       addAdvLine(body, "거기선 안 죽어.");
       addAdvLine(body, "그거 말고를 봐. 내가 볼 수 있는 건 거기까지야.", true);
     }
-    addAdvSys(body, "메모 「물어본 것」에 남았습니다.");
+    addAdvSys(body, "핸드폰 메모의 「물어본 것」에 남았습니다.");
 
     markAsked(sp);
     var l = loadAskLog();
@@ -5036,7 +5036,7 @@
       // 회차가 끝났으므로 플로팅 버튼 셋은 내린다 (Phase 4) — 규칙서·주머니·듣는다는
       // 살아서 고를 것이 있을 때만 의미가 있고, 남아 있으면 마지막 안내문을 가린다.
       ["rulesBtn", "pocket", "listenBtn"].forEach(function(id){ var e = $(id); if (e) e.hidden = true; });
-      $("endingNote").textContent = "— 이 회차는 여기서 끝났습니다. 핸드폰 설정에서 다시 시작할 수 있습니다. —";
+      $("endingNote").textContent = "— 이번 회차는 여기서 끝났습니다. 다시 시작하려면 오른쪽 위 핸드폰을 열고 ⚙ 설정에서 「재시작」을 누릅니다. —";
       $("endingNote").classList.remove("hidden");
     }
   }
@@ -5071,7 +5071,7 @@
         box.appendChild(cont);
         var sl = document.createElement("button");
         sl.className = "choice-btn"; sl.type = "button";
-        sl.textContent = "여기서 눈을 붙인다";
+        sl.textContent = "저장하고 쉰다";
         sl.addEventListener("click", function(){
           Snd.play("select");
           if (!itemPicked()){ openItemScreenMidRun(sleepHere); return; }
@@ -5185,24 +5185,36 @@
           '<stop offset="0" stop-color="#82674b" stop-opacity="1"/>' +
           '<stop offset=".55" stop-color="#82674b" stop-opacity=".93"/>' +
           '<stop offset="1" stop-color="#82674b" stop-opacity="0"/></radialGradient>' +
+        // 얼굴 자리를 지우는 가우시안 (1e, 사용자 지시 2026-09-21). 덮지 않고 **뭉갠다**.
+        // 마스크 가장자리를 그라디언트로 풀어야 경계선이 안 생긴다 — 선이 보이면 스티커와 같아진다.
+        '<filter id="' + u + 'fb" x="-60%" y="-60%" width="220%" height="220%" color-interpolation-filters="sRGB">' +
+          '<feGaussianBlur stdDeviation="4.5"/></filter>' +
+        '<radialGradient id="' + u + 'fm" cx="50%" cy="50%" r="50%">' +
+          '<stop offset="0" stop-color="#fff" stop-opacity="1"/>' +
+          '<stop offset=".5" stop-color="#fff" stop-opacity="1"/>' +
+          '<stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>' +
+        '<mask id="' + u + 'fk">' +
+          '<ellipse cx="179" cy="138" rx="14" ry="15" fill="url(#' + u + 'fm)"/></mask>' +
       '</defs>' +
       // 2026-09-18: 도형 대신 **생성 이미지**(assets/img/photo.webp). 채택본은 08 §5 1번.
       // 머리 빈자리는 넣지 않은 그림이다(사용자 지시 2026-09-15) — 아래 .face-void 가 그 자리를 맡는다.
       // 이미지가 없거나 못 읽어도 SVG 는 그대로 그려진다: 뒤에 바탕 사각형을 남겨 둔다.
       '<rect width="320" height="240" fill="url(#' + u + 'g)"/>' +
       '<image href="assets/img/photo.webp" x="0" y="0" width="320" height="240" preserveAspectRatio="xMidYMid slice"/>' +
-      // 2026-09-18: 좌표를 **새 그림의 오른쪽 인물 머리**에 맞췄다 — 중심 (172,107), 머리 반지름 약 13.
-      // 예전 값(206,120 / rx30 ry34)은 도형 시절의 것이라 새 그림에서는 허공을 파냈다.
-      '<g class="face-void" fill="#e7dcc4">' +
-        '<ellipse cx="172" cy="107" rx="17" ry="19"/>' +
-        '<ellipse cx="163" cy="98" rx="9" ry="7"/>' +
-        '<ellipse cx="181" cy="116" rx="8" ry="6"/>' +
-        '<ellipse cx="177" cy="95" rx="6" ry="5"/>' +
-        '<path d="M159 124 q15 -6 29 1" stroke="#cdbfa2" stroke-width="2" fill="none" opacity=".7"/>' +
+      // 2026-09-21 (1e): 사진을 s21041 로 바꾸면서 좌표를 **격자로 실측**해 다시 잡았다 —
+      // 오른쪽 형체의 머리 중심 (179,138), 머리 폭 약 22(viewBox 320x240 기준).
+      // 옛 값 (172,107)은 이전 사진 기준이라 새 그림에서는 머리 위 허공을 지웠다.
+      // 탈색(bleach)도 같은 자리에서 시작한다 — 초기값과 갱신값이 서로 달랐던 것(172,107 vs 206,120)을 함께 맞췄다.
+      // 얼굴 자리 — **스티커가 아니라 흐림**이다 (1e, 사용자 지시 2026-09-21).
+      // 같은 사진을 한 번 더 깔고 블러를 먹인 뒤 얼굴 자리만 남기는 마스크를 씌운다.
+      // 예전에는 살색 타원 넷으로 덮었는데, 덮은 자국이 스티커처럼 보였다.
+      // 긁힘은 별도 svg.scratches(z-index:1)라 이 위에 그대로 남는다.
+      '<g class="face-void" mask="url(#' + u + 'fk)" filter="url(#' + u + 'fb)">' +
+        '<image href="assets/img/photo.webp" x="0" y="0" width="320" height="240" preserveAspectRatio="xMidYMid slice"/>' +
       '</g>' +
       // 탈색 — 오른쪽 형체의 얼굴에서 시작해 번진다. 가운데는 배경색 그대로, 가장자리는 투명.
       // 원 하나면 접시처럼 보여서 셋을 어긋나게 겹쳤다. 크기는 transform scale 하나로만 몬다.
-      '<g class="bleach" transform="translate(172 107) scale(0.2)" opacity="0">' +
+      '<g class="bleach" transform="translate(179 138) scale(0.2)" opacity="0">' +
         '<ellipse rx="58" ry="50" fill="url(#' + u + 'b)"/>' +
         '<ellipse cx="-22" cy="-14" rx="34" ry="30" fill="url(#' + u + 'b)"/>' +
         '<ellipse cx="20" cy="18" rx="30" ry="26" fill="url(#' + u + 'b)"/>' +
@@ -5319,7 +5331,7 @@
     if (voidEl) voidEl.style.opacity = (1 - Math.min(1, q * 1.4)).toFixed(3);
     var bl = frame.querySelector(".bleach");
     if (bl){
-      bl.setAttribute("transform", "translate(206 120) scale(" + (0.2 + e * 0.78).toFixed(3) + ")");
+      bl.setAttribute("transform", "translate(179 138) scale(" + (0.2 + e * 0.78).toFixed(3) + ")");
       bl.setAttribute("opacity", Math.min(1, q * 1.5).toFixed(3));
     }
     el.__step = step;
@@ -6014,7 +6026,7 @@
     var p1 = document.createElement("p"); p1.className = "para"; p1.textContent = "창밖이 검었다. 눈을 감았다.";
     b.appendChild(p1);
     var s = document.createElement("p"); s.className = "sys-note";
-    s.textContent = "여기까지 저장했습니다. 앱을 닫아도 됩니다.";
+    s.textContent = "여기까지 저장했습니다. 앱을 닫아도 됩니다. 다음에 「이어하기」를 누르면 여기서 이어집니다.";
     b.appendChild(s);
     c.appendChild(b);
     $("choices").innerHTML = "";
@@ -6134,12 +6146,12 @@
     // 상단 안내 (사용자 지시 2026-09-12) — 시스템 화면이라 설명체다.
     var g = document.createElement("p");
     g.className = "memo-guide";
-    g.textContent = "죽어서 남은 것. 같은 상황이 오면 선택지에 표시된다.";
+    g.textContent = "죽을 때마다 배운 것이 여기에 남습니다. 같은 상황이 다시 오면 그 선택지에 표시가 붙습니다.";
     // 2회차 이상 첫 시작에 한 번만 — 메모가 회차를 넘어 남는다는 것을 알려 준다.
     if (runNo >= 2 && !memoRunNoticeShown()){
       var gr = document.createElement("span");
       gr.className = "mg-run";
-      gr.textContent = "다시 시작해도 메모는 남는다. 죽어서 배운 것이니까.";
+      gr.textContent = "다시 시작해도 이 메모는 지워지지 않습니다.";
       g.appendChild(gr);
       markMemoRunNotice();
     }
@@ -6164,7 +6176,7 @@
       byPlace[sp].push(d);
     });
     if (!order.length){
-      var e1 = document.createElement("div"); e1.className = "memo-empty"; e1.textContent = "아직 없다.";
+      var e1 = document.createElement("div"); e1.className = "memo-empty"; e1.textContent = "아직 없습니다.";
       s1.appendChild(e1);
     }
     order.forEach(function(sp){
@@ -6232,11 +6244,11 @@
     var s4 = document.createElement("div"); s4.className = "memo-sec";
     var g4 = document.createElement("p");
     g4.className = "memo-guide";
-    g4.textContent = "들은 말. 그 말대로 하고 죽었으면 표시된다.";
+    g4.textContent = "「안 죽는 쪽 묻기」로 들은 답이 여기에 남습니다. 그 답대로 골랐다가 죽었으면 표시가 붙습니다.";
     s4.appendChild(g4);
     var asks = loadAskLog().slice().reverse();
     if (!asks.length){
-      var e4 = document.createElement("div"); e4.className = "memo-empty"; e4.textContent = "아직 없다.";
+      var e4 = document.createElement("div"); e4.className = "memo-empty"; e4.textContent = "아직 없습니다.";
       s4.appendChild(e4);
     }
     asks.slice(0, 40).forEach(function(r){
@@ -6248,12 +6260,12 @@
       it.appendChild(nm);
       var hd = document.createElement("span");
       hd.className = "mi-heard";
-      hd.textContent = "그건 아니라고 했다.";
+      hd.textContent = "그 선택은 안 죽는다고 했습니다.";
       it.appendChild(hd);
       if (r.wrong){
         var w = document.createElement("span");
         w.className = "mi-wrong";
-        w.textContent = "그 말대로 했다가 죽었다.";
+        w.textContent = "그 말대로 골랐다가 죽었습니다. 틀린 답이었습니다.";
         it.appendChild(w);
       }
       if (typeof r.run === "number" && r.run !== runNo){
@@ -6289,7 +6301,7 @@
     // 눈금이 무엇인지 한 줄 (Phase 4, 사용자 지시). 시스템 화면이라 설명체다.
     var guide = document.createElement("p");
     guide.className = "memo-guide";
-    guide.textContent = "정류장 12개. 눈금은 다음 정류장이 열리기까지 지나야 하는 곳의 수다.";
+    guide.textContent = "정류장 12곳을 다 지나면 이야기의 끝에 닿습니다. 정류장 사이의 눈금은 다음 정류장에 닿기 전에 지나야 하는 작은 장소의 수입니다.";
     box.appendChild(guide);
     var NS = "http://www.w3.org/2000/svg";
     // Phase 4: 12개가 한 화면(390px)에 들어와야 한다. 예전 GAP 46 은 총 높이 542 라 스크롤이 났다.
@@ -6412,7 +6424,7 @@
     var n = document.createElement("p");
     n.className = "set-note";
     // 설명체 — 무엇이 남고 무엇이 돌아가는지 기능으로 적는다(사용자 지시 2026-09-12).
-    n.textContent = "재시작하면 지도와 사진은 처음으로 돌아갑니다. 메모는 남습니다. 기억과 끝도 남습니다.";
+    n.textContent = "재시작하면 지도와 사진은 처음으로 돌아갑니다. 메모, 모은 기억, 다다른 끝은 남습니다.";
     box.appendChild(n);
     row("재시작", "", restartGame);
     row("데이터 전부 삭제", "danger", wipeAll);
