@@ -733,7 +733,7 @@
 
   // build_web.py 가 주입: BUILD_ID = YYYYMMDD-HHMM-<주입 ink 소스 sha1 앞 8자>, SM0 = ink VAR sibling_memory 시작값.
   // /*MARKER*/fallback 형식(INK_JSON 과 동일 관례) — 템플릿을 안 거치고 그냥 열어도 여기서 문법·런타임 오류가 나지 않는다.
-  var BUILD_ID = "20260920-2215-c59481b6";
+  var BUILD_ID = "20260921-0922-c59481b6";
   var SM0 = 26;
   // sm 경계 — 물소리 단계(TASK_08)가 조언자 band 경계를 쓴다. build_web.py 가 ink `CONST SM_TRUE/SM_ALONE` 에서 주입.
   var SM_TRUE = 17;
@@ -4131,6 +4131,15 @@
     }
     startTime = Date.now();
     loadLog();
+    // 아이템 소모 누적의 **기준값**을 ink 저장본에서 되살린다 (2026-09-21).
+    // `itemUsedSeen` 은 평범한 JS 변수라 페이지가 다시 뜨면 0 으로 돌아가는데, ink 의 `item_used` 는
+    // 저장본에 실려 그대로 돌아온다. 그러면 `usedNow > itemUsedSeen` 이 다시 참이 되어
+    // **이미 센 소모가 한 번 더 로그에 찍힌다** — 그것도 지금 있는 공간 이름과 지난번 결과(item_last)로.
+    // 「여기서 눈을 붙인다」가 "앱을 닫아도 됩니다"로 끝나므로 하루를 넘길 때마다 이 일이 난다.
+    // 9/20 플레이 로그에서 부적 하나가 A02·B03 두 곳에서 소모된 것처럼 보인 게 이것이다
+    // (ink 는 `charm_left > 0` 을 요구하고 1 에서 시작하므로 두 번 소모될 수 없다 — 로그만 중복이었다).
+    // 0 으로 되돌리는 것은 **회차 시작(beginRun) 한 곳뿐**이어야 한다.
+    itemUsedSeen = parseInt(safeVar("item_used", 0), 10) || 0;
     lastSpace = safeVar("current_space", null);
     lastRenderedText = "";
     rulesDwellStart = null;
