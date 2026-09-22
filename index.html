@@ -102,6 +102,7 @@
   .topinfo{display:flex;flex-direction:column;flex:1;min-width:0;
     font-size:11px;color:var(--muted);line-height:1.45;}
   .topinfo span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  #testInfo{color:#c8b48f;}
   .topbtns{display:flex;gap:6px;flex:0 0 auto;}
   .small-btn{background:#232227;color:var(--text);border:1px solid #3a3a40;
     border-radius:4px;padding:5px 8px;font-size:11px;cursor:pointer;white-space:nowrap;}
@@ -585,6 +586,7 @@
   <div id="topbar" class="hidden">
     <div id="lockPhoto" class="lock-photo" title="잠금화면"></div>
     <div class="topinfo">
+      <span id="testInfo" hidden></span>
       <span id="debugInfo" hidden></span>
     </div>
     <div class="topbtns">
@@ -797,12 +799,38 @@
 
   // build_web.py 가 주입: BUILD_ID = YYYYMMDD-HHMM-<주입 ink 소스 sha1 앞 8자>, SM0 = ink VAR sibling_memory 시작값.
   // /*MARKER*/fallback 형식(INK_JSON 과 동일 관례) — 템플릿을 안 거치고 그냥 열어도 여기서 문법·런타임 오류가 나지 않는다.
-  var BUILD_ID = "20260922-1341-505e3fa4";
+  var BUILD_ID = "20260922-1357-505e3fa4";
   var SM0 = 26;
   // sm 경계 — 물소리 단계(TASK_08)가 조언자 band 경계를 쓴다. build_web.py 가 ink `CONST SM_TRUE/SM_ALONE` 에서 주입.
   var SM_TRUE = 17;
   var SM_ALONE = 11;
   var DEBUG = /[?&]debug\b/.test(location.search);
+  // ── 시험 모드 (사용자 지시 2026-09-22) ──────────────────────────────────
+  // `?jump=A12&sm=8` — 시작 공간과 sibling_memory 를 정해 시작 화면 없이 바로 들어간다.
+  //   jump  A01~A12 · B01~B24 · C01~C48 (없으면 처음부터)   sm  0 이상, 0.5 단위 (없으면 ink 시작값)
+  //   g  m|f (기본 m)   item  salt|charm|hunch|none (기본 none)   seed  정수   flags  ink 참/거짓 VAR 이름, 쉼표로
+  // jump·sm 둘 다 없으면 TEST 는 null 이고 아래 어디에도 영향이 없다. 하나라도 있으면(값이 무효여도) 시험 모드:
+  //   · 로그를 보내지 않는다 — LOG_ENDPOINT 를 비운다(밀린 큐 재전송도 같이 멈춘다).
+  //   · 저장 키에 `__test` 를 붙인다 — 이 기기의 실제 저장·메모·기록을 건드리지 않는다. 열 때마다 시험 저장분을 비운다.
+  //   · 빌드 전환 정리(아래)를 건너뛴다 — 실제 저장의 정리는 다음 평소 기동이 한다.
+  var TEST = (function(){
+    var q = null;
+    try{ q = new URLSearchParams(location.search); }catch(e){ return null; }
+    if (!q.has("jump") && !q.has("sm")) return null;
+    var t = { jump: null, sm: null, gender: "m", item: null, seed: null, flags: [], bad: [] };
+    if (q.has("jump")){
+      var m = /^([ABC])(\d{1,2})$/.exec(String(q.get("jump") || "").trim().toUpperCase());
+      var max = { A: 12, B: 24, C: 48 };
+      if (m && +m[2] >= 1 && +m[2] <= max[m[1]]) t.jump = m[1] + ("0" + (+m[2])).slice(-2);
+      else t.bad.push("jump");
+    }
+    if (q.has("sm")){ t.sm = parseSmValue(q.get("sm")); if (t.sm === null) t.bad.push("sm"); }
+    if (q.has("g")){ var g = String(q.get("g")).toLowerCase(); if (g === "m" || g === "f") t.gender = g; else t.bad.push("g"); }
+    if (q.has("item")){ var it = String(q.get("item")).toLowerCase(); if (/^(salt|charm|hunch|none)$/.test(it)) t.item = it; else t.bad.push("item"); }
+    if (q.has("seed")){ t.seed = parseManualSeed(q.get("seed")); if (t.seed === null) t.bad.push("seed"); }
+    if (q.has("flags")) t.flags = String(q.get("flags")).split(",").map(function(s){ return s.trim(); }).filter(Boolean);
+    return t;
+  })();
   // `?fresh` — 이 기기의 저장분을 **열기 전에** 전부 지우고 시작한다(기기 식별자만 남긴다).
   // 완전 새 프로필로 메모를 검사하려면 필요하다: 새 항목이 0개인지, 안 배운 항목의 제목이 새는지
   // (사용자 지시 2026-09-12의 검증 항목). 지운 뒤 표식도 지우므로 다음 기동은 평소와 같다.
@@ -827,10 +855,22 @@
   var WIPE_ON_NEW_BUILD = true;
   var BUILD_MARK_KEY = "gwidam_build_v1";   // 마지막으로 실행한 빌드 ID (접미사 없음)
   var DEVICE_KEY = "gwidam_device_v1";      // 기기 식별자 — 빌드가 바뀌어도 남긴다(로그 이력이 끊기지 않게)
-  var KEY_SUFFIX = "__" + BUILD_ID;
+  var KEY_SUFFIX = "__" + BUILD_ID + (TEST ? "__test" : "");
   function K(base){ return base + KEY_SUFFIX; }
+  if (TEST){
+    // 시험은 열 때마다 같은 자리에서 시작한다 — 지난 시험의 저장·메모·기록을 비운다(접미사가 __test 인 것만).
+    try{
+      var testDoomed = [];
+      for (var ti = 0; ti < localStorage.length; ti++){
+        var tk = localStorage.key(ti);
+        if (tk && tk.indexOf("gwidam_") === 0 && tk.slice(-KEY_SUFFIX.length) === KEY_SUFFIX) testDoomed.push(tk);
+      }
+      testDoomed.forEach(function(k){ try{ localStorage.removeItem(k); }catch(e){} });
+    }catch(e){}
+  }
   var buildChanged = false;
   (function(){
+    if (TEST) return;   // 시험 모드는 실제 저장을 건드리지 않는다
     var prev = null;
     try{ prev = localStorage.getItem(BUILD_MARK_KEY); }catch(e){ return; }
     if (prev === BUILD_ID) return;
@@ -4244,6 +4284,7 @@
   // ── 플레이 로그 자동 수집 (Google Apps Script 웹앱) ──
   // LOG_ENDPOINT: GAS 웹앱 배포 URL(…/exec). 비어 있으면 전송·큐 모두 하지 않는다.
   var LOG_ENDPOINT = "https://script.google.com/macros/s/AKfycby4rrgNdXGb41bgr4IxwXNM8_PLNipORuUDpxlC2iamQu6fYENv7_3VvGLCE-i7wSzfZQ/exec";
+  if (TEST) LOG_ENDPOINT = "";   // 시험 모드: 보내지도, 큐에 쌓지도 않는다
   // DEVICE_KEY 는 위 빌드 전환 블록에서 선언한다 — 빌드가 바뀌어도 지우지 않는 유일한 키다.
   var QUEUE_KEY = K("gwidam_queue_v1");
   var deviceId = null;
@@ -4346,6 +4387,7 @@
   // 새 회차는 두 걸음이다 (Phase C §4-6): 성별 → **주머니에 든 것** → 본문.
   // `새로 시작` 버튼은 아이템 화면을 열고, 거기서 하나를 고르면 beginRun() 이 실제로 시작한다.
   function beginRun(){
+    if (TEST && TEST.item !== null) selectedItem = TEST.item;   // 시험 모드 재시작도 같은 아이템으로
     story = newStoryInstance();
     try{ story.variablesState["gender"] = selectedGender; }catch(e){}
     // 아이템: ink VAR 로 넣는다(저장본에 실려 이어하기에서도 유지된다).
@@ -4362,7 +4404,7 @@
     pendingItemResume = null; daySnap = null;
     flushQueue();   // 재시작은 리로드가 아니라 initUI 를 안 탄다 — 밀린 전송을 여기서 한 번 더 민다
     // sm 시작값(?debug 전용): 비었거나 무효하면 ink VAR sibling_memory 기본값을 그대로 둔다.
-    var debugSmStart = DEBUG ? parseSmValue($("debugSmStartInput") ? $("debugSmStartInput").value : "") : null;
+    var debugSmStart = TEST ? TEST.sm : (DEBUG ? parseSmValue($("debugSmStartInput") ? $("debugSmStartInput").value : "") : null);
     if (debugSmStart !== null){
       try{ story.variablesState["sibling_memory"] = debugSmStart; }catch(e){}
     }
@@ -4370,7 +4412,7 @@
     runNo += 1;
     try{ localStorage.setItem(RUN_KEY, String(runNo)); }catch(e){}
     // 회차 시드: 입력값이 유효하면 그 값, 아니면 무작위(비앵커 셔플용 ink SEED_RANDOM). 로그 첫 줄에 기록 — 같은 시드면 같은 배정 순서.
-    var manualSeed = parseManualSeed($("seedInput") ? $("seedInput").value : "");
+    var manualSeed = (TEST && TEST.seed !== null) ? TEST.seed : parseManualSeed($("seedInput") ? $("seedInput").value : "");
     var seedManual = manualSeed !== null;
     var seed = seedManual ? manualSeed : Math.floor(Math.random() * 1000000);
     try{ story.variablesState["run_seed"] = seed; }catch(e){}
@@ -4386,8 +4428,48 @@
     rulesDwellStart = null;
     endingLogged = false;
     battShownFrags = -1; battPendingUp = false; mapLitPending = null; mapDetail = null; endingThisRun = null;
+    var jumped = TEST ? testJump() : false;
     showStoryScreen();
-    advance(null);
+    advance(null, jumped);
+  }
+
+  // 시험 모드 진입 (?jump=…) — 그 공간 **직전**의 상태를 만들고 gate 로 간다.
+  // 앵커 An: next_anchor = n, 조각 1..n-1(앵커 k 가 조각 k 를 준다), 지도에는 A01..A(n-1) 클리어.
+  //   → 클리어하면 평소처럼 다음 구간으로, 죽으면 평소처럼 An 앞 비앵커로 돌아간다.
+  // B·C: A01 을 막 끝낸 상태(next_anchor 2, 조각 1). A01(또는 jump 없음)은 처음부터 — 상태를 만들지 않는다.
+  // 아이템: jump 가 A01 뒤이거나 item 을 정했으면 「주머니에 든 것」 화면을 띄우지 않는다.
+  function testJump(){
+    if (TEST.item !== null || (TEST.jump && TEST.jump !== "A01")){
+      try{ localStorage.setItem(ITEMPICKED_KEY, "1"); }catch(e){}
+    }
+    TEST.flags.forEach(function(f){
+      var ok = false;
+      try{ if (typeof story.variablesState[f] === "boolean"){ story.variablesState[f] = true; ok = true; } }catch(e){}
+      if (!ok && TEST.bad.indexOf("flags:" + f) === -1) TEST.bad.push("flags:" + f);
+    });
+    if (!TEST.jump || TEST.jump === "A01") return false;
+    var kind = TEST.jump.charAt(0), n = parseInt(TEST.jump.slice(1), 10);
+    var passed = (kind === "A") ? n - 1 : 1;   // 이미 지난 앵커 수
+    try{
+      story.variablesState["next_anchor"] = (kind === "A") ? n : 2;
+      story.variablesState["nonanchor_since"] = 0;
+      var fr = new inkjs.InkList("fragments", story);
+      for (var i = 1; i <= passed; i++) fr.AddItem("fragment_" + i);
+      story.variablesState["fragments"] = fr;
+      story.ChoosePathString(TEST.jump.toLowerCase() + "_gate");
+    }catch(e){
+      if (TEST.bad.indexOf("jump") === -1) TEST.bad.push("jump");
+      return false;
+    }
+    var o = progressOfRun();
+    for (var k = 1; k <= passed; k++){
+      var a = "A" + (k < 10 ? "0" : "") + k;
+      o.cur.cleared.push(a); o.cur.anchors.push(a);
+    }
+    o.cur.fragments = passed;
+    saveProgress(o.all);
+    logEvent("test_jump", { to: TEST.jump, sm: currentSM() });
+    return true;
   }
 
   function continueGame(){
@@ -6910,7 +6992,19 @@
       // INK_SOURCE 가 없거나 컴파일 실패 — 시작/이어하기 버튼은 이미 비활성화됨.
       return;
     }
+    if (TEST) startTest();
   });
+
+  // 시험 모드: 시작 화면을 건너뛰고 바로 들어간다. 상단 가운데에 한 줄 — 설명체(게임이 하는 말).
+  function startTest(){
+    selectGender(TEST.gender);
+    selectedItem = TEST.item || "none";
+    beginRun();
+    var parts = ["시험 모드 — 기록을 보내지 않습니다", TEST.jump || "처음부터", "sm " + (currentSM() === null ? "-" : currentSM())];
+    if (TEST.bad.length) parts.push("무시한 값: " + TEST.bad.join(", "));
+    var el = $("testInfo");
+    if (el){ el.textContent = parts.join(" · "); el.title = el.textContent; el.hidden = false; }
+  }
 })();
 </script>
 </body>
