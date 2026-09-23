@@ -148,19 +148,18 @@
   #continueBtn{background:#15181c;border-color:#33424c;}
 
   /* ── 본문 화면 ── */
-  /* ── 공간 배경 (2026-09-18) ──
-     앵커 12곳의 그림을 **본문 뒤에** 깐다. 본문이 읽히는 것이 먼저라 아주 어둡게 — opacity .16,
-     그 위에 세로 그라디언트 막. `position:fixed` 인 까닭: 스크롤해도 배경이 같이 흐르면
-     "공간"이 아니라 "긴 그림"으로 읽힌다. 공간이 바뀔 때 0.6초 페이드.
-     비앵커(B·C·전환)에는 그림이 없다 — 그때는 빈 배경으로 돌아간다. */
-  /* 넓은 화면에서도 #app 폭(390px) 안에만 깐다 — 창 전체로 번지면 앱이 아니라 벽지가 된다. */
-  #spaceBg{position:fixed;top:0;bottom:0;left:50%;transform:translateX(-50%);
-    width:100%;max-width:390px;z-index:0;pointer-events:none;
-    background-position:center;background-size:cover;background-repeat:no-repeat;
-    opacity:0;transition:opacity .6s ease-out;}
-  #spaceBg.on{opacity:.16;}
-  #spaceBg::after{content:"";position:absolute;inset:0;
-    background:linear-gradient(180deg,rgba(15,14,18,.55) 0%,rgba(15,14,18,.25) 30%,rgba(15,14,18,.75) 100%);}
+  /* ── 공간 그림 (TASK_16 [4], 사용자 지시 2026-09-23) ──
+     옛 방식(앵커 그림을 본문 뒤에 opacity .16 으로 까는 #spaceBg)은 폐기했다.
+     이제는 **공간에 들어서는 페이지**의 본문 위에 그림 한 장이 선다. 읽기 시작해 아래로 내리면
+     그림이 더 느리게 올라가며(시차) 어두워진다 — 물러난다. 공간 안 다음 페이지부터는 없다.
+     그림은 들어설 때 받는다(지연 로딩) — 첫 화면 payload 에 들어가지 않는다. 받기 전에는 자리만(비율 고정). */
+  .space-art{position:relative;margin:-18px -16px 16px;overflow:hidden;background:#0c0b0f;
+    height:min(58vh, calc(min(100vw, 390px) * var(--ar, 1.75)));}
+  .space-art img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 45%;
+    opacity:0;transition:opacity .9s ease-out;will-change:transform,opacity;transform-origin:50% 30%;}
+  .space-art.loaded img{opacity:1;}
+  .space-art::after{content:"";position:absolute;left:0;right:0;bottom:0;height:34%;pointer-events:none;
+    background:linear-gradient(180deg,rgba(15,14,18,0) 0%,var(--bg) 100%);}
   #app > #topbar, #app > #startScreen, #app > #storyScreen{position:relative;z-index:1;}
   #storyScreen{flex:1;display:flex;flex-direction:column;}
   #storyText{padding:18px 16px 8px;font-size:15px;line-height:1.8;}
@@ -328,6 +327,12 @@
   .rulesheet .rule.dmg-hand{font-family:"Nanum Pen Script","Gaegu","Segoe Print","Comic Sans MS",cursive;
     color:#1b3a6b;font-size:15px;}
   .rulesheet .rule.dmg-torn{outline:1px dashed #a89f88;outline-offset:-2px;color:rgba(31,29,25,.55);}
+  /* TASK_16 [1] 규칙서 오버레이 — 첫 판 뒤에 붙은 줄. 훼손 꼴(dmg-*)은 그대로 두고 왼쪽 띠 + 「새」만 더한다. */
+  .rulesheet .rs-add-head{margin:12px 0 6px;padding-top:8px;border-top:1px dashed #b9b19d;
+    font-family:system-ui,-apple-system,"Malgun Gothic",sans-serif;font-size:11.5px;color:#6b5a3e;letter-spacing:.02em;}
+  .rulesheet .rule.added{box-shadow:inset 3px 0 0 #9a6a32;padding-left:10px;padding-right:28px;}
+  .rulesheet .rule.added::after{content:"새";position:absolute;right:2px;top:2px;font-family:system-ui,sans-serif;
+    font-size:10px;line-height:1;padding:2px 4px;border-radius:3px;background:#9a6a32;color:#f3ecdc;}
   /* ── 규칙서 고정 버튼 + 오버레이 ── */
   #rulesBtn{position:fixed;right:12px;bottom:12px;z-index:50;padding:10px 14px;border-radius:20px;
     border:1px solid var(--border);background:var(--panel);color:var(--text);font-size:13.5px;cursor:pointer;
@@ -408,6 +413,10 @@
   .item-card button{margin-top:10px;width:100%;padding:10px 0;border-radius:6px;font-size:13.5px;
     border:1px solid var(--accent);background:#2a2118;color:#f0e3d0;cursor:pointer;}
   .item-card.locked{opacity:.5;}
+  /* TASK_16 [6] 어디서 통하는지 · 확률 — 효과를 적는 줄 */
+  .item-card p.ic-spec{font-size:12px;color:#a9a497;}
+  .item-card p.ic-spec b{display:inline-block;min-width:4.2em;color:#d8d2c2;font-weight:600;}
+  .death-sys.item-miss{color:#9a968c;}
   .item-card.locked button{border-color:var(--border);background:#1b1a1f;color:var(--muted);cursor:not-allowed;}
   .item-card .locknote{color:#c8b48f;font-size:11.5px;margin-top:6px;}
 
@@ -576,8 +585,6 @@
 </head>
 <body>
 <div id="app">
-  <!-- 공간 배경 (2026-09-18) — 앵커 12곳의 그림. setSpaceBg() 가 background-image 를 갈아 끼운다. -->
-  <div id="spaceBg" aria-hidden="true"></div>
 
   <div id="compileBanner" class="hidden"></div>
 
@@ -655,19 +662,21 @@
     </div>
     <div class="item-card" data-item="salt">
       <h3>소금</h3>
-      <p>죽는 선택을 골라도 두 번까지 살려줍니다.</p>
+      <p>죽는 선택을 골라도 대신 막아 줍니다. 두 번 씁니다.</p>
       <!-- 소금 재설계 2026-09-13: C 전용 → B·C. 문구도 범위에 맞춘다.
            플레이어가 쓰는 말로 "비앵커"는 **지도에 정류장이 서지 않는 곳**이다 —
            앵커를 클리어하면 「지도에 불이 들어왔다」가 뜨므로 이 구분은 플레이 중에 배워진다. -->
-      <p>지도에 정류장으로 뜨는 12곳 말고, 그 사이의 작은 곳에서만 효과가 있습니다. 실패 없이 반드시 됩니다.</p>
+      <p class="ic-spec"><b>통하는 곳</b> 지도에 정류장으로 뜨지 않는 곳 — 정류장과 정류장 사이의 작은 곳. 정류장 12곳에서는 통하지 않습니다.</p>
+      <p class="ic-spec"><b>확률</b> 반드시 막습니다(열에 열).</p>
       <button type="button">가져간다</button>
     </div>
     <div class="item-card" data-item="charm">
       <h3>부적</h3>
-      <p>죽는 선택을 골라도 한 번 살려줍니다.</p>
+      <p>죽는 선택을 골라도 대신 막아 줍니다. 한 번 씁니다.</p>
       <!-- 부적 앵커 전용 2026-09-14: A·B → A. 소금과 짝이 되게 같은 말("정류장")로 범위를 가른다 —
            소금은 "정류장이 아닌 곳", 부적은 "정류장". 겹치는 자리가 없다. -->
-      <p>지도에 정류장으로 뜨는 12곳에서만 효과가 있습니다. 성공률은 열 번 중 여섯 번입니다.</p>
+      <p class="ic-spec"><b>통하는 곳</b> 지도에 정류장으로 뜨는 12곳. 그 사이의 작은 곳에서는 통하지 않습니다.</p>
+      <p class="ic-spec"><b>확률</b> 열에 여섯. 막지 못해도 부적은 없어집니다.</p>
       <button type="button">가져간다</button>
     </div>
     <div class="item-card" data-item="hunch">
@@ -760,33 +769,53 @@
   var log = [];
   var lastSpace = null;
 
-  // ── 공간 배경 (2026-09-18) ──────────────────────────────────────────
-  // 앵커 12곳만 그림이 있다. B·C·전환은 배경 없이 — 그림이 있는 곳과 없는 곳이 갈리는 게
-  // 앵커를 "머무는 곳"으로 읽히게 한다(05 §2 앵커에서만 조각). 같은 공간을 다시 칠하지 않는다.
-  // **그림 목록은 여기 한 곳이다.** 빌드(scripts/build_web.py copy_art)가 이 배열을 읽어
+  // ── 그림 목록 ─────────────────────────────────────────────────────
+  // **빌드에 싣는 그림 목록은 여기 한 곳이다.** 빌드(scripts/build_web.py copy_art)가 이 배열을 읽어
   // build/assets/img/ 를 채운다 — CSS 가 직접 부르는 것(photo·title·prop_*)은 경로에서 읽히지만
-  // 앵커·엔딩은 이름을 이어 붙여 쓰므로 경로로는 안 잡힌다. 여기에 없으면 빌드에 안 들어간다.
+  // 엔딩·조각은 이름을 이어 붙여 쓰므로 경로로는 안 잡힌다. 여기에 없으면 빌드에 안 들어간다.
   // TASK_12 (2026-09-22): 사진은 band 3단계 파생 세 장(photo_b1~b3), 조각 16장(frag01~16) 추가.
   // TASK_12 잔여 2: 엔딩 복구 사진은 번짐 없는 원본(photo) — 진엔딩·잊힌에서만 쓴다.
   // TASK_13: 옆 사람 머리 자리 긁힘은 사진에 굽지 않은 **겹**(scrape_b1~b3, RGBA)이다 — 원본(photo) 위, 필터 밖.
+  // TASK_16 [4]: 앵커 A01~A12 는 여기서 빠졌다 — 공간 그림은 아래 SPACE_ART(assets/spaces/) 로 따로 간다.
   var ART_FILES = ["photo","scrape_b1","scrape_b2","scrape_b3","title","prop_rulebook","prop_codex","prop_map",
-    "A01","A02","A03","A04","A05","A06","A07","A08","A09","A10","A11","A12",
     "end_forgotten","end_alone","end_true",
     "frag01","frag02","frag03","frag04","frag05","frag06","frag07","frag08",
     "frag09","frag10","frag11","frag12","frag13","frag14","frag15","frag16"];
-  var ART_SPACES = {};
-  ART_FILES.forEach(function(n){ if (/^A\d\d$/.test(n)) ART_SPACES[n] = 1; });
-  var bgSpace = null;
-  function setSpaceBg(sp){
-    var el = document.getElementById("spaceBg");
-    if (!el) return;
-    var want = (sp && ART_SPACES[sp]) ? sp : null;
-    if (want === bgSpace) return;
-    bgSpace = want;
-    if (!want){ el.classList.remove("on"); return; }
-    el.style.backgroundImage = 'url("assets/img/' + want + '.webp")';
-    el.classList.add("on");
+  // ── 공간 그림 (TASK_16 [4]) ──
+  // build_web.py 가 assets/spaces/<ID>.webp 가 **있는 공간만** {ID: [가로, 세로]} 로 넣는다(없으면 그림 없이).
+  // 파일은 build/assets/spaces/ — 들어설 때 받는다. 세션 3 이 B·C 그림을 넣으면 다음 빌드에 저절로 들어온다.
+  var SPACE_ART = {"A01": [411, 720], "A02": [411, 720], "A03": [411, 720], "A04": [411, 720], "A05": [411, 720], "A06": [411, 720], "A07": [411, 720], "A08": [411, 720], "A09": [411, 720], "A10": [411, 720], "A11": [411, 720], "A12": [411, 720]};
+  var spaceArtEl = null;
+  function showSpaceArt(block, sp){
+    spaceArtEl = null;
+    var dim = sp && SPACE_ART[sp];
+    if (!block || !dim) return;
+    var fig = document.createElement("div");
+    fig.className = "space-art";
+    fig.setAttribute("aria-hidden", "true");
+    fig.style.setProperty("--ar", String(dim[1] / dim[0]));
+    var img = document.createElement("img");
+    img.alt = "";
+    img.decoding = "async";
+    img.onload = function(){ fig.classList.add("loaded"); };
+    img.onerror = function(){ if (fig.parentNode) fig.parentNode.removeChild(fig); if (spaceArtEl === fig) spaceArtEl = null; };
+    img.src = "assets/spaces/" + sp + ".webp";
+    fig.appendChild(img);
+    block.insertBefore(fig, block.firstChild);
+    spaceArtEl = fig;
+    recedeSpaceArt();
   }
+  // 읽으며 내리면 물러난다 — 스크롤의 0.35배만 따라 올라가고(시차), 그림 높이의 90% 를 내리는 동안 어두워진다.
+  // (작아지게 하면 가장자리에 빈 띠가 생겨 뺐다.)
+  function recedeSpaceArt(){
+    var fig = spaceArtEl;
+    if (!fig || !fig.isConnected) return;
+    var img = fig.firstChild, y = Math.max(0, window.scrollY || 0), h = fig.offsetHeight || 1;
+    var r = Math.min(1, y / (h * 0.9));
+    img.style.transform = "translateY(" + Math.round(y * 0.35) + "px)";
+    img.style.filter = r > 0 ? "brightness(" + (1 - 0.55 * r).toFixed(3) + ")" : "";
+  }
+  window.addEventListener("scroll", recedeSpaceArt, { passive: true });
   var lastRenderedText = "";
   var rulesDwellStart = null;
   var rulesDwellSpace = null;
@@ -799,7 +828,7 @@
 
   // build_web.py 가 주입: BUILD_ID = YYYYMMDD-HHMM-<주입 ink 소스 sha1 앞 8자>, SM0 = ink VAR sibling_memory 시작값.
   // /*MARKER*/fallback 형식(INK_JSON 과 동일 관례) — 템플릿을 안 거치고 그냥 열어도 여기서 문법·런타임 오류가 나지 않는다.
-  var BUILD_ID = "20260923-0909-3f3e733e";
+  var BUILD_ID = "20260923-1010-3f3e733e";
   var SM0 = 26;
   // sm 경계 — 물소리 단계(TASK_08)가 조언자 band 경계를 쓴다. build_web.py 가 ink `CONST SM_TRUE/SM_ALONE` 에서 주입.
   var SM_TRUE = 17;
@@ -852,11 +881,52 @@
   // 지우고(기기 식별자만 남긴다) 시작 화면에 안내를 1회 띄운다. 안내가 1회인 이유: 이 블록이
   // 지운 직후 BUILD_MARK_KEY 를 새 빌드 ID 로 갱신하므로 다음 기동에서는 buildChanged 가 false.
   // 출시 빌드에서는 끈다 — `python scripts/build_web.py --no-wipe` 가 아래 true 를 false 로 바꾼다.
-  var WIPE_ON_NEW_BUILD = true;
+  // ── TASK_16 [2] (사용자 지시 2026-09-23): 저장은 빌드 교체에 **살아남는다** ──
+  // 저장 키에서 빌드 ID 를 뺐다(시험 모드만 `__test`). 빌드 전환 시 지우기는 기본 꺼짐 — 켜려면 build_web.py --wipe.
+  // 옛 빌드 키(`…__<빌드 ID>`)는 첫 기동에서 새 이름으로 **옮긴다**(아래 migrate). 빌드가 달라도
+  //   · JS 쪽 저장(메모·기록·지도·화면)은 필드마다 기본값으로 받는다(없는 필드 = 기본값, 아는 필드만 쓴다).
+  //   · ink 상태는 저장한 빌드의 ink 해시(빌드 ID 끝 8자)가 같으면 그대로, 다르면 **관용 복원**(continueGame):
+  //     새 ink 에도 있고 모양이 같은 변수만 옮기고, 나머지는 새 ink 의 기본값. 그 공간의 첫머리(gate)에서 다시 시작.
+  var WIPE_ON_NEW_BUILD = false;
   var BUILD_MARK_KEY = "gwidam_build_v1";   // 마지막으로 실행한 빌드 ID (접미사 없음)
   var DEVICE_KEY = "gwidam_device_v1";      // 기기 식별자 — 빌드가 바뀌어도 남긴다(로그 이력이 끊기지 않게)
-  var KEY_SUFFIX = "__" + BUILD_ID + (TEST ? "__test" : "");
+  var KEY_SUFFIX = TEST ? "__test" : "";
   function K(base){ return base + KEY_SUFFIX; }
+  var SAVEBUILD_KEY = K("gwidam_savebuild_v1");   // 저장본을 만든 빌드 ID — ink 해시 비교용
+  var SCREEN_V = 2;                               // 화면 저장본(SCREEN_KEY) 모양 번호 — 모르는 번호면 필드별 기본값
+  var RE_BUILD_SUFFIX = /^(gwidam_[a-z0-9_]+?)__(\d{8}-\d{4}-[0-9a-f]{8})$/;
+  var migratedFrom = null;
+  (function migrate(){
+    if (TEST) return;
+    try{
+      var prevB = localStorage.getItem(BUILD_MARK_KEY);
+      var byBuild = {};
+      for (var i = 0; i < localStorage.length; i++){
+        var k = localStorage.key(i), m = k && RE_BUILD_SUFFIX.exec(k);
+        if (m) (byBuild[m[2]] = byBuild[m[2]] || []).push([k, m[1]]);
+      }
+      var builds = Object.keys(byBuild);
+      // 옛 시험 키(`…__<빌드 ID>__test`)는 옮기지 않고 지운다.
+      var oldTest = [];
+      for (var j = 0; j < localStorage.length; j++){
+        var kt = localStorage.key(j);
+        if (kt && /^gwidam_.*__\d{8}-\d{4}-[0-9a-f]{8}__test$/.test(kt)) oldTest.push(kt);
+      }
+      oldTest.forEach(function(k){ localStorage.removeItem(k); });
+      if (!builds.length) return;
+      // 옮길 빌드: 마지막으로 실행한 빌드가 있으면 그것, 없으면 가장 최근 것(빌드 ID 는 시각순으로 정렬된다)
+      var src = (prevB && byBuild[prevB]) ? prevB : builds.sort().pop();
+      if (localStorage.getItem("gwidam_save_v1") === null && localStorage.getItem("gwidam_log_v1") === null){
+        byBuild[src].forEach(function(p){
+          localStorage.setItem(p[1], localStorage.getItem(p[0]));
+        });
+        if (localStorage.getItem("gwidam_save_v1") !== null) localStorage.setItem("gwidam_savebuild_v1", src);
+        migratedFrom = src;
+      }
+      // 옮긴 뒤 옛 키는 전부 지운다 — 쌓이면 용량만 먹는다.
+      builds.forEach(function(b){ byBuild[b].forEach(function(p){ localStorage.removeItem(p[0]); }); });
+    }catch(e){}
+  })();
   if (TEST){
     // 시험은 열 때마다 같은 자리에서 시작한다 — 지난 시험의 저장·메모·기록을 비운다(접미사가 __test 인 것만).
     try{
@@ -880,7 +950,8 @@
         var doomed = [];
         for (var i = 0; i < localStorage.length; i++){
           var k = localStorage.key(i);
-          if (k && k.indexOf("gwidam_") === 0 && k !== DEVICE_KEY && k !== BUILD_MARK_KEY) doomed.push(k);
+          if (k && k.indexOf("gwidam_") === 0 && k !== DEVICE_KEY && k !== BUILD_MARK_KEY &&
+              k.indexOf("gwidam_sound_") !== 0) doomed.push(k);
         }
         doomed.forEach(function(k){ try{ localStorage.removeItem(k); }catch(e){} });
       }catch(e){}
@@ -1098,8 +1169,15 @@
   function saveProgress(p){ try{ localStorage.setItem(PROGRESS_KEY, JSON.stringify(p)); }catch(e){} }
   function progressOfRun(){
     var all = loadProgress(); var k = String(runNo);
-    if (!all[k]) all[k] = { cleared: [], anchors: [], fragments: 0, deaths: 0, ended: null };
-    return { all: all, cur: all[k] };
+    if (!all[k] || typeof all[k] !== "object") all[k] = {};
+    // 필드별 기본값 (TASK_16 [2]) — 옛 빌드의 저장본에 없는 필드·모양이 다른 필드만 기본값으로.
+    var c = all[k];
+    if (!Array.isArray(c.cleared)) c.cleared = [];
+    if (!Array.isArray(c.anchors)) c.anchors = [];
+    if (typeof c.fragments !== "number") c.fragments = 0;
+    if (typeof c.deaths !== "number") c.deaths = 0;
+    if (c.ended === undefined) c.ended = null;
+    return { all: all, cur: c };
   }
   // 클리어 = 사망 없이 공간이 바뀐 것. 순서대로 쌓는다(같은 공간을 두 번 클리어할 일은 없지만 막지 않는다).
   function recordClear(space){
@@ -4423,7 +4501,6 @@
     var carried = codexRestore(story);
     if (carried) logEvent("codex_carry", { count: carried });
     lastSpace = null;
-    setSpaceBg(null);
     lastRenderedText = "";
     rulesDwellStart = null;
     endingLogged = false;
@@ -4472,19 +4549,125 @@
     return true;
   }
 
+  function inkHashOf(buildId){ var s = String(buildId || ""); return /-[0-9a-f]{8}$/.test(s) ? s.slice(-8) : null; }
+
+  // 관용 복원 (TASK_16 [2]) — 저장본의 ink 가 지금 ink 와 다를 때.
+  // 새 ink 의 빈 상태를 바탕으로, 옛 저장본에서 **이름이 같고 모양(수·글·참거짓·LIST·경로)이 같은** 변수만 옮긴다.
+  // 옮겨 싣다가 inkjs 가 거부하는 변수(없어진 LIST 항목 등)는 하나씩 빼고 새 기본값을 둔다 = "구조가 바뀐 필드만 기본값".
+  // 방문 횟수는 새 ink 에 그 knot 가 있을 때만 옮긴다. 위치는 옛 호출 스택을 버리고 current_space 의 gate 로 간다.
+  // 반환: { kept: n, reset: [이름…], space } 또는 null(이어갈 수 없음).
+  function tolerantLoad(s, raw){
+    var old = null, fresh = null;
+    try{ old = JSON.parse(raw); fresh = JSON.parse(s.state.ToJson()); }catch(e){ return null; }
+    // inkjs 는 기본값과 같은 변수를 저장본에 쓰지 않는다 — 그래서 비교 기준은 새 ink 의 **변수 자체**(값의 형)다.
+    var ov = old.variablesState || {};
+    function oldShape(v){
+      if (v === null || v === undefined) return "null";
+      if (typeof v === "object"){
+        if (v.list !== undefined) return "list";
+        if (v["^->"] !== undefined) return "divert";
+        if (v["^var"] !== undefined) return "varptr";
+        return "obj";
+      }
+      if (typeof v === "string") return v.charAt(0) === "^" ? "string" : "other";
+      return typeof v;   // number · boolean
+    }
+    function newShape(k){
+      var v;
+      try{ if (!s.variablesState.GlobalVariableExistsWithName(k)) return null; v = s.variablesState[k]; }catch(e){ return null; }
+      if (v instanceof inkjs.InkList) return "list";
+      if (v === null || v === undefined) return "null";
+      return typeof v;   // number · string · boolean (경로 값은 object — 옮기지 않는다)
+    }
+    var take = {}, reset = [];
+    Object.keys(ov).forEach(function(k){
+      var ns = newShape(k);
+      if (ns && ns === oldShape(ov[k])) take[k] = ov[k];
+      else reset.push(k);
+    });
+    function knotOk(path){
+      var root = String(path || "").split(".")[0];
+      try{ return !!(root && s.KnotContainerWithName(root)); }catch(e){ return false; }
+    }
+    function counts(src){
+      var out = {};
+      Object.keys(src || {}).forEach(function(p){ if (knotOk(p)) out[p] = src[p]; });
+      return out;
+    }
+    function build(vars, withCounts){
+      var m = JSON.parse(JSON.stringify(fresh));
+      for (var k in vars) m.variablesState[k] = vars[k];
+      if (withCounts){
+        m.visitCounts = counts(old.visitCounts); m.turnIndices = counts(old.turnIndices);
+        if (typeof old.turnIdx === "number") m.turnIdx = old.turnIdx;
+      }
+      if (typeof old.storySeed === "number") m.storySeed = old.storySeed;
+      if (typeof old.previousRandom === "number") m.previousRandom = old.previousRandom;
+      return JSON.stringify(m);
+    }
+    function tryLoad(j){ try{ s.state.LoadJson(j); return true; }catch(e){ return false; } }
+    var withCounts = true;
+    if (!tryLoad(build(take, true))){
+      // 하나씩 걸러 낸다 — 같은 인스턴스에 상태만 다시 싣는 것이라 빠르다.
+      var ok = {};
+      Object.keys(take).forEach(function(k){
+        var one = {}; one[k] = take[k];
+        if (tryLoad(build(one, false))) ok[k] = take[k]; else reset.push(k);
+      });
+      take = ok;
+      if (!tryLoad(build(take, true))){ withCounts = false; if (!tryLoad(build(take, false))) return null; }
+    }
+    var sp = null;
+    try{ sp = s.variablesState["current_space"]; }catch(e){ sp = null; }
+    sp = (sp && /^[ABC]\d\d$/.test(String(sp))) ? String(sp) : null;
+    var gate = (sp || "A01").toLowerCase() + "_gate";
+    try{ s.ChoosePathString(gate); }catch(e){ return null; }
+    return { kept: Object.keys(take).length, reset: reset, space: sp, counts: withCounts };
+  }
+
   function continueGame(){
     var raw = null;
     try{ raw = localStorage.getItem(SAVE_KEY); }catch(e){}
     if (!raw){ return; }
+    var saveBuild = null;
+    try{ saveBuild = localStorage.getItem(SAVEBUILD_KEY); }catch(e){}
+    // 같은 ink(빌드 ID 끝 8자 = ink 해시)면 그대로 싣는다. 다르면(또는 싣다가 깨지면) 관용 복원.
+    var sameInk = !!saveBuild && inkHashOf(saveBuild) === inkHashOf(BUILD_ID);
+    var mig = null;
     story = newStoryInstance();
-    try{ story.state.LoadJson(raw); }catch(e){
-      var box = $("compileBanner");
-      box.innerHTML += "\n[저장본 로드 실패] " + escapeHtml(e.message);
-      box.classList.remove("hidden");
-      return;
+    var loaded = false;
+    if (sameInk){
+      try{ story.state.LoadJson(raw); loaded = true; }catch(e){ loaded = false; }
+    }
+    if (!loaded){
+      story = newStoryInstance();
+      mig = tolerantLoad(story, raw);
+      if (!mig){
+        var box = $("compileBanner");
+        box.innerHTML += "\n[저장본 로드 실패] 이 저장본은 지금 버전에서 이어갈 수 없습니다.";
+        box.classList.remove("hidden");
+        return;
+      }
     }
     startTime = Date.now();
     loadLog();
+    if (saveBuild !== BUILD_ID){
+      // 빌드가 바뀐 채 이어간다 — 로그에 한 줄. 요약기는 이 뒤의 이벤트를 새 빌드로 센다.
+      logEvent("build_resume", { from: saveBuild, to: BUILD_ID, same_ink: sameInk && !mig,
+                                 kept: mig ? mig.kept : null, reset: mig ? mig.reset : null,
+                                 space: mig ? mig.space : null });
+      try{ localStorage.setItem(SAVEBUILD_KEY, BUILD_ID); }catch(e){}
+    }
+    if (mig){
+      // ink 가 바뀌어 페이지 큐를 믿을 수 없다 — 화면 저장본을 버리고 그 공간 첫머리부터 다시 그린다.
+      try{ localStorage.removeItem(SCREEN_KEY); localStorage.removeItem(SLEEP_KEY); }catch(e){}
+      itemUsedSeen = parseInt(safeVar("item_used", 0), 10) || 0;
+      lastSpace = null;   // gate 에서 다시 들어간다 — enter 를 새로 남긴다(클리어는 아님: 고른 공간이 없다)
+      lastRenderedText = ""; rulesDwellStart = null; endingLogged = false;
+      showStoryScreen();
+      advance(null, false);
+      return;
+    }
     // 아이템 소모 누적의 **기준값**을 ink 저장본에서 되살린다 (2026-09-21).
     // `itemUsedSeen` 은 평범한 JS 변수라 페이지가 다시 뜨면 0 으로 돌아가는데, ink 의 `item_used` 는
     // 저장본에 실려 그대로 돌아온다. 그러면 `usedNow > itemUsedSeen` 이 다시 참이 되어
@@ -4526,8 +4709,13 @@
       localStorage.setItem(SCREEN_KEY, JSON.stringify({
         pages: pages, idx: pageIdx, echo: lastEchoText, revisit: lastRevisitSpace,
         deathEntry: pendingDeathEntry, deathPrev: deathPrevSM,
-        batchDied: batchDied, batchSpaceBefore: batchSpaceBefore, batchEnterDone: batchEnterDone
+        batchDied: batchDied, batchSpaceBefore: batchSpaceBefore, batchEnterDone: batchEnterDone,
+        // TASK_16 [2]: 화면에 **보이던** 공간. ink 의 current_space 는 배치 끝 값이라, 전환 페이지(하루 정산)에서
+        // 저장하면 이미 다음 공간이다 — 그걸로 되살리면 다음 장이 "같은 공간"으로 보여 진입·클리어가 안 남았다.
+        lastSpace: lastSpace, pendingDeathI: (pendingDeath && typeof pendingDeath.i === "number") ? pendingDeath.i : null,
+        rulesheets: rulesheets, rulesheetSeq: rulesheetSeq, itemMiss: pendingItemMiss, v: SCREEN_V
       }));
+      localStorage.setItem(SAVEBUILD_KEY, BUILD_ID);
     }catch(e){ /* 용량 초과 등은 무시 — 폴백(currentText)이 있다 */ }
   }
 
@@ -4640,8 +4828,48 @@
   var RULE_LINE_RE = /^\s*>?\s*\d+(?:-\d+)?\.\s/;   // "6-1." 형식(A09) 포함
   var DOC_LINE_RE = /^>\s?/;
 
-  // 공간별 최근 규칙서 카드 HTML (하단 "규칙서" 버튼이 연다)
+  // 공간별 규칙서 — 하단 "규칙서" 버튼이 연다.
+  // TASK_16 [1]: 예전에는 공간마다 **마지막 카드 하나**(outerHTML)만 남겨서, 규칙이 나중에 붙는 공간
+  // (A08 뒷면 6·7 · A04 덧댄 종이 밑의 3 · B13 이정표 · C16 여백 5 …)에서는 새로 붙은 줄만 보였고,
+  // 본문이 옛 항목 한 줄을 인용해도(`> 1. …`) 규칙서가 그 한 줄로 덮였다.
+  // 이제는 공간마다 **쌓는다**: { secs: [{title, pre[], rules[{t, c, add}]}], seen: {줄: 1}, at: 순번 }.
+  // 이미 본 줄(글자 그대로)은 다시 넣지 않는다 — 인용은 새 줄이 아니다. 첫 판 뒤에 들어온 줄은 add=true(표시 구분).
   var rulesheets = {};
+  var rulesheetSeq = 0;
+  function ruleKey(t){ return String(t || "").replace(/\s+/g, " ").trim(); }
+  function mergeRuleCard(space, card){
+    var rules = [].slice.call(card.querySelectorAll(".rule"));
+    if (!rules.length) return;
+    var sh = rulesheets[space] || (rulesheets[space] = { secs: [], seen: {}, at: 0 });
+    var first = sh.secs.length === 0;
+    var fresh = rules.filter(function(r){ return !sh.seen[ruleKey(r.textContent)]; });
+    if (!fresh.length) return;
+    var tEl = card.querySelector(".rs-title");
+    var sec = { title: tEl ? tEl.textContent : "", pre: [].map.call(card.querySelectorAll(".rs-pre"), function(p){ return p.textContent; }),
+                rules: [] };
+    fresh.forEach(function(r){
+      sh.seen[ruleKey(r.textContent)] = 1;
+      sec.rules.push({ t: r.textContent, c: String(r.className || "").replace(/\bhunch\b/, "").trim(), add: !first });
+    });
+    sh.secs.push(sec);
+    sh.at = ++rulesheetSeq;
+  }
+  function rulesheetHtml(sh){
+    var h = '<div class="rulesheet">';
+    sh.secs.forEach(function(sec, i){
+      if (i === 0){
+        h += '<div class="rs-title">' + escapeHtml(sec.title || "규칙") + "</div>";
+      } else {
+        // 설명체 — 게임이 하는 말. 뒤에 붙은 줄이 어디서 왔는지는 본문이 말한다.
+        h += '<div class="rs-add-head">나중에 본 항목' + (sec.title ? " — " + escapeHtml(sec.title) : "") + "</div>";
+      }
+      sec.pre.forEach(function(p){ h += '<div class="rs-pre">' + escapeHtml(p) + "</div>"; });
+      sec.rules.forEach(function(r){
+        h += '<div class="' + escapeHtml(r.c + (r.add ? " added" : "")) + '">' + escapeHtml(r.t) + "</div>";
+      });
+    });
+    return h + "</div>";
+  }
 
   function dmgClassFromTags(tags){
     var cls = [];
@@ -4707,7 +4935,7 @@
     function closeCard(){
       if (card){
         if (cardHasRule){
-          rulesheets[cardSpace] = card.outerHTML;
+          mergeRuleCard(cardSpace, card);
         }
         card = null; cardSpace = null; cardHasRule = false;
       }
@@ -4780,6 +5008,13 @@
           s3.innerHTML = (cnt2 === 1) ? "처음 남은 것이다."
                                       : "<b>이유가 열렸다.</b> 메모에서 볼 수 있다.";
           block.appendChild(s3);
+        }
+        // 주머니의 것이 통하지 않은 자리 (TASK_16 [6]) — 설명체 한 줄
+        if (pendingItemMiss){
+          var sm0 = document.createElement("p");
+          sm0.className = "death-sys item-miss";
+          sm0.textContent = pendingItemMiss + " — 여기서는 통하지 않았다.";
+          block.appendChild(sm0);
         }
         // 사망 뒤 「뭘 어겼는지만.」 질문은 제거했다 (TASK_10-1, 사용자 지시 2026-09-21).
         // 사망 3줄이 어긴 규칙을 이미 보여 주므로 중복이고, 그 공간의 질문 하나를 사망 뒤에 쓰게 하면
@@ -4887,7 +5122,9 @@
     el.className = "revisit";
     el.textContent = "지난번에 여기서 본 규칙서: 「" + last.choice + "」";
     // 직전 선택 줄이 있으면 그 바로 아래. 순서 고정: 직전 선택 → 재방문 배너 → 본문.
+    // 순서 고정: 공간 그림 → 직전 선택 → 재방문 배너 → 본문 (그림이 있으면 그 아래부터 센다)
     var head = lastBlockEl.firstChild;
+    if (head && head.nodeType === 1 && head.className.indexOf("space-art") === 0) head = head.nextSibling;
     var before = (head && head.nodeType === 1 && head.className === "last-choice") ? head.nextSibling : head;
     lastBlockEl.insertBefore(el, before);
   }
@@ -4896,12 +5133,13 @@
   var rulesOpenAt = null;
   function openRules(){
     var space = safeVar("current_space", null) || lastSpace || "-";
-    var html = rulesheets[space];
-    if (!html){
-      // 현재 공간 카드가 없으면 가장 최근 카드
-      var keys = Object.keys(rulesheets);
-      html = keys.length ? rulesheets[keys[keys.length - 1]] : null;
+    var sh = rulesheets[space];
+    if (!sh){
+      // 현재 공간 카드가 없으면 가장 최근에 쌓인 공간
+      var keys = Object.keys(rulesheets).sort(function(a, b){ return (rulesheets[a].at || 0) - (rulesheets[b].at || 0); });
+      sh = keys.length ? rulesheets[keys[keys.length - 1]] : null;
     }
+    var html = (sh && sh.secs && sh.secs.length) ? rulesheetHtml(sh) : null;
     // 제목에 공간 ID 를 쓰지 않는다 (Phase C §4-1). 지명이 있으면 지명, 없으면 그냥 "규칙서".
     var pn = placeName(space);
     $("rulesOverlayTitle").textContent = pn ? "규칙서 — " + pn : "규칙서";
@@ -5243,7 +5481,6 @@
         sl.className = "choice-btn"; sl.type = "button";
         sl.textContent = "저장하고 쉰다";
         sl.addEventListener("click", function(){
-          Snd.play("select");
           if (!itemPicked()){ openItemScreenMidRun(sleepHere); return; }
           sleepHere();
         });
@@ -5294,7 +5531,6 @@
       ui: isDeathScreen ? "death_continue" : "continue_tap"
     });
     finalizeRulesDwell();
-    Snd.play("tap");
     showPage(pageIdx + 1, false);
   }
 
@@ -5547,6 +5783,7 @@
 
   // afterChoiceText: 방금 고른 선택지 텍스트(없으면 게임 시작 직후 호출). forcedEnter: 디버그 강제 진입 표식.
   var pendingItemDelta = null;   // 이번 배치에서 아이템이 줄었는가 (Phase 3)
+  var pendingItemMiss = null;    // 이번 사망에서 주머니의 것이 통하지 않았는가 ("소금" | "부적" | null) — TASK_16 [6]
   function advance(afterChoiceText, forcedEnter){
     var beforeSM = currentSM();
     var beforeFragCount = fragmentNames().length;
@@ -5606,6 +5843,15 @@
                               salt_left: safeVar("salt_left", 0), charm_left: safeVar("charm_left", 0) });
     }
     itemUsedSeen = usedNow;
+    // 통하지 않은 자리 (TASK_16 [6]) — 주머니에 남은 게 있는데 죽었고, 줄지도 않았다(= 이 자리에서는 안 통한다:
+    // 소금은 정류장에서, 부적은 정류장 사이에서, 둘 다 막을 수 없게 된 사망에서). 젖은 부적(줄고 죽음)은 여기가 아니다.
+    pendingItemMiss = null;
+    if (batchDied){
+      var itNow = safeVar("item", "none");
+      if (itNow === "salt" && beforeSalt > 0 && (parseInt(safeVar("salt_left", 0), 10) || 0) === beforeSalt) pendingItemMiss = "소금";
+      else if (itNow === "charm" && beforeCharm > 0 && (parseInt(safeVar("charm_left", 0), 10) || 0) === beforeCharm) pendingItemMiss = "부적";
+      if (pendingItemMiss) logEvent("item_miss", { space: spaceBefore, item: itNow });
+    }
 
     codexPersist();   // 도감은 회차를 넘어 유지 — 사망·클리어마다 저장
     var afterFragCount = fragmentNames().length;
@@ -5636,24 +5882,27 @@
     // enter 는 **공간 페이지**에서만(사망·전환 페이지의 space 는 아직 이전 공간이다).
     // 사망 배치는 공간이 같아도 한 번 남긴다 — Phase A2 의 A01 사망 → A01 직행이 그 경우다(재도전 attempt 가 올라야 한다).
     var isSpacePage = (pg.kind || "space") === "space";
+    var anchorEntered = null;
     if (sp && !silent && isSpacePage && (sp !== lastSpace || pendingForced || (batchDied && !batchEnterDone))){
       var enterExtra = { space: sp, attempt: computeAttempt(sp), kind: spaceKind(sp) };
       if (pendingForced){ enterExtra.forced = true; pendingForced = false; }
       logEvent("enter", enterExtra);
       batchEnterDone = true;
+      if (/^A\d\d$/.test(sp)) anchorEntered = sp;
       // 직전 사망의 next_space 는 새 공간이 화면에 뜬 지금 채운다(전환 동안은 이전 공간이 유지됨)
       if (pendingDeath){ pendingDeath.next_space = sp; pendingDeath = null; persistLog(); }
       // 클리어 = 사망 없이 공간이 바뀐 것. 디버그 강제 진입은 클리어가 아니다.
       if (!batchDied && !enterExtra.forced && batchSpaceBefore && batchSpaceBefore !== sp) recordClear(batchSpaceBefore);
       recordEnter(sp);
       lastSpace = sp;
-      setSpaceBg(sp);
+      pg.art = sp;   // 들어서는 페이지 — 그림이 선다(이어하기 복원도 이 표식으로 다시 세운다)
       showRevisitBanner(sp);
       lastRevisitSpace = sp;
     } else if (sp && isSpacePage){
       lastSpace = sp;
-      setSpaceBg(sp);
     }
+    // 공간 그림 (TASK_16 [4]) — 들어서는 페이지에만. 재방문 배너·직전 선택 줄보다 위(블록 맨 위).
+    if (pg.art) showSpaceArt(lastBlockEl, pg.art); else spaceArtEl = null;
 
     isDaySettle = false;
     // ── 획득 시스템 줄 (TASK_06 Phase 1, 사용자 지시 2026-09-13) ──
@@ -5704,14 +5953,12 @@
           "<span class=\"ss-pocket\">주머니 — " + escapeHtml(itemName) + " " + pendingItemDelta.from + " → <b>" + pendingItemDelta.to + "</b></span>";
         lastBlockEl.appendChild(box);
         lastBlockEl.classList.add("saved");
-        Snd.play("item");
         var pk0 = $("pocket");
         if (pk0){ pk0.classList.remove("bump"); void pk0.offsetWidth; pk0.classList.add("bump");
                   setTimeout(function(){ pk0.classList.remove("bump"); }, 600); }
       } else if (pg.item && pendingItemDelta){
         appendSysNote("주머니 — " + escapeHtml(pendingItemDelta.name) + " " + pendingItemDelta.from +
                       " → <b class=\"sn-down\">" + pendingItemDelta.to + "</b>");
-        Snd.play("item");
         var pk = $("pocket");
         if (pk){ pk.classList.remove("bump"); void pk.offsetWidth; pk.classList.add("bump");
                  setTimeout(function(){ pk.classList.remove("bump"); }, 600); }
@@ -5736,9 +5983,12 @@
     else if (pageIdx >= pages.length - 1) checkEnding((pg.lines || []).join(""), null);
     // 소리 (TASK_08) — 이 페이지의 바탕 앰비언트·물 단계로 옮긴다. 사망 페이지는 끊고(0.12초),
     // 사망 뒤 첫 페이지는 천천히 돌아온다. 이어하기 복원(silent)도 소리는 되살린다 — 효과음만 안 낸다.
-    var snd = soundSceneFor(pg, fragsAtPage(pageIdx));
-    Snd.scene(snd, snd.cut ? 0.12 : (sceneWasCut ? 2.4 : 1.6));
-    sceneWasCut = !!snd.cut;
+    // 소리 v2 (TASK_16 [5]) — 사건에만. 버스 문 = 전환 페이지가 보일 때, 앵커 진입 = 앵커 공간에 enter 가 남을 때.
+    // 조각·사망은 위에서 냈다. 이어하기 복원(silent)은 사건이 아니라 소리를 내지 않는다.
+    if (!silent){
+      if ((pg.kind || "space") === "transit") Snd.play("bus");
+      if (anchorEntered) Snd.anchor(anchorEntered, waterStage(fragsAtPage(pageIdx), (typeof pg.sm === "number") ? pg.sm : currentSM()));
+    }
     saveGame();
   }
 
@@ -5764,9 +6014,23 @@
       batchDied = !!saved.batchDied; batchSpaceBefore = saved.batchSpaceBefore || null;
       batchEnterDone = !!saved.batchEnterDone;
       pendingChoiceEcho = saved.echo || null;
-      lastSpace = safeVar("current_space", null);   // silent 복원이라 enter 를 다시 남기지 않는다
-    setSpaceBg(lastSpace);
-      showPage(typeof saved.idx === "number" ? saved.idx : 0, true);
+      // silent 복원이라 enter 를 다시 남기지 않는다. 기준 공간은 **저장 때 보이던 공간**이다 (TASK_16 [2]) —
+      // 옛 저장본(lastSpace 없음)은 지금 페이지의 공간(전환이면 그 배치를 고른 공간)으로 받는다.
+      var idx0 = typeof saved.idx === "number" ? saved.idx : 0;
+      var pg0 = pages[Math.max(0, Math.min(idx0, pages.length - 1))] || {};
+      if (saved.lastSpace !== undefined) lastSpace = saved.lastSpace;
+      else if ((pg0.kind || "space") === "space" && pg0.space) lastSpace = pg0.space;
+      else lastSpace = batchSpaceBefore || safeVar("current_space", null);
+      pendingItemMiss = (typeof saved.itemMiss === "string") ? saved.itemMiss : null;
+      if (saved.rulesheets && typeof saved.rulesheets === "object"){
+        rulesheets = saved.rulesheets; rulesheetSeq = saved.rulesheetSeq || 0;
+      }
+      if (typeof saved.pendingDeathI === "number"){
+        for (var di = log.length - 1; di >= 0; di--){
+          if (log[di].i === saved.pendingDeathI && log[di].event === "death"){ pendingDeath = log[di]; break; }
+        }
+      }
+      showPage(idx0, true);
       if (saved.revisit) showRevisitBanner(saved.revisit);   // 재방문 배너도 화면의 일부다
       return;
     }
@@ -5800,45 +6064,28 @@
     // 계속 탭은 여기 오지 않는다 — 페이지 넘김은 onPageTap 이 맡고, 이쪽은 실제 분기 선택뿐이다.
     logEvent("choice", extra);
     finalizeRulesDwell();
-    Snd.play("select");
     // 화면에 남기지 않고, 다음 블록 최상단 한 줄로만 넘긴다.
     pendingChoiceEcho = choiceText;
     story.ChooseChoiceIndex(idx);
     advance(choiceText);
   }
 
-  // ══ 사운드 (TASK_08) ═══════════════════════════════════════════════
-  // 물소리가 이 게임의 실이다(05 §3 실 표). 소리는 그 실을 귀로 옮기는 것이지 분위기 장식이 아니다.
-  // · 앰비언트 넷 — 버스 안 / 실내 정적(형광등) / 물 / 바깥 밤(바람). 첫 탭에 **넷 다** 돌려 두고 게인만 옮긴다.
-  //   페이지가 바뀌어도 소스를 멈췄다 켜지 않으니 끊기지 않고, 크로스페이드는 게인 둘이 엇갈려 움직이는 것뿐이다.
-  // · 물은 바탕과 따로 한 겹 더 깔린다. 조각 수·sm 으로 3단계(멀리 → 가까이) — 크기와 저역통과를 같이 옮긴다.
-  // · 사망은 소리를 크게 내지 않는다. 앰비언트를 **끊고**(0.12초) 안으로 부풀다 끊기는 작은 소리 하나만 둔다.
-  // · 효과 여섯 — 탭 / 선택 / 조각 / 사망 / 아이템 / 폰 열기. 더 늘리지 않는다.
-  // 음원은 scripts/make_audio.py 가 직접 합성한다(CC0 — reports/audio_license.md). 파일은 RMS -20dBFS(효과는 피크 -1dBFS)로
-  // 구워져 있고, 섞는 크기는 아래 dB 표가 정한다. 자동재생 차단: 첫 탭(포인터·키)에서 컨텍스트를 연다.
-  var SOUND_KEY = "gwidam_sound_v1";   // 빌드가 바뀌어도 남긴다(K() 접미사 없음). "off" 일 때만 끈다 — 기본은 켜짐
+  // ══ 소리 v2 (TASK_16 [5], 사용자 지시 2026-09-23 — 설계 reports/SOUND_v2_design.md) ═══════════════
+  // 배경음(앰비언트 루프)은 폐기했다. **소리는 사건에만 난다** — 버스 문 · 조각 획득 · 사망 · 앵커 진입.
+  // 기본 꺼짐. 설정에서 켜기 전에는 음원을 받지도 않는다. 기억 띠 물소리는 앵커 진입 3초 페이드 안에서만.
+  // 음원은 scripts/make_audio.py 가 합성한 v1 10개 중 6개(CC0 — reports/audio_license.md). 빌드는 아래 이름만 싣는다.
+  var SOUND_KEY = "gwidam_sound_v2";   // 빌드가 바뀌어도 남긴다(K() 접미사 없음). "on" 일 때만 켠다 — 기본은 꺼짐
   var AUDIO_DIR = "assets/audio/";
-  var AMB_LOOP_SEC = 24;                // make_audio.py LOOP
-  var AMB_FILE = { bus: "amb_bus.mp3", room: "amb_room.mp3", night: "amb_night.mp3", water: "amb_water.mp3" };
-  var SFX_FILE = { tap: "sfx_tap.mp3", select: "sfx_select.mp3", fragment: "sfx_fragment.mp3",
-                   death: "sfx_death.mp3", item: "sfx_item.mp3", phone: "sfx_phone.mp3" };
-  var AMB_DB = { bus: -9, room: -15, night: -10 };
-  // 물: 0 없음(프롤로그 — 실 표 A01 「·」) · 1 멀리(배경, 거의 저음만) · 2 가까워짐 · 3 발밑
+  var SIG_FILE = { bus: "sfx_item.mp3", fragment: "sfx_fragment.mp3", death: "sfx_death.mp3" };
+  var SIG_DB = { bus: -18, fragment: -14, death: -20 };
+  var ANCHOR_FILE = { room: "amb_room.mp3", night: "amb_night.mp3", water: "amb_water.mp3" };
+  var ANCHOR_DB = { room: -15, night: -10 };
+  var ANCHOR_RISE = 0.15, ANCHOR_FADE = 3.0;   // 올라오는 0.15초 → 3초에 걸쳐 0
+  // 물: 0 없음(프롤로그 — 실 표 A01 「·」) · 1 멀리(거의 저음만) · 2 가까워짐 · 3 발밑
   var WATER_STEP = [null, { db: -22, lp: 520 }, { db: -15, lp: 1800 }, { db: -8, lp: 11000 }];
-  var SFX_DB = { tap: -27, select: -23, fragment: -14, death: -20, item: -18, phone: -24 };
-  // 공간 → 바탕 [이름, dB 보정]. 없으면 실내(형광등). 판정 근거는 본문 도입 — reports/TASK_08_release.md.
-  var AMB_SPACE = { B03: ["night", 0], B06: ["night", 0], B13: ["night", 0], C43: ["night", 0], C44: ["night", 0],
-                    B14: ["night", -6], B15: ["night", -7], C42: ["night", -6], B16: ["bus", 0] };
-  // A12 는 한 공간 안에서 대합실 → 첫 차 → 강 → 둑·국도 → 대합실로 옮겨 간다. knot 머리로 가른다(없으면 실내).
-  // "water" = 바탕 없이 물만, 가장 가까이 — 가라앉는 장면.
-  var AMB_KNOT = [["a12_board", "bus"], ["a12_t4", "bus"], ["a12_window", "bus"], ["a12_eyes", "bus"], ["a12_tilt", "bus"],
-                  ["a12_death_bus_again", "bus"], ["a12_t5", "water"], ["a12_death_deep", "water"],
-                  ["a12_wade", "night"], ["a12_t6", "night"], ["a12_meet", "night"], ["a12_t7", "night"],
-                  ["a12_alone_walk", "night"], ["a12_t8", "night"], ["a12_t9", "night"], ["a12_ending", "night"]];
-  var sceneWasCut = false;
 
   // 물 단계 — 조각 수로 가까워지고(실 표: A02 시작 · A05~A09 집 안의 물 · A11 발밑 · A12 강), sm 이 조언자 band
-  // 경계를 넘으면 그만큼 당겨진다(흐림 → 2, 침묵 → 3). 둘 중 가까운 쪽. 회차 안에서는 멀어지지 않는다(조각은 늘고 sm 은 준다).
+  // 경계를 넘으면 그만큼 당겨진다(흐림 → 2, 침묵 → 3). 둘 중 가까운 쪽.
   function waterStage(frags, sm){
     var f = frags >= 10 ? 3 : (frags >= 5 ? 2 : (frags >= 1 ? 1 : 0));
     var s = (typeof sm !== "number") ? 0 : (sm < SM_ALONE ? 3 : (sm < SM_TRUE ? 2 : 0));
@@ -5850,41 +6097,18 @@
     for (var j = i + 1; j < pages.length; j++) if (pages[j] && pages[j].frag) later++;
     return Math.max(0, fragCount() - later);
   }
-  function soundSceneFor(pg, frags){
-    if (!pg) return { base: null, water: 0 };
-    if (pg.kind === "death") return { base: null, water: 0, cut: true };
-    var water = waterStage(frags, (typeof pg.sm === "number") ? pg.sm : null);
-    if (pg.kind === "transit") return { base: "bus", mul: 0, water: water };
-    var sp = pg.space || safeVar("current_space", null);
-    if (sp === "A12"){
-      var path = String(pg.path || "");
-      if (!path){ try{ path = story.state.currentPathString || ""; }catch(e){ path = ""; } }
-      for (var i = 0; i < AMB_KNOT.length; i++){
-        if (path.indexOf(AMB_KNOT[i][0]) !== 0) continue;
-        return AMB_KNOT[i][1] === "water" ? { base: null, water: 3 } : { base: AMB_KNOT[i][1], mul: 0, water: water };
-      }
-    }
-    var m = AMB_SPACE[sp];
-    return { base: m ? m[0] : "room", mul: m ? m[1] : 0, water: water };
-  }
 
   var Snd = (function(){
     var AC = window.AudioContext || window.webkitAudioContext;
-    var ctx = null, master = null, ambBus = null, sfxBus = null, lp = null;
-    var amb = {}, sfx = {}, ready = false, loading = false, errors = [], loops = {}, played = {};
-    var want = { base: null, mul: 0, water: 0, cut: false };
-    var on = true;
-    try{ on = localStorage.getItem(SOUND_KEY) !== "off"; }catch(e){ on = true; }
+    var ctx = null, master = null, buf = {}, ready = false, loading = false, errors = [], played = {};
+    var on = false;
+    try{ on = localStorage.getItem(SOUND_KEY) === "on"; }catch(e){ on = false; }
 
     function say(){
       if (!DEBUG) return;
       try{ console.log.apply(console, ["[audio]"].concat([].slice.call(arguments))); }catch(e){}
     }
     function fromDb(d){ return Math.pow(10, d / 20); }
-    function hold(p, t){
-      if (p.cancelAndHoldAtTime){ p.cancelAndHoldAtTime(t); }
-      else { var v = p.value; p.cancelScheduledValues(t); p.setValueAtTime(v, t); }
-    }
     function decode(ab){
       return new Promise(function(res, rej){
         var r = ctx.decodeAudioData(ab, res, function(e){ rej(e || new Error("decode")); });   // 구 Safari 는 콜백형만
@@ -5897,119 +6121,83 @@
         return r.arrayBuffer();
       }).then(decode);
     }
-    // 루프 시작점 — 파일은 한 바퀴 + 앞머리 1초다. MP3 는 인코더 지연이 앞에 붙고, 그걸 걷는지는 브라우저마다 다르다.
-    // 그래서 **찾는다**: 한 바퀴 떨어진 두 구간이 같아지는 첫 자리에서 한 바퀴를 잘라 쓴다(주기 신호라 어디서 잘라도 이어진다).
-    function loopOf(name, buf){
-      var sr = buf.sampleRate, n = Math.round(AMB_LOOP_SEC * sr), d = buf.getChannelData(0), W = 1024;
-      var maxOff = Math.min(8000, d.length - n - W);
-      if (maxOff < 0){ loops[name] = { off: 0, rel: null, len: d.length }; return buf; }
-      var pick = -1, pickRel = null, best = 0, bestRel = Infinity;
-      for (var o = 0; o <= maxOff; o++){
-        var e = 0, en = 0;
-        for (var i = 0; i < W; i += 4){ var a = d[o + i], b = d[o + n + i]; e += (a - b) * (a - b); en += a * a; }
-        var rel = en > 1e-9 ? e / en : Infinity;
-        if (rel < bestRel){ bestRel = rel; best = o; }
-        if (rel < 0.02){ pick = o; pickRel = rel; break; }
-      }
-      if (pick < 0){ pick = best; pickRel = bestRel; }
-      var out = ctx.createBuffer(1, n, sr);
-      out.getChannelData(0).set(d.subarray(pick, pick + n));
-      loops[name] = { off: pick, rel: Math.round(pickRel * 10000) / 10000, len: d.length, loop: n };
-      return out;
-    }
-    // 효과음 앞의 무음(인코더 지연)을 걷는다 — 탭 소리가 한 박자 늦게 나지 않게.
-    function trimLead(buf){
-      var d = buf.getChannelData(0), o = 0, lim = Math.min(d.length, Math.round(0.08 * buf.sampleRate));
+    // 효과음 앞의 무음(인코더 지연)을 걷는다 — 신호가 한 박자 늦게 나지 않게.
+    function trimLead(b){
+      var d = b.getChannelData(0), o = 0, lim = Math.min(d.length, Math.round(0.08 * b.sampleRate));
       while (o < lim && Math.abs(d[o]) < 1e-4) o++;
-      if (o < 8) return buf;
-      var out = ctx.createBuffer(1, d.length - o, buf.sampleRate);
+      if (o < 8) return b;
+      var out = ctx.createBuffer(1, d.length - o, b.sampleRate);
       out.getChannelData(0).set(d.subarray(o));
       return out;
     }
     function load(){
       if (loading) return;
       loading = true;
-      var t0 = Date.now();
-      var jobs = Object.keys(AMB_FILE).map(function(k){
-        return get(AMB_FILE[k]).then(function(b){ amb[k] = { buf: loopOf(k, b) }; })
-          .catch(function(e){ errors.push(AMB_FILE[k] + " — " + ((e && e.message) || e)); });
-      }).concat(Object.keys(SFX_FILE).map(function(k){
-        return get(SFX_FILE[k]).then(function(b){ sfx[k] = trimLead(b); })
-          .catch(function(e){ errors.push(SFX_FILE[k] + " — " + ((e && e.message) || e)); });
-      }));
-      Promise.all(jobs).then(function(){
-        start();
+      var t0 = Date.now(), all = {};
+      Object.keys(SIG_FILE).forEach(function(k){ all[k] = SIG_FILE[k]; });
+      Object.keys(ANCHOR_FILE).forEach(function(k){ all["a_" + k] = ANCHOR_FILE[k]; });
+      Promise.all(Object.keys(all).map(function(k){
+        return get(all[k]).then(function(b){ buf[k] = (k.indexOf("a_") === 0) ? b : trimLead(b); })
+          .catch(function(e){ errors.push(all[k] + " — " + ((e && e.message) || e)); });
+      })).then(function(){
         ready = true;
-        var total = Object.keys(AMB_FILE).length + Object.keys(SFX_FILE).length;
-        say("준비 " + (Object.keys(amb).length + Object.keys(sfx).length) + "/" + total + " · 오류 " + errors.length +
-            " · " + (Date.now() - t0) + "ms · 루프 " + JSON.stringify(loops));
+        say("준비 " + Object.keys(buf).length + "/" + Object.keys(all).length + " · 오류 " + errors.length + " · " + (Date.now() - t0) + "ms");
         if (errors.length) try{ console.warn("[audio] 불러오기 실패: " + errors.join(" | ")); }catch(e){}
-        apply(0.8);
       });
     }
-    function start(){
-      ["bus", "room", "night", "water"].forEach(function(k){
-        if (!amb[k]) return;
-        var src = ctx.createBufferSource();
-        src.buffer = amb[k].buf; src.loop = true;
-        var g = ctx.createGain(); g.gain.value = 0;
-        if (k === "water"){
-          lp = ctx.createBiquadFilter(); lp.type = "lowpass"; lp.Q.value = 0.4; lp.frequency.value = WATER_STEP[1].lp;
-          src.connect(lp); lp.connect(g);
-        } else {
-          src.connect(g);
-        }
-        g.connect(ambBus);
-        src.start(0, Math.random() * AMB_LOOP_SEC);   // 넷이 같은 자리에서 시작하지 않게
-        amb[k].src = src; amb[k].g = g;
-      });
-    }
-    function apply(fade){
-      if (!ready) return;
-      var t = ctx.currentTime, tc = Math.max(0.02, fade / 3);   // setTargetAtTime: 3τ 에 95%
-      ["bus", "room", "night"].forEach(function(k){
-        if (!amb[k] || !amb[k].g) return;
-        var target = (!want.cut && want.base === k) ? fromDb(AMB_DB[k] + (want.mul || 0)) : 0;
-        var p = amb[k].g.gain; hold(p, t); p.setTargetAtTime(target, t, tc);
-      });
-      if (amb.water && amb.water.g){
-        var st = want.cut ? null : WATER_STEP[want.water || 0];
-        var pw = amb.water.g.gain; hold(pw, t); pw.setTargetAtTime(st ? fromDb(st.db) : 0, t, tc);
-        if (st){ var pf = lp.frequency; hold(pf, t); pf.setTargetAtTime(st.lp, t, Math.max(tc, 0.4)); }
-      }
-    }
-    function scene(s, fade){
-      want = { base: (s && s.base) || null, mul: (s && s.mul) || 0, water: (s && s.water) || 0, cut: !!(s && s.cut) };
-      if (ready) apply(typeof fade === "number" ? fade : 1.6);
-    }
+    function live(){ return ready && on && ctx && ctx.state === "running"; }
     function play(name){
-      if (!ready || !on || !sfx[name] || ctx.state !== "running") return false;
+      if (!live() || !buf[name]) return false;
       var s = ctx.createBufferSource();
-      s.buffer = sfx[name];
-      var g = ctx.createGain(); g.gain.value = fromDb(SFX_DB[name] || -20);
-      s.connect(g); g.connect(sfxBus);
+      s.buffer = buf[name];
+      var g = ctx.createGain(); g.gain.value = fromDb(SIG_DB[name] || -20);
+      s.connect(g); g.connect(master);
       s.onended = function(){ try{ g.disconnect(); }catch(e){} };
       s.start(0);
       played[name] = (played[name] || 0) + 1;
       return true;
     }
+    // 앵커 진입 — 바탕 한 겹 + 물 한 겹이 같은 봉투(0.15초 올라옴 → 3초에 0)를 탄다. 루프 없음.
+    function one(b, db, lpHz){
+      var t = ctx.currentTime, s = ctx.createBufferSource(), g = ctx.createGain();
+      s.buffer = b;
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(fromDb(db), t + ANCHOR_RISE);
+      g.gain.exponentialRampToValueAtTime(0.0005, t + ANCHOR_RISE + ANCHOR_FADE);
+      g.gain.linearRampToValueAtTime(0, t + ANCHOR_RISE + ANCHOR_FADE + 0.05);
+      if (lpHz){
+        var lp = ctx.createBiquadFilter(); lp.type = "lowpass"; lp.Q.value = 0.4; lp.frequency.value = lpHz;
+        s.connect(lp); lp.connect(g);
+      } else {
+        s.connect(g);
+      }
+      g.connect(master);
+      var off = Math.max(0, Math.min(20, b.duration - ANCHOR_FADE - 1)) * Math.random();   // 파일 안 어디서든
+      s.start(t, off, ANCHOR_RISE + ANCHOR_FADE + 0.1);
+      s.onended = function(){ try{ g.disconnect(); }catch(e){} };
+    }
+    function anchor(space, water){
+      if (!live()) return false;
+      var base = (space === "A12") ? "night" : "room";
+      if (buf["a_" + base]) one(buf["a_" + base], ANCHOR_DB[base], 0);
+      var st = WATER_STEP[water || 0];
+      if (st && buf.a_water) one(buf.a_water, st.db, st.lp);
+      played.anchor = (played.anchor || 0) + 1;
+      played.lastAnchor = { space: space, base: base, water: water || 0 };
+      return true;
+    }
     function unlock(){
-      if (!AC) return;
+      if (!AC || !on) return;   // 꺼져 있으면 컨텍스트도 만들지 않는다 — 음원을 받지 않는다
       if (!ctx){
         try{ ctx = new AC(); }catch(e){ errors.push("AudioContext — " + e); return; }
-        master = ctx.createGain(); master.gain.value = on ? 1 : 0; master.connect(ctx.destination);
-        ambBus = ctx.createGain(); ambBus.connect(master);
-        sfxBus = ctx.createGain(); sfxBus.connect(master);
+        master = ctx.createGain(); master.gain.value = 1; master.connect(ctx.destination);
         // 구 iOS: 제스처 안에서 소리 하나를 틀어야 풀린다 — 한 샘플짜리 무음
         try{ var z = ctx.createBufferSource(); z.buffer = ctx.createBuffer(1, 1, ctx.sampleRate); z.connect(ctx.destination); z.start(0); }catch(e){}
         say("컨텍스트 " + ctx.state + " · " + ctx.sampleRate + "Hz");
         load();
       }
-      if (on && ctx.state !== "running" && !document.hidden){
-        try{
-          var r = ctx.resume();
-          if (r && r.then) r.then(function(){ say("재개 " + ctx.state); }, function(){});
-        }catch(e){}
+      if (ctx.state !== "running" && !document.hidden){
+        try{ var r = ctx.resume(); if (r && r.then) r.then(function(){ say("재개 " + ctx.state); }, function(){}); }catch(e){}
       }
     }
     ["pointerdown", "touchend", "mousedown", "keydown"].forEach(function(ev){
@@ -6022,48 +6210,21 @@
     function setOn(v){
       on = !!v;
       try{ localStorage.setItem(SOUND_KEY, on ? "on" : "off"); }catch(e){}
-      if (!ctx){ if (on) unlock(); return; }
-      var t = ctx.currentTime;
-      hold(master.gain, t); master.gain.setTargetAtTime(on ? 1 : 0, t, 0.06);
-      try{
-        if (on) ctx.resume();
-        else setTimeout(function(){ if (!on && ctx) ctx.suspend(); }, 400);
-      }catch(e){}
+      if (on){ if (ctx) master.gain.value = 1; unlock(); return; }   // 켜는 누름 자체가 제스처다 — 여기서 컨텍스트를 연다
+      if (!ctx) return;
+      try{ master.gain.setTargetAtTime(0, ctx.currentTime, 0.06); }catch(e){}
+      setTimeout(function(){ try{ if (!on && ctx) ctx.suspend(); }catch(e){} }, 400);
     }
     function state(){
-      var g = {};
-      ["bus", "room", "night", "water"].forEach(function(k){
-        g[k] = (amb[k] && amb[k].g) ? Math.round(amb[k].g.gain.value * 10000) / 10000 : null;
-      });
-      return { ctx: ctx ? ctx.state : "none", ready: ready, on: on, errors: errors.slice(), want: want, gains: g,
-               lp: lp ? Math.round(lp.frequency.value) : null, master: master ? master.gain.value : null,
-               loops: loops, played: played, amb: Object.keys(amb).length, sfx: Object.keys(sfx).length };
+      return { ctx: ctx ? ctx.state : "none", ready: ready, on: on, errors: errors.slice(),
+               loaded: Object.keys(buf).sort(), played: played };
     }
-    return { unlock: unlock, scene: scene, play: play, setOn: setOn, isOn: function(){ return on; }, state: state };
+    return { unlock: unlock, play: play, anchor: anchor, setOn: setOn, isOn: function(){ return on; }, state: state };
   })();
 
-  // ?debug=1 전용 — 헤드리스 검사가 쓴다. 조각 수·sm 을 **실제 ink 상태**에 넣고 지금 페이지를 다시 그려
-  // 물 단계가 showPage 경로로 오르는지 본다(스크린샷 대신 콘솔 로그로 — 사용자 지시).
+  // ?debug=1 전용 — 헤드리스 검사가 쓴다.
   if (DEBUG){
-    window.__sound = {
-      state: Snd.state, stage: waterStage, play: Snd.play,
-      scene: function(s, f){ Snd.scene(s, f); return Snd.state().want; },
-      sceneFor: function(pg, frags){ return soundSceneFor(pg, frags); },
-      page: function(){ var p = pages[pageIdx] || {}; return { idx: pageIdx, kind: p.kind, space: p.space, path: p.path, sm: p.sm, frags: fragsAtPage(pageIdx) }; },
-      setFrags: function(n){
-        var L = new inkjs.InkList("fragments", story);
-        for (var i = 1; i <= n; i++) L.AddItem("fragment_" + i);
-        story.variablesState["fragments"] = L;
-        showPage(pageIdx, true);
-        return fragCount();
-      },
-      setSM: function(v){
-        story.variablesState["sibling_memory"] = v;
-        if (pages[pageIdx]) pages[pageIdx].sm = v;
-        showPage(pageIdx, true);
-        return currentSM();
-      }
-    };
+    window.__sound = { state: Snd.state, stage: waterStage, play: Snd.play, anchor: Snd.anchor };
   }
 
   // ══ 핸드폰 (Phase C §4-2~4-5) ═══════════════════════════════════════
@@ -6222,7 +6383,6 @@
     try{ localStorage.setItem(SLEEP_KEY, JSON.stringify({ idx: pageIdx, run: runNo })); }catch(e){}
     logEvent("day_sleep", { space: lastSpace, idx: pageIdx });
     sendLog("day_sleep", false);
-    Snd.scene(null, 3.5);   // 눈을 감았다 — 버스 소리가 천천히 빠진다
     var c = $("storyText");
     c.innerHTML = "";
     var b = document.createElement("div");
@@ -6259,12 +6419,10 @@
     tab.textContent = DEATH_CONTINUE_LABEL;
     tab.addEventListener("click", function(){
       logEvent("day_wake", { space: lastSpace });
-      Snd.play("tap");
       showPage(Math.min(pages.length - 1, (typeof raw.idx === "number" ? raw.idx : pageIdx) + 1), false);
     });
     box.appendChild(tab);
     // 눈을 떴다. 버스 안이었다 — 첫 탭 전이라 컨텍스트가 아직 없으면 탭에서 열리며 이 장면으로 들어온다.
-    Snd.scene({ base: "bus", water: waterStage(fragCount(), currentSM()) }, 2.5);
     window.scrollTo(0, 0);
     return true;
   }
@@ -6282,7 +6440,6 @@
   function openPhone(){
     codexOpenAt = Date.now();
     logEvent("phone_open", { view: "lock", battery: batteryPct(), item: safeVar("item", "none") });
-    Snd.play("phone");
     phoneView = null;
     ["memoView", "mapView", "setView"].forEach(function(id){ $(id).classList.add("hidden"); });
     renderLock();
@@ -6666,13 +6823,17 @@
       box.appendChild(b);
       return b;
     }
-    // 소리 (TASK_08) — 기본값은 켜짐. 설명체: 지금 상태와, 누르면 무엇이 되는지.
+    // 소리 (TASK_16 [5] v2) — 기본값은 꺼짐. 설명체: 지금 상태와, 누르면 무엇이 되는지, 켜면 언제 나는지.
     row(Snd.isOn() ? "소리: 켜짐 — 누르면 끕니다" : "소리: 꺼짐 — 누르면 켭니다", "", function(){
       var nv = !Snd.isOn();
       Snd.setOn(nv);
       logEvent("sound", { on: nv });
       renderSettings();
     });
+    var sn = document.createElement("p");
+    sn.className = "set-note";
+    sn.textContent = "켜면 네 순간에만 짧게 소리가 납니다: 버스 문이 열릴 때, 기억이 돌아올 때, 죽었을 때, 정류장에 내릴 때. 배경음은 없습니다.";
+    box.appendChild(sn);
     var n = document.createElement("p");
     n.className = "set-note";
     // 설명체 — 무엇이 남고 무엇이 돌아가는지 기능으로 적는다(사용자 지시 2026-09-12).
@@ -6742,6 +6903,10 @@
       txt = "직감";
     }
     el.textContent = txt;
+    // 어디서 통하는지 (TASK_16 [6]) — 길게 누르거나 올려 두면 보인다
+    el.title = it === "salt" ? "소금 — 정류장이 아닌 곳에서 반드시 막는다. 정류장에서는 통하지 않는다."
+             : it === "charm" ? "부적 — 정류장 12곳에서 열에 여섯 막는다. 정류장 사이에서는 통하지 않는다."
+             : "직감 — 정류장이 아닌 곳의 규칙서에서 가짜 하나가 흔들린다.";
     el.classList.toggle("spent", spent);
     el.hidden = false;
   }
@@ -6763,7 +6928,6 @@
   // 지도에 첫 불이 들어온 뒤에야 통한다. 그래서 클리어·조각1·첫 점등을 본 다음이 제자리다.
   // 프롤로그에서 죽으면 뜨지 않는다 — 재진입해서 클리어한 그 시점에 한 번만.
   function chooseItem(which){
-    Snd.play("select");
     selectedItem = which;
     $("itemScreen").classList.add("hidden");
     if (pendingItemResume){
@@ -6880,7 +7044,6 @@
     try{ localStorage.removeItem(SAVE_KEY); }catch(e){}
     try{ localStorage.removeItem(SCREEN_KEY); }catch(e){}   // 저장본과 짝 — 남으면 다음 이어하기가 남의 화면을 그린다
     logEvent("run_end", { reason: "restart" });
-    Snd.scene(null, 1.2);
     $("phoneScreen").classList.add("hidden");
     $("storyScreen").classList.add("hidden");
     $("topbar").classList.add("hidden");
@@ -6925,7 +7088,12 @@
   }
 
   function initUI(){
-    if (buildChanged && $("buildNotice")) $("buildNotice").hidden = false;
+    if (buildChanged && $("buildNotice")){
+      // 설명체. 기록을 지우는 빌드(--wipe)일 때만 옛 문구.
+      $("buildNotice").textContent = WIPE_ON_NEW_BUILD ? "새 버전입니다. 이전 버전의 기록은 지워집니다."
+                                                       : "새 버전입니다. 하던 게임과 메모는 그대로 이어집니다.";
+      $("buildNotice").hidden = false;
+    }
     if (DEBUG){
       $("seedRow").hidden = false;
       $("debugSmStartRow").hidden = false;
