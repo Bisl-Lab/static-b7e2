@@ -97,6 +97,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 #title h1,#end h1{font-size:26px;font-weight:600;margin:0;letter-spacing:.04em}
 #title .sub,#end .sub{font-size:12px;color:var(--dim);margin:0}
 #title ul{margin:6px 0 4px;padding-left:18px;font-size:14px;line-height:1.7;color:#cfc8ba}
+#title .snd-lead{font-size:16px;color:#f3dfbf;margin:4px 0 0;font-weight:600}
 #title .snd{font-size:13px;color:#e3c79d;border-left:2px solid var(--sodium);padding-left:10px;margin:0}
 .big{min-height:54px;border-radius:12px;border:1px solid var(--sodium);background:#1a140d;color:#f3dfbf;font-size:17px;margin-top:8px}
 #title .tag,#end .tag{font-size:10px;color:#4f5856;text-align:center;margin-top:6px}
@@ -195,7 +196,7 @@ button{font:inherit;color:inherit;cursor:pointer}
         </div>
         <div class="side back">
           <div class="ghost">대합실 이용 안내<br>1. 대합실이 평소와 다르면 도로 쪽 문으로 나갔다가 다시 들어오십시오.<br>2. 평소와 같으면 그대로 앉아 계십시오.<br>3. 방송에서 승객을 부르면 즉시 승강장으로 나가십시오.</div>
-          <div class="pen">3번은 가짜다.<br>부르는 소리가 나도<br>대답하지 말고 앉아 있어라.</div>
+          <div class="pen">3번은 가짜다.<br>부르는 소리가 나도<br>승강장으로 나가지 마라.</div>
         </div>
       </div>
     </div>
@@ -222,6 +223,7 @@ button{font:inherit;color:inherit;cursor:pointer}
       <li>방송이 끝나면 아래 행동을 고를 수 있습니다.</li>
       <li>[종이]에 대합실 규칙이 있습니다. 뒤집을 수 있습니다.</li>
     </ul>
+    <p class="snd-lead">소리를 켜고 하세요 (이어폰 권장)</p>
     <p class="snd">소리를 켜 두십시오. 소리로만 알 수 있는 것이 있습니다. 소리를 낼 수 없으면 위의 [자막]을 켜십시오.</p>
     <button id="bStart" class="big" type="button">시작</button>
     <p class="tag" id="tagLine">proto-room01</p>
@@ -298,12 +300,12 @@ var Core = (function(){
       scene: "유리문 밖의 목소리가 안으로 들어왔다.", missed: "방송 목소리가 유리문 밖에서 났다." },
     { id: "cut_name", face: null, kind: "hear", sal: .75, what: "방송이 「첫 차 승객 ―」 이름이 올 자리에서 뚝 끊긴다",
       scene: "끊긴 방송이 다시 이어졌다. 바로 내 옆에서.", missed: "방송이 이름 자리에서 끊겼다." },
-    { id: "hum_stop", face: null, kind: "hear", sal: .5, what: "형광등 웅웅 소리가 멈춘다(불은 켜진 채)",
+    { id: "hum_stop", face: null, kind: "hear", sal: .5, what: "형광등 웅웅 소리가 멈춘다 — 깜빡이던 승강장 쪽 형광등도 깜빡임을 멈추고 켜진 채로 있다",
       scene: "조용해진 대합실에서 숨소리가 들렸다.", missed: "형광등 소리가 멈춰 있었다." },
     { id: "knock3", face: 2, kind: "hear", sal: .8, what: "도로 쪽 문에서 노크 세 번(보고 있으면 문이 떨린다)",
       scene: "네 번째 노크는 등 뒤에서 났다.", missed: "노크가 세 번 있었다." },
     { id: "call_platform", face: null, kind: "trap", sal: .8, what: "방송이 「승객 한 분, 승강장으로 나와 주십시오.」 — [승강장으로 나간다]가 뜬다(누르면 죽음, 가짜 규칙 3)",
-      scene: "부르는 소리가 한 번 더 났다. 이번에는 바로 옆에서.", missed: "부르는 방송도 평소와 다른 것이었다.",
+      scene: "부르는 소리가 한 번 더 났다. 이번에는 바로 옆에서.", missed: "부르는 방송이 있었다. 평소와 달랐다.",
       scenePlatform: "승강장은 비어 있었고, 유리문이 등 뒤에서 닫혔다.", missedPlatform: "3번은 가짜였다." },
     { id: "lights_noengine", face: 0, kind: "trap", sal: .7, what: "유리문 밖에 헤드라이트, 엔진 소리 없음 — [승강장으로 나간다]가 뜬다(규칙 5: 첫 차가 아니다)",
       scene: "헤드라이트가 유리문에 닿을 만큼 다가왔다.", missed: "헤드라이트가 있었다. 평소와 달랐다.",
@@ -1132,7 +1134,11 @@ function beginLoop(){
   logEv("loop_start", { wait: P.wait || null, first: P.first, reset: P.reset, ending: P.ending });
 }
 function fire(ev){
-  if (ev.type === "hum_stop"){ Snd.humOff(true); setPersist("hum", null); }
+  if (ev.type === "hum_stop"){
+    Snd.humOff(true); setPersist("hum", null);
+    // 화면 단서: 소리와 함께 깜빡이던 형광등(A)도 멈춰 켜진 채로 있다. 다음 바퀴 beginLoop 에서 다시 깜빡인다.
+    tubes.tA.flick = false; tubes.tA.q = []; tubes.tA.off = false; applyTubes();
+  }
   else if (ev.type === "knock"){
     Snd.knock(); sndCap("[노크 세 번 — 도로 쪽 문]", 3000);
     [0, 340, 660].forEach(function(ms){ setTimeout(function(){ var d = svgs[2].querySelector(".rdoor"); if (!d) return; d.classList.remove("knock"); void d.getBBox(); d.classList.add("knock"); }, ms); });
@@ -1295,7 +1301,7 @@ if (TEST){
       anomaly: P ? P.anomaly : null, correct: P ? Core.correctChoice(P) : null, lure: P ? P.lure : null, ending: P ? P.ending : null,
       wait: P ? P.wait : null, stareT: +stareT.toFixed(2), caption: $("capText").textContent, sit: !$("bSit").disabled,
       plat: $("bPlat").classList.contains("show"), death: $("death").classList.contains("show") ? $("dMissed").textContent : null,
-      end: $("end").classList.contains("show"), snd: Snd.state(), capOn: capOn, events: events.length }; },
+      end: $("end").classList.contains("show"), snd: Snd.state(), capOn: capOn, events: events.length, flickA: tubes.tA.flick }; },
     start: function(){ Snd.init(); startSession(); },
     face: function(n){ cur = n; layoutFaces(); markSeen(); },
     skipTo: function(type){ if (!P) return; var e = P.events.filter(function(x){ return x.type === type; })[0]; if (e) gt = Math.max(gt, e.t - 0.05); },
