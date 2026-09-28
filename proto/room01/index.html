@@ -1281,7 +1281,7 @@ function face3(st){
 // 고대비 층 — 이상의 흔적(물·발자국·떨어진 전단·쓸고 가는 빛)은 어두워짐 위에 그린다
 function hcLayer(n, st){
   var a = st.anom, s = '';
-  if (n === 0 && a === "wet_steps") [[176, 482, .55, 0], [192, 500, .65, 0], [172, 522, .78, 0], [196, 550, .92, 0], [170, 584, 1.05, 0]].forEach(function(p){ s += foot(p[0], p[1], p[2], p[3]); });
+  if (n === 0 && a === "wet_steps") [[176, 482, .55, 182], [193, 500, .65, 186], [166, 522, .78, 192], [174, 550, .92, 198], [136, 584, 1.05, 206]].forEach(function(p){ s += foot(p[0], p[1], p[2], p[3]); });
   if (n === 3 && a === "wet_steps") [[330, 590, 1.05, -30], [296, 560, .95, -40], [250, 538, .85, -55], [196, 518, .78, -65], [140, 500, .7, -72], [104, 482, .62, -80]].forEach(function(p){ s += foot(p[0], p[1], p[2], p[3]); });
   if (n === 0 && a === "water_rise") s += '<g clip-path="url(#clipGlass)"><g class="wrhc"><path d="M66,466 q19,-5 38,0 t38,0 t38,0 t38,0 t38,0 t38,0" stroke="#cfe3df" stroke-width="2.5" fill="none"/></g></g>';
   if (n === 3 && a === "sitter") s += '<g class="sitterhc">' + sitterHC(5) + '</g>';
@@ -1696,7 +1696,7 @@ function dripFx(c, x0, x1, y0, y1, t0, t1, n){
 }
 var TXT3 = "방송이 승강장으로 나오라고 부르면 바로 승강장으로 나가십시오.";
 D("wet_steps.sit", function(c){ c.look();
-  [[150, 180, 1.3], [212, 214, 1.4], [154, 254, 1.5], [206, 296, 1.6]].forEach(function(p, i){ var g = c.el(foot(p[0], p[1], p[2], 0), true); c.at(0.6 + i * 0.9, function(){ g.setAttribute("opacity", 1); Snd.drip(); }); });
+  [[150, 180, 1.3], [212, 214, 1.4], [154, 254, 1.5], [206, 296, 1.6]].forEach(function(p, i){ var g = c.el(foot(p[0], p[1], p[2], 180), true); c.at(0.6 + i * 0.9, function(){ g.setAttribute("opacity", 1); Snd.drip(); }); });
   var pool = c.el('<ellipse cx="180" cy="330" rx="10" ry="4" fill="#6d8c89" opacity=".75"/>').firstChild;
   c.at(4.2, function(){ Snd.pour(1.5); });
   c.tw(4.2, 5.6, function(k){ pool.setAttribute("rx", 10 + 140 * k); pool.setAttribute("ry", 4 + 36 * k); });
@@ -1955,7 +1955,7 @@ D("normal.door", function(c){
 // ── 죽음 뒤 설명 — 그 바퀴의 해당 면 정지 화면에 놓친 이상을 동그라미로 짚는다(v2.1) ──
 // c = [cx, cy, rx, ry](면 좌표 360×600) · zoom = [사물, 보기] 가까이 본 모습을 옆에 · zc = 그 안의 동그라미 · snd = [평소/이번 소리 듣기]
 var MARK = {
-  wet_steps: { f: 0, c: [[184, 532, 50, 66]] },
+  wet_steps: { f: 0, c: [[162, 535, 50, 66]] },
   door_open: { f: 2, c: [[274, 334, 64, 146]] },
   shutter_up: { f: 1, c: [[180, 205, 148, 74]] },
   call_platform: { f: 3, c: [[300, 52, 28, 28]], snd: 1 },
