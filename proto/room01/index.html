@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap" rel="stylesheet">
 <style>
-/* 시뮬레이션 시제품 room01 v2 — 「대합실 03:47」. 설계 proto/room01/DESIGN_v2.md. 팔레트 08 §2. */
+/* 시뮬레이션 시제품 room01 v2.1 — 「대합실 03:47」. 설계 proto/room01/DESIGN_v2.md(§4 v2.1). 팔레트 08 §2. */
 :root{
   --sepia:#82674B; --night:#2B3A3A; --sodium:#C9873F; --ink:#14161A; --paper:#E8E2D6;
   --bg:#08090b; --panel:#0b0d0f; --dim:#8d8a82; --line:#26302f;
@@ -38,6 +38,19 @@ button{font:inherit;color:inherit;cursor:pointer}
 .face.show{display:block}
 .face.anim{transition:transform .22s ease-out}
 .face svg{width:100%;height:100%;display:block}
+/* 분위기 — 어둠·가장자리 그늘은 면 SVG 안(.atmoD · gAtmo, 이상 흔적 밑). 여기 덮개는 필름 입자만 */
+#atmo{position:absolute;inset:0;z-index:2;pointer-events:none;overflow:hidden}
+.grain{position:absolute;inset:-60px;background-image:var(--noise);background-size:180px 180px;opacity:.1;mix-blend-mode:screen;pointer-events:none;animation:grain .6s steps(6) infinite}
+@keyframes grain{0%{transform:translate(0,0)}17%{transform:translate(-22px,14px)}33%{transform:translate(18px,-26px)}50%{transform:translate(-30px,-8px)}67%{transform:translate(26px,20px)}83%{transform:translate(-10px,30px)}100%{transform:translate(0,0)}}
+html.still .grain{animation:none}
+.panel .grain{opacity:.05;z-index:6}
+#death .grain{opacity:.1;z-index:3}
+@keyframes shk{0%,100%{transform:translate(0,0)}14%{transform:translate(-8px,5px)}28%{transform:translate(7px,-6px)}42%{transform:translate(-6px,-3px)}57%{transform:translate(6px,6px)}71%{transform:translate(-4px,2px)}86%{transform:translate(3px,-2px)}}
+#app.shake{animation:shk .32s linear}
+#scare{position:absolute;inset:0;z-index:40;display:none;pointer-events:none;background:#000}
+#scare.show{display:block}
+#scare svg{width:100%;height:100%;display:block;animation:lunge .42s cubic-bezier(.2,.9,.3,1)}
+@keyframes lunge{from{transform:scale(.55)}to{transform:scale(1.18)}}
 .arrow{position:absolute;top:50%;margin-top:-26px;width:34px;height:52px;border:0;background:rgba(8,10,11,.35);color:#6f7a78;font-size:22px;z-index:3}
 .arrow.l{left:0;border-radius:0 8px 8px 0}.arrow.r{right:0;border-radius:8px 0 0 8px}
 #sndcap{position:absolute;top:8px;left:8px;right:8px;display:flex;flex-wrap:wrap;gap:4px;justify-content:center;z-index:3;pointer-events:none}
@@ -58,7 +71,14 @@ button{font:inherit;color:inherit;cursor:pointer}
 .ph{display:flex;align-items:center;justify-content:space-between;height:34px;flex:0 0 auto}
 .ph b{font-size:14px;font-weight:600;letter-spacing:.06em}
 .ph .x{height:30px;min-width:56px;border-radius:15px;border:1px solid #3a4645;background:#111616;color:var(--paper);font-size:13px}
-#inSvg{flex:1 1 auto;width:100%;min-height:0;display:block}
+#inSvg{flex:1 1 auto;width:100%;min-height:0;display:block;touch-action:none}
+/* 몸짓 안내 · 작은 보조 버튼 · 귀 대기 고리 */
+.ghint{flex:0 0 auto;font-size:11px;color:#8d8a82;line-height:1.4;padding:3px 4px 2px}
+.ghint:empty{display:none}
+.acts .btn.aux{flex:0 1 auto;min-height:34px;font-size:12px;color:#a9a397;border-style:dashed;padding:4px 12px}
+#paper .acts{justify-content:center}
+#ear{position:absolute;left:0;top:0;width:70px;height:70px;margin:-35px 0 0 -35px;border-radius:50%;border:2px solid rgba(233,169,98,.8);box-shadow:0 0 18px rgba(233,169,98,.35);pointer-events:none;display:none;z-index:9}
+#ear.on{display:block}
 #inCap{flex:0 0 auto;min-height:62px;font-size:14px;line-height:1.55;color:#ddd6c8;padding:6px 4px;white-space:pre-line}
 #inCap.sys{color:var(--dim);font-size:13px}
 .acts{flex:0 0 auto;display:flex;gap:8px}
@@ -73,26 +93,28 @@ button{font:inherit;color:inherit;cursor:pointer}
 #paper .tab.on{color:var(--paper);border-color:var(--sodium)}
 #paper .tab:disabled{display:none}
 .cardwrap{flex:1 1 auto;display:flex;align-items:center;justify-content:center;min-height:0;padding:6px 0}
-.card{position:relative;width:min(100%,360px);height:min(100%,440px);perspective:1200px}
+.card{position:relative;width:min(100%,360px);height:min(100%,440px);perspective:1200px;touch-action:none;transition:transform .25s}
 .card .inner{position:absolute;inset:0;transition:transform .5s;transform-style:preserve-3d}
+.card.drag,.card.drag .inner{transition:none}
 .card.flipped .inner{transform:rotateY(180deg)}
 .side{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:var(--paper);color:var(--ink);
-  border-radius:3px;padding:20px 18px;box-shadow:0 10px 30px rgba(0,0,0,.5);overflow:hidden}
+  border-radius:3px;padding:1.3em 1.2em .8em;box-shadow:0 10px 30px rgba(0,0,0,.5);overflow:hidden;font-size:14px;display:flex;flex-direction:column}
+.side.scroll{overflow-y:auto}
 .side.back{transform:rotateY(180deg)}
-.side h2{font-size:16px;margin:0 0 4px;text-align:center;letter-spacing:.12em;font-weight:700}
-.side .lead{font-size:12.5px;text-align:center;margin:0 0 12px;color:#3a3a38}
-.side h3{font-size:13px;margin:10px 0 4px;letter-spacing:.1em}
-.side ol{margin:0;padding-left:20px;font-size:14px;line-height:1.55}
-.side li{margin-bottom:6px;position:relative}
-.side .foot{position:absolute;bottom:12px;left:0;right:0;text-align:center;font-size:10px;color:#6b665d;letter-spacing:.1em}
-.side .under{display:none}
+.side h2{font-size:1.143em;margin:0 0 .25em;text-align:center;letter-spacing:.12em;font-weight:700}
+.side .lead{font-size:.893em;text-align:center;margin:0 0 .8em;color:#3a3a38}
+.side h3{font-size:.929em;margin:.7em 0 .3em;letter-spacing:.1em}
+.side ol{margin:0;padding-left:1.45em;line-height:1.5}
+.side li{margin-bottom:.4em;position:relative}
+.side .foot{margin-top:auto;padding-top:.6em;text-align:center;font-size:.714em;color:#6b665d;letter-spacing:.1em}
+.side .under{display:none;position:absolute;pointer-events:none}
 .card.lit .side{background:#f7f2e6;box-shadow:0 0 50px rgba(244,234,210,.45)}
 .card.lit .pr{opacity:.45}
 .card.lit .under{display:block}
-.under.blur{position:absolute;left:1px;top:1px;right:0;opacity:.18;filter:blur(.6px);pointer-events:none}
-.under.hand{font-family:"Nanum Pen Script",cursive;font-size:22px;color:#5a5448;line-height:1;margin-top:-2px;transform:rotate(-2deg)}
-.under.water{font-family:"Nanum Pen Script",cursive;font-size:22px;color:#4f6f73;line-height:1;margin-top:-2px;position:relative;z-index:0;isolation:isolate}
-.under.water:before{content:"";position:absolute;left:-10px;top:-14px;width:170px;height:44px;border-radius:50%;background:radial-gradient(#9fb5b3 0,rgba(159,181,179,.25) 60%,transparent 72%);z-index:-1}
+.under.blur{left:1px;top:1px;right:0;opacity:.18;filter:blur(.6px)}
+.under.hand{right:.1em;top:50%;margin-top:-.6em;font-family:"Nanum Pen Script",cursive;font-size:1.57em;color:#5a5448;line-height:1;transform:rotate(-2deg);white-space:nowrap}
+.under.water{left:14%;top:50%;margin-top:-.6em;font-family:"Nanum Pen Script",cursive;font-size:1.57em;color:#4f6f73;line-height:1;z-index:0;isolation:isolate;white-space:nowrap}
+.under.water:before{content:"";position:absolute;left:-.45em;top:-.64em;width:7.7em;height:2em;border-radius:50%;background:radial-gradient(#9fb5b3 0,rgba(159,181,179,.25) 60%,transparent 72%);z-index:-1}
 .margin-w{position:absolute;right:14px;top:120px;width:40px;font-family:"Nanum Pen Script",cursive;font-size:21px;color:#1f2d33;writing-mode:vertical-rl;line-height:1}
 .stampm{position:absolute;right:8px;top:6px;width:52px;height:52px;border:4px solid rgba(170,40,30,.8);border-radius:50%;color:rgba(170,40,30,.85);
   display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;transform:rotate(-14deg)}
@@ -165,13 +187,33 @@ button{font:inherit;color:inherit;cursor:pointer}
 @keyframes jump{0%{transform:scale(1)}40%{transform:scale(1.035)}100%{transform:scale(1)}}
 #tickNote{font-size:13px;color:#d8cbb4;text-align:center;padding:0 26px;line-height:1.5;min-height:2em}
 #death{background:#030304;flex-direction:column;z-index:25}
-#dSvg{flex:1 1 auto;width:100%;min-height:0;display:block}
+#dPic{position:relative;flex:1 1 auto;min-height:0}
+#dSvg,#dStill{position:absolute;inset:0;width:100%;height:100%;display:block}
+#dStill{opacity:0;transition:opacity .45s}
+#death.expl #dStill{opacity:1}
+#death.expl #dSvg{opacity:0;transition:opacity .45s}
+.mk{animation:mk .7s .3s ease-out forwards}
+@keyframes mk{to{stroke-dashoffset:0}}
 #dText{flex:0 0 auto;padding:12px 24px calc(18px + env(safe-area-inset-bottom));min-height:150px}
 #dLine{font-size:18px;line-height:1.5;margin:0 0 12px;color:var(--paper);opacity:0;transition:opacity .6s}
 #dLine.on{opacity:1}
-#dSys{opacity:0;transition:opacity .3s}
-#dSys.on{opacity:1}
+#dSys{display:none}
+#dSys.on{display:block;animation:fin .3s}
+@keyframes fin{from{opacity:0}to{opacity:1}}
 #dSys p{margin:0 0 4px;font-size:13px;color:#a9a397;line-height:1.5}
+#dCmp{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:6px 0 8px}
+#dCmp:empty{display:none}
+#dCmp div{border:1px solid #2c3736;border-radius:8px;padding:6px 8px;font-size:12.5px;line-height:1.4;color:#cfc8ba}
+#dCmp b{display:block;font-size:10.5px;letter-spacing:.1em;color:var(--dim);font-weight:600;margin-bottom:2px}
+#dCmp .now{border-color:#6a4a2a;color:#f0d6b0}
+#dSnd{display:none;gap:8px;margin:8px 0 2px}
+#dSnd.on{display:flex}
+#dSnd button{flex:1;min-height:40px;border-radius:9px;border:1px solid #33403f;background:#131919;color:var(--paper);font-size:13px}
+#dSnd button:active{background:#1d2626}
+#dSndCap{font-size:12px !important;color:#d8cbb4 !important;margin:4px 0 0 !important}
+#dSndCap:empty{display:none}
+#dNext{font-size:11px !important;color:#6f7775 !important;margin:8px 0 0 !important;opacity:0;transition:opacity .3s}
+#dNext.on{opacity:1}
 #dSkip{position:absolute;top:10px;right:12px;font-size:11px;color:#5f6664;display:none}
 #dSkip.on{display:block}
 </style>
@@ -190,6 +232,9 @@ button{font:inherit;color:inherit;cursor:pointer}
     <radialGradient id="gVig" cx=".5" cy=".45" r=".75"><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".62"/></radialGradient>
     <radialGradient id="gRadio"><stop offset="0" stop-color="#E9A962" stop-opacity=".9"/><stop offset=".25" stop-color="#C9873F" stop-opacity=".45"/><stop offset="1" stop-color="#C9873F" stop-opacity="0"/></radialGradient>
     <radialGradient id="gStain"><stop offset="0" stop-color="#6d8c89" stop-opacity=".7"/><stop offset="1" stop-color="#6d8c89" stop-opacity="0"/></radialGradient>
+    <radialGradient id="gAtmo" cx=".5" cy=".46" r=".72"><stop offset=".42" stop-color="#000" stop-opacity="0"/><stop offset=".8" stop-color="#000" stop-opacity=".46"/><stop offset="1" stop-color="#000" stop-opacity=".74"/></radialGradient>
+    <radialGradient id="gGhost" cx=".5" cy=".4" r=".62"><stop offset="0" stop-color="#e2ebe7"/><stop offset=".6" stop-color="#b3c4bf"/><stop offset="1" stop-color="#566965"/></radialGradient>
+    <radialGradient id="gSock"><stop offset="0" stop-color="#000"/><stop offset=".55" stop-color="#030505"/><stop offset="1" stop-color="#2e3d3a" stop-opacity="0"/></radialGradient>
     <radialGradient id="gRust"><stop offset="0" stop-color="#7a4a2a" stop-opacity=".85"/><stop offset="1" stop-color="#7a4a2a" stop-opacity="0"/></radialGradient>
     <pattern id="pSlat" width="10" height="9" patternUnits="userSpaceOnUse"><rect width="10" height="9" fill="#4d5856"/><rect y="7" width="10" height="2" fill="#323b3a"/></pattern>
     <pattern id="pCork" width="6" height="6" patternUnits="userSpaceOnUse"><rect width="6" height="6" fill="#82674B"/><circle cx="2" cy="2" r=".7" fill="#6e563e"/><circle cx="5" cy="4.5" r=".6" fill="#957a5b"/></pattern>
@@ -211,6 +256,7 @@ button{font:inherit;color:inherit;cursor:pointer}
     <div class="face" data-f="1"><svg viewBox="0 0 360 600" preserveAspectRatio="xMidYMid meet"></svg></div>
     <div class="face" data-f="2"><svg viewBox="0 0 360 600" preserveAspectRatio="xMidYMid meet"></svg></div>
     <div class="face" data-f="3"><svg viewBox="0 0 360 600" preserveAspectRatio="xMidYMid meet"></svg></div>
+    <div id="atmo"><div class="grain"></div></div>
     <button class="arrow l" id="aL" type="button" aria-label="왼쪽 면">‹</button>
     <button class="arrow r" id="aR" type="button" aria-label="오른쪽 면">›</button>
     <div id="sndcap"></div>
@@ -223,8 +269,11 @@ button{font:inherit;color:inherit;cursor:pointer}
     <div id="inspect" class="panel">
       <div class="ph"><b id="inName"></b><button id="inClose" class="x" type="button">닫기</button></div>
       <svg id="inSvg" viewBox="0 0 320 260" preserveAspectRatio="xMidYMid meet"></svg>
+      <div class="ghint" id="inHint"></div>
       <div id="inCap"></div>
       <div class="acts" id="inActs"></div>
+      <div id="ear"></div>
+      <div class="grain"></div>
     </div>
 
     <div id="paper" class="panel">
@@ -233,7 +282,9 @@ button{font:inherit;color:inherit;cursor:pointer}
         <div class="side front" id="sideF"></div>
         <div class="side back" id="sideB"></div>
       </div></div></div>
-      <div class="acts"><button id="bFlip" class="btn" type="button">뒤집기</button><button id="bLit" class="btn" type="button">형광등에 비추기</button></div>
+      <div class="ghint" id="paHint">종이를 위로 끌어 올리면 형광등에 비춥니다. 손을 떼면 내려옵니다. 옆으로 끌면 뒤집습니다.</div>
+      <div class="acts"><button id="bFlip" class="btn aux" type="button">뒤집기</button><button id="bLit" class="btn aux" type="button">형광등에 비추기</button></div>
+      <div class="grain"></div>
     </div>
   </main>
 
@@ -246,17 +297,21 @@ button{font:inherit;color:inherit;cursor:pointer}
   <div id="fade" class="ov"></div>
   <div id="tick" class="ov"><svg id="tickSvg" viewBox="-50 -50 100 100"></svg><div id="tickNote"></div></div>
   <div id="death" class="ov">
-    <svg id="dSvg" viewBox="0 0 360 600" preserveAspectRatio="xMidYMid slice"></svg>
-    <div id="dText"><p id="dLine"></p><div id="dSys"><p id="dSys1"></p><p id="dSys2"></p></div></div>
+    <div id="dPic"><svg id="dSvg" viewBox="0 0 360 600" preserveAspectRatio="xMidYMid slice"></svg><svg id="dStill" viewBox="0 0 360 360" preserveAspectRatio="xMidYMid meet"></svg></div>
+    <div id="dText"><p id="dLine"></p><div id="dSys"><p id="dSys1"></p><div id="dCmp"></div><p id="dSys2"></p>
+      <div id="dSnd"><button id="dSndN" type="button">평소 소리 듣기</button><button id="dSndT" type="button">이번 소리 듣기</button></div>
+      <p id="dSndCap"></p><p id="dNext">화면을 누르면 다음 바퀴로 넘어갑니다.</p></div></div>
     <div id="dSkip">탭하면 넘깁니다</div>
+    <div class="grain"></div>
   </div>
+  <div id="scare"></div>
 
   <div id="title" class="ov show">
     <h1>대합실 03:47</h1>
-    <p class="sub">시뮬레이션 시제품 v2 · 방 하나</p>
+    <p class="sub">시뮬레이션 시제품 v2.1 · 방 하나</p>
     <ul>
       <li>좌우로 밀면 벽을 돌립니다. 양옆의 ‹ › 도 같습니다.</li>
-      <li>사물을 누르면 가까이 봅니다. 뒤집거나 열어 볼 수 있습니다.</li>
+      <li>사물을 누르면 가까이 봅니다. 끌기·길게 누르기·문지르기로 만져 볼 수 있습니다. 아래 작은 버튼도 같습니다.</li>
       <li>방송이 끝나면 아래 행동을 고를 수 있습니다.</li>
       <li>[종이]에 대합실 규칙이 있습니다. 전부 믿을 수 있는 것은 아닙니다.</li>
       <li>시간이 갈수록 대합실 조명이 조금씩 줄어듭니다. 이상이 아닙니다.</li>
@@ -264,7 +319,7 @@ button{font:inherit;color:inherit;cursor:pointer}
     <p class="snd-lead">소리를 켜고 하세요 (이어폰 권장)</p>
     <p class="snd">소리로만 알 수 있는 것이 있습니다. 소리를 낼 수 없으면 위의 [자막]을 켜십시오.</p>
     <button id="bStart" class="big" type="button">시작</button>
-    <p class="tag" id="tagLine">proto-room01 v2</p>
+    <p class="tag" id="tagLine">proto-room01 v2.1</p>
   </div>
 
   <div id="end" class="ov">
@@ -272,7 +327,7 @@ button{font:inherit;color:inherit;cursor:pointer}
     <h1 id="endLine">첫 차에 탔다.</h1>
     <dl id="endStats"></dl>
     <button id="bAgain" class="big" type="button">처음부터 다시 하기</button>
-    <p class="tag">proto-room01 v2</p>
+    <p class="tag">proto-room01 v2.1</p>
   </div>
 </div>
 
@@ -313,7 +368,7 @@ var Core = (function(){
   var FAKE = { 3: "부르는 목소리가 쓴 줄", 6: "바랜 전단 속 사람이 쓴 줄", 8: "젖은 것이 쓴 줄" };
   var NORMAL = { id: null, missed: "없음 — 평소와 같았습니다", d: { door: { dur: 5, line: "문밖은 도로가 아니었다.", rule: 2 } } };
 
-  // 이상 표 — DESIGN_v2.md §1. tier: 신박/조사/스침/큰. face = 확인하는 면(0~3), null = 소리.
+  // 이상 표 — DESIGN_v2.md §1. tier: 신박/조사/스침/큰. face = 확인하는 면(0~3), null = 소리. ear = 귀로 아는 이상(신박이어도 바퀴 3부터).
   // d = 죽음(원인 → 장면 길이·한 줄·어긴 규칙 rule 또는 따른 가짜 fake). sal = 시뮬 플레이어가 처음 만나 알아챌 확률(추정).
   var A = [
     { id: "wet_steps", tier: "신박", face: 0, sal: .8, missed: "유리문에서 이어진 젖은 발자국",
@@ -323,7 +378,7 @@ var Core = (function(){
     { id: "shutter_up", tier: "신박", face: 1, sal: .8, missed: "끝까지 올라간 매점 셔터",
       d: { sit: { dur: 6, line: "셔터 안의 잡음이 내 귀 옆에서 끊겼다.", rule: 1 },
            stare: { dur: 5, line: "셔터가 안쪽에서 내려와 눈앞을 닫았다.", rule: 4 } } },
-    { id: "call_platform", tier: "신박", face: null, sal: .85, lure: true, missed: "승강장으로 부르는 방송",
+    { id: "call_platform", tier: "신박", face: null, ear: true, sal: .85, lure: true, missed: "승강장으로 부르는 방송",
       d: { platform: { dur: 8, line: "목소리가 셋째 줄을 끝까지 읽고 도장을 찍었다.", fake: 3 },
            sit: { dur: 6, line: "스피커가 꺼진 뒤에도 부르는 말은 이어졌다.", rule: 1 } } },
     { id: "lights_noengine", tier: "신박", face: 0, sal: .8, lure: true, missed: "엔진 소리 없는 헤드라이트",
@@ -375,8 +430,37 @@ var Core = (function(){
       d: { sit: { dur: 7, line: "셔터 안에서 라디오 불빛만 켜져 있었다.", rule: 1 },
            stare: { dur: 5, line: "올라간 셔터가 멈추지 않았다.", rule: 4 } } }
   ];
+  // 평소엔 / 이번엔 — 죽음 뒤 시스템 줄에 나란히(v2.1)
+  var CMP = {
+    "wet_steps":["마른 바닥","유리문에서 이어진 젖은 발자국"],
+    "door_open":["닫혀 있는 도로 쪽 문","한 뼘 열린 도로 쪽 문"],
+    "shutter_up":["반쯤 내린 매점 셔터","끝까지 올라간 매점 셔터"],
+    "call_platform":["「대합실에서 기다려 주십시오」","「승강장으로 나와 주십시오」"],
+    "lights_noengine":["캄캄한 유리문 밖","엔진 소리 없이 뜬 헤드라이트 두 개"],
+    "lamp_hang":["천장에 붙은 형광등","떨어져 매달려 흔들리는 형광등"],
+    "coins_return":["조용한 반환구","멎지 않고 떨어지는 동전"],
+    "chairs_turned":["모두 앞을 보는 의자","내 자리만 빼고 벽 쪽으로 돌아앉은 의자"],
+    "platform_day":["캄캄한 승강장","대낮처럼 하얀 승강장"],
+    "flyer_fallen":["게시판에 붙은 바랜 전단","떨어져 발밑에 뒤집힌 전단"],
+    "rule_write":["비어 있는 규칙서 여백","저절로 글씨가 써지는 여백"],
+    "rule_wet":["마른 규칙서","젖어 글씨가 흘러내리는 규칙서"],
+    "rule_stamp":["도장 없는 규칙서","붉은 「확인」 도장"],
+    "flyer_room":["하얗게 바랜 사진 자리","사진 속에 떠오른 이 대합실"],
+    "handprints_out":["종이 한 장만 붙은 유리 바깥","바깥 면의 젖은 손자국"],
+    "shoes_pair":["마른 옆자리 밑","옆자리 밑의 젖은 신발 한 켤레"],
+    "hum_water":["빈 형광등 관","관 속을 흐르는 물"],
+    "voice_outside":["천장 스피커에서 나는 방송","유리문 밖에서 나는 방송"],
+    "cut_name":["끝까지 이어지는 방송","「첫 차 승객」에서 끊긴 방송"],
+    "knock3":["조용한 도로 쪽 문","도로 쪽 문의 노크 세 번"],
+    "light_sweep":["어두운 문 창","창을 쓸고 가는 헤드라이트"],
+    "clock_back":["제 방향으로 가는 분침","거꾸로 도는 분침"],
+    "sitter":["비어 있는 옆자리들","자리를 옮겨 오는 젖은 눌림"],
+    "water_rise":["마른 유리문 밖","유리문 밖에서 차오르는 물"],
+    "shutter_rising":["반쯤 내린 채 멈춘 셔터","저절로 올라가는 셔터"]
+  };
   var BY = {};
-  A.forEach(function(a){ a.big = a.tier === "큰"; BY[a.id] = a; });
+  // from = 처음 나올 수 있는 바퀴(pos). 신박 1 · 스침·귀로 아는 이상 3 · 조사 4 · 큰 5 (v2.1)
+  A.forEach(function(a){ a.big = a.tier === "큰"; a.from = a.big ? 5 : (a.tier === "조사" ? 4 : ((a.tier === "스침" || a.ear) ? 3 : 1)); a.cmp = CMP[a.id] || null; BY[a.id] = a; });
   var BIG = A.filter(function(a){ return a.big; }).map(function(a){ return a.id; });
   var GEN = A.filter(function(a){ return !a.big; }).map(function(a){ return a.id; });
 
@@ -414,19 +498,21 @@ var Core = (function(){
       bag: [], last: null, calm: 0, usedBig: {}, bigRequeue: null,
       forced: o.anomaly, fast: !!o.fast, cleared: false, seenAnoms: {} };
   }
-  // 일반 20개: 섞은 주머니에서 골고루. 죽게 한 일반 이상은 앞쪽(0~2)에 되돌린다.
-  function draw(S){
-    if (!S.bag.length){
-      S.bag = shuffle(GEN.slice(), S.rnd);
-      if (S.bag[0] === S.last && S.bag.length > 1){ var t = S.bag[0]; S.bag[0] = S.bag[1]; S.bag[1] = t; }
-    }
-    var id = S.bag.shift(); S.last = id; return id;
+  // 일반 20개: 섞은 주머니에서 골고루. 그 바퀴에 아직 못 나오는 것(from > pos)은 건너뛰어 주머니 앞에 남는다 — 열리는 바퀴에 먼저 나온다.
+  // 나올 수 있는 것이 주머니에 없으면, 주머니에 없는 것들을 섞어 뒤에 붙인다. 죽게 한 일반 이상은 앞쪽(0~2)에 되돌린다.
+  function draw(S, pos){
+    pos = pos == null ? 99 : pos;
+    var ok = function(id){ return BY[id].from <= pos; }, i = -1, k;
+    if (!S.bag.some(ok)) S.bag = S.bag.concat(shuffle(GEN.filter(function(id){ return S.bag.indexOf(id) < 0; }), S.rnd));
+    for (k = 0; k < S.bag.length; k++) if (ok(S.bag[k]) && S.bag[k] !== S.last){ i = k; break; }
+    if (i < 0) for (k = 0; k < S.bag.length; k++) if (ok(S.bag[k])){ i = k; break; }
+    var id = S.bag.splice(i, 1)[0]; S.last = id; return id;
   }
   function requeue(S, id){
     var i = S.bag.indexOf(id); if (i >= 0) S.bag.splice(i, 1);
     S.bag.splice(Math.min(S.bag.length, Math.floor(S.rnd() * 3)), 0, id);
   }
-  // 이상이 뽑혔을 때 종류 고르기. 바퀴 5~8(03:51~)은 절반이 큰 이상(시도 안에서 중복 없음, 죽게 한 큰 이상이 먼저).
+  // 이상이 뽑혔을 때 종류 고르기. 바퀴 1~2 신박(눈) · 3 +스침·귀 · 4 +조사 · 5~8(03:51~) 절반이 큰 이상(시도 안에서 중복 없음, 죽게 한 큰 이상이 먼저).
   function pick(S, pos){
     if (pos >= 5){
       if (S.bigRequeue && !S.usedBig[S.bigRequeue]){ var q = S.bigRequeue; S.bigRequeue = null; S.usedBig[q] = 1; return q; }
@@ -435,7 +521,7 @@ var Core = (function(){
         if (pool.length){ var id = pool[Math.floor(S.rnd() * pool.length)]; S.usedBig[id] = 1; return id; }
       }
     }
-    return draw(S);
+    return draw(S, pos);
   }
 
   function lightPasses(start, end){
@@ -508,7 +594,8 @@ var Core = (function(){
     var src = a || NORMAL, d = src.d[cause] || src.d.sit;
     var sys1 = "놓친 이상: " + src.missed;
     var sys2 = d.fake ? "따른 가짜 규칙: 규칙 " + d.fake + " — " + FAKE[d.fake] : "어긴 규칙: 규칙 " + d.rule + " — " + RULE[d.rule];
-    return { cause: cause, scene: (src.id || "normal") + "." + (src.d[cause] ? cause : "sit"), dur: d.dur, line: d.line, fake: d.fake || null, rule: d.rule || null, sys: [sys1, sys2] };
+    return { cause: cause, scene: (src.id || "normal") + "." + (src.d[cause] ? cause : "sit"), dur: d.dur, line: d.line, fake: d.fake || null, rule: d.rule || null, sys: [sys1, sys2],
+      anom: src.id || null, cmp: src.cmp || null };
   }
   // choice: sit / door / platform / stare / repin / timeout. ctx: { look(보고 있던 면), t(바퀴 안 시각) }
   function judge(P, choice, ctx){
@@ -533,7 +620,7 @@ var Core = (function(){
   function apply(S, P, res){
     if (res.cleared){ S.cleared = true; return; }
     if (res.correct){ S.streak++; return; }
-    S.deaths++; S.streak = 0; S.attempt++; S.fresh = true; S.calm = 0; S.usedBig = {};
+    S.deaths++; S.streak = 0; S.attempt++; S.fresh = true; S.calm = 0; S.usedBig = {}; S.last = null;
     if (P.anomaly && S.forced === undefined){
       if (BY[P.anomaly].big) S.bigRequeue = P.anomaly; else requeue(S, P.anomaly);
     }
@@ -564,9 +651,14 @@ if (Q.anomaly !== undefined){
 var SEEDQ = Q.seed !== undefined ? (parseInt(Q.seed, 10) >>> 0) : null;
 var LOOPQ = Q.loop !== undefined ? Math.max(1, parseInt(Q.loop, 10) || 1) : 1;
 var FAST = Q.fast === "1", STILL = Q.still === "1";
+// 필름 입자 — 잡음 그림 한 장을 CSS 변수로(방·확대·종이·죽음 화면이 같이 쓴다). ?still=1 이면 멈춘다.
+(function(){ try{ var cv = document.createElement("canvas"); cv.width = cv.height = 160; var x = cv.getContext("2d"), im = x.createImageData(160, 160), d = im.data;
+  for (var i = 0; i < d.length; i += 4){ var v = Math.pow(Math.random(), 2.4) * 255; d[i] = d[i + 1] = d[i + 2] = v; d[i + 3] = 255; }
+  x.putImageData(im, 0, 0); document.documentElement.style.setProperty("--noise", "url(" + cv.toDataURL("image/png") + ")"); }catch(e){} })();
+if (STILL) document.documentElement.classList.add("still");
 
-// ── 로그 ── 기존 수집 주소(GAS). build proto-room01 · ver v2. 시험 모드에서는 보내지 않는다.
-var BUILD = "proto-room01", VER = "v2";
+// ── 로그 ── 기존 수집 주소(GAS). build proto-room01 · ver v2.1. 시험 모드에서는 보내지 않는다.
+var BUILD = "proto-room01", VER = "v2.1";
 var ENDPOINT = TEST ? "" : "https://script.google.com/macros/s/AKfycby4rrgNdXGb41bgr4IxwXNM8_PLNipORuUDpxlC2iamQu6fYENv7_3VvGLCE-i7wSzfZQ/exec";
 var LSK = { dev: "proto_room01_device", runs: "proto_room01_runs", queue: "proto_room01_queue", snd: "proto_room01_sound", cap: "proto_room01_captions", seen: "proto_room01_v2_seen_deaths" };
 function lsGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
@@ -750,7 +842,7 @@ var Snd = (function(){
   function voice(sched, mode, cut, opt){
     if (!live()) return;
     opt = opt || {};
-    var t0 = now() + 0.03, o1 = ctx.createOscillator(); o1.type = "sawtooth"; o1.frequency.value = 220;
+    var pf = opt.pitch || 1, t0 = now() + 0.03, o1 = ctx.createOscillator(); o1.type = "sawtooth"; o1.frequency.value = 220 * pf;
     var src = g(0.5); o1.connect(src);
     var amp = g(0), fs = [], fg = [1.0, 0.55, 0.22], Qs = [5, 9, 12];
     for (var i = 0; i < 3; i++){ var b = filt("bandpass", VOW.a[i], Qs[i]), gg = g(fg[i]); src.connect(b); b.connect(gg); gg.connect(amp); fs.push(b); }
@@ -762,6 +854,7 @@ var Snd = (function(){
       lp.connect(pk); pk.connect(outG); outG.connect(place(0, 900)); out = lp;
     } else if (mode === "dry"){
       var hp2 = filt("highpass", 160); outG = g(0.9); hp2.connect(outG); outG.connect(place(opt.face == null ? null : opt.face)); out = hp2;
+    } else if (mode === "into"){ outG = g(1); outG.connect(opt.dest); out = outG;   // 귀 대기: 부른 쪽이 준 길로(먹먹하게 거른 뒤 크기를 올린다)
     } else { var c = pa(0.55, opt.muffle || 0); out = c.input; wetG = c.wet; outG = c.out; }
     amp.connect(out); ng.connect(out);
     var syl = sched.items.filter(function(x){ return x.syl; }), n = syl.length;
@@ -771,7 +864,7 @@ var Snd = (function(){
       var F = VOW[hangul ? JUNG[Math.floor((code % 588) / 28)] : "eo"], cho = hangul ? Math.floor(code / 588) : 11;
       for (var q = 0; q < 3; q++) fs[q].frequency.setTargetAtTime(F[q], t, 0.015);
       var prog = k / Math.max(1, n - 1);
-      o1.frequency.setTargetAtTime(232 - 58 * prog + (k % 4 === 1 ? 12 : 0), t, 0.03);
+      o1.frequency.setTargetAtTime((232 - 58 * prog + (k % 4 === 1 ? 12 : 0)) * pf, t, 0.03);
       var tOn = t + (FRIC[cho] ? 0.035 : 0.01);
       amp.gain.setTargetAtTime(0.85, tOn, 0.012);
       amp.gain.setTargetAtTime(0, t + d * 0.78, 0.018);
@@ -785,7 +878,8 @@ var Snd = (function(){
       if (wetG){ wetG.gain.setValueAtTime(wetG.gain.value, tEnd); wetG.gain.linearRampToValueAtTime(0, tEnd + 0.006); }
       noise(master, tEnd + 0.01, 0.012, 0.08, "highpass", 1500);
     }
-    return { stop: function(){
+    var base = outG.gain.value;
+    return { boost: function(v){ try{ outG.gain.setTargetAtTime(base * v, now(), 0.12); }catch(e){} }, stop: function(){
       var t = now();
       try{ outG.gain.cancelScheduledValues(t); outG.gain.setValueAtTime(outG.gain.value, t); outG.gain.linearRampToValueAtTime(0, t + 0.05);
         if (wetG){ wetG.gain.cancelScheduledValues(t); wetG.gain.setValueAtTime(wetG.gain.value, t); wetG.gain.linearRampToValueAtTime(0, t + 0.05); }
@@ -829,6 +923,56 @@ var Snd = (function(){
   function deathSting(){ if (!live() || !buf.death) return; var s = ctx.createBufferSource(), gg = g(0.35); s.buffer = buf.death; s.connect(gg); gg.connect(master); s.start(0); }
   function thump(){ if (!live()) return; noise(master, now() + 0.01, 0.1, 0.4, "lowpass", 500); }
   function tick(){ if (!live()) return; tone(place(2), "square", 2100, now() + 0.003, 0.03, 0.012); }
+  // ── 귀 대기 — 길게 누르는 동안 점점 커지는 소리. set(k) k = 0→1(누른 시간) · stop() ──
+  function listen(kind, opt){
+    var nop = { set: function(){}, stop: function(){} };
+    if (!live()) return nop;
+    opt = opt || {};
+    var t = now(), out = g(0), nodes = [], tm = [], alive = true, vh = null, target = 0.4;
+    out.connect(place(null));
+    function src(n){ nodes.push(n); n.start(t); return n; }
+    function nsrc(){ var n = src(ctx.createBufferSource()); n.buffer = noiseBuf; n.loop = true; return n; }
+    if (kind === "voice"){          // 셔터 안의 낮은 목소리(먹먹하게, 되풀이)
+      var lp = filt("lowpass", 650), pk = filt("peaking", 280, 1); pk.gain.value = 6; lp.connect(pk); pk.connect(out);
+      var bed = nsrc(), bf = filt("lowpass", 240), bg = g(0.12); bed.connect(bf); bf.connect(bg); bg.connect(out);
+      var say = function(){ if (!alive) return; var sch = Core.speech(opt.text || "…"); vh = voice(sch, "into", false, { dest: lp, pitch: 0.72 }) || vh; tm.push(setTimeout(say, (sch.dur + 1.0) * 1000)); };
+      tm.push(setTimeout(say, 150)); target = 1.0;
+    } else if (kind === "radio"){   // 라디오 잡음
+      var ns = nsrc(), bp = filt("bandpass", 1300, 1.6), am = g(0.5), lfo = src(ctx.createOscillator()), lg = g(0.35);
+      lfo.frequency.value = 5.3; lfo.connect(lg); lg.connect(am.gain); ns.connect(bp); bp.connect(am); am.connect(out); target = 0.3;
+    } else if (kind === "wind"){    // 문틈 바람
+      var nw = nsrc(), bw = filt("bandpass", 420, 0.6), aw = g(0.6), lw = src(ctx.createOscillator()), gw = g(0.45);
+      lw.frequency.value = 0.23; lw.connect(gw); gw.connect(aw.gain); nw.connect(bw); bw.connect(aw); aw.connect(out); target = 0.55;
+    } else if (kind === "buzz"){    // 형광등 웅웅(+관 속 물)
+      var ob = src(ctx.createOscillator()), lb = filt("lowpass", 520); ob.type = "sawtooth"; ob.frequency.value = 100; ob.connect(lb); lb.connect(out); target = 0.14;
+      if (opt.water){ var nt = nsrc(), ft = filt("bandpass", 1600, 3), gt2 = g(0.9); nt.connect(ft); ft.connect(gt2); gt2.connect(out); }
+    } else if (kind === "tickback"){   // 거꾸로 나는 째깍(서서히 커졌다 뚝 끊김)
+      var tk = function(){ if (!alive) return; var t0 = now() + 0.01, s2 = ctx.createBufferSource(), f2 = filt("highpass", 1800), e2 = g(0);
+        s2.buffer = noiseBuf; e2.gain.setValueAtTime(0.0001, t0); e2.gain.exponentialRampToValueAtTime(0.9, t0 + 0.07); e2.gain.linearRampToValueAtTime(0, t0 + 0.075);
+        s2.connect(f2); f2.connect(e2); e2.connect(out); s2.start(t0, Math.random()); s2.stop(t0 + 0.1); tm.push(setTimeout(tk, 260)); };
+      tk(); target = 0.9;
+    } else {                        // dead: 선이 끊긴 스피커 · 빈 공기
+      var nd = nsrc(), fd = filt("lowpass", 170); nd.connect(fd); fd.connect(out); target = 0.35;
+    }
+    var h = {
+      set: function(k){ if (alive) out.gain.setTargetAtTime(target * (0.06 + 0.94 * k), now(), 0.1); },
+      stop: function(){ if (!alive) return; alive = false; tm.forEach(clearTimeout); var t2 = now(); out.gain.cancelScheduledValues(t2); out.gain.setTargetAtTime(0, t2, 0.07);
+        nodes.forEach(function(n){ try{ n.stop(t2 + 0.5); }catch(e){} }); if (vh) vh.stop(); }
+    };
+    h.set(0); return h;
+  }
+  // ── 깜짝 놀람 소리 ──
+  function shriek(){ if (!live()) return; var t = now() + 0.005;
+    [0, 11, -7, 19].forEach(function(d){ var o = ctx.createOscillator(), e = g(0), bp = filt("bandpass", 2600, 1.5);
+      o.type = "sawtooth"; o.frequency.setValueAtTime(1400 + d * 25, t); o.frequency.exponentialRampToValueAtTime(3100 + d * 40, t + 0.22);
+      e.gain.setValueAtTime(0, t); e.gain.linearRampToValueAtTime(0.14, t + 0.008); e.gain.exponentialRampToValueAtTime(0.0001, t + 0.42);
+      o.connect(bp); bp.connect(e); e.connect(master); o.start(t); o.stop(t + 0.46); });
+    noise(master, t, 0.25, 0.45, "highpass", 2800, null, 0.002); tone(master, "sine", 58, t, 0.7, 0.4, 34); }
+  function rush(){ if (!live()) return; var t = now() + 0.005, sb = ctx.createBufferSource(), f = filt("bandpass", 260, 0.9), e = g(0);
+    sb.buffer = noiseBuf; sb.loop = true; f.frequency.setValueAtTime(260, t); f.frequency.exponentialRampToValueAtTime(3800, t + 0.3);
+    e.gain.setValueAtTime(0.0001, t); e.gain.exponentialRampToValueAtTime(0.75, t + 0.3); e.gain.linearRampToValueAtTime(0, t + 0.34);
+    sb.connect(f); f.connect(e); e.connect(master); sb.start(t, Math.random()); sb.stop(t + 0.38);
+    noise(master, t + 0.3, 0.3, 0.55, "lowpass", 900, null, 0.002); tone(master, "sine", 48, t + 0.3, 0.8, 0.5, 30); tone(master, "sawtooth", 2300, t + 0.3, 0.07, 0.3, 3400); }
   // ── 이어지는 소리(이름으로 켜고 끈다) ──
   function loopOn(name, opt){
     if (!live() || loops[name]) return;
@@ -887,7 +1031,7 @@ var Snd = (function(){
   return { init: init, humOn: humOn, humOff: humOff, humPitch: humPitch, humStretch: humStretch, chime: chime, voice: voice,
     knock: knock, door: door, clunk: clunk, tuk: tuk, paper: paper, paperSlide: paperSlide, tap: tap, blink: blink, coin: coin, scratch: scratch,
     stampWet: stampWet, stampHit: stampHit, creak: creak, drip: drip, pour: pour, glass: glass, thud: thud, bang: bang, wind: wind, hinge: hinge,
-    camera: camera, whoosh: whoosh, cutClick: cutClick, deathSting: deathSting, thump: thump, tick: tick,
+    camera: camera, whoosh: whoosh, cutClick: cutClick, deathSting: deathSting, thump: thump, tick: tick, listen: listen, shriek: shriek, rush: rush,
     loopOn: loopOn, loopLevel: loopLevel, loopOff: loopOff, allLoopsOff: allLoopsOff, hasLoop: function(n){ return !!loops[n]; },
     setOn: setOn, isOn: function(){ return on; }, resume: resume, suspend: suspend, level: level, repan: repan, quiet: function(v){ quiet = !!v; },
     setFace: function(fn){ faceOf = fn; },
@@ -933,6 +1077,21 @@ function foot(x, y, k, rot){
   return '<g transform="rotate(' + (rot || 0) + ' ' + x + ' ' + y + ')"><ellipse cx="' + x + '" cy="' + y + '" rx="' + (6.5 * k) + '" ry="' + (11 * k) + '" fill="#7fa29f" opacity=".72"/>' +
     '<ellipse cx="' + x + '" cy="' + (y + 14 * k) + '" rx="' + (5 * k) + '" ry="' + (5 * k) + '" fill="#7fa29f" opacity=".72"/>' +
     '<ellipse cx="' + (x - 1.5 * k) + '" cy="' + (y - 3 * k) + '" rx="' + (2.2 * k) + '" ry="' + (4.5 * k) + '" fill="#dcebe8" opacity=".45"/></g>';
+}
+// 괴이의 얼굴 — 물에 젖은 창백한 얼굴. 깜짝 놀람 세 곳(유리 · 죽음 끝 · 큰 이상 시한)에 쓴다. 원점 = 얼굴 가운데.
+function ghostSVG(){
+  return '<path d="M-104,176 q10,-100 104,-110 q94,10 104,110z" fill="#050808"/>' +
+    '<path d="M-16,44 q16,34 32,0 v44 h-32z" fill="#7d918d"/>' +
+    '<path d="M0,-72 C35,-72 49,-42 47,-6 C45,30 27,60 0,66 C-27,60 -45,30 -47,-6 C-49,-42 -35,-72 0,-72z" fill="url(#gGhost)"/>' +
+    '<ellipse cx="-17" cy="-8" rx="16" ry="13" fill="url(#gSock)"/><ellipse cx="17" cy="-5" rx="15" ry="14" fill="url(#gSock)"/>' +
+    '<circle cx="-15" cy="-7" r="1.5" fill="#f3f8f6"/><circle cx="18" cy="-4" r="1.5" fill="#f3f8f6"/>' +
+    '<path d="M-1,6 q-4,10 1,13" stroke="#6b807b" stroke-width="1.6" fill="none" opacity=".35"/>' +
+    '<path d="M-9,30 q9,-5 18,0 q-2,21 -9,28 q-7,-7 -9,-28z" fill="#040606"/>' +
+    '<path d="M-52,-8 C-58,-62 -22,-88 0,-84 C24,-88 60,-62 52,-8 C45,-42 30,-60 0,-62 C-30,-60 -45,-42 -52,-8z" fill="#040707"/>' +
+    '<path d="M-46,-32 C-60,20 -56,94 -42,156 L-28,156 C-41,92 -43,30 -35,-22z" fill="#040707"/>' +
+    '<path d="M46,-32 C60,20 56,94 42,156 L28,156 C41,92 43,30 35,-22z" fill="#040707"/>' +
+    '<path d="M-25,-60 C-32,-20 -27,24 -23,76" stroke="#040707" stroke-width="5" fill="none"/><path d="M9,-62 C11,-30 6,0 11,44" stroke="#040707" stroke-width="3" fill="none" opacity=".85"/>' +
+    '<path d="M-6,66 v28 M14,60 v38 M-38,124 v32 M36,118 v26" stroke="#8fb0ad" stroke-width="2" opacity=".8"/>';
 }
 function clockSVG(cx, cy, r, min, mirror, cls){
   var h = Math.floor(min / 60) % 12, m = min % 60, s = '<g transform="translate(' + cx + ' ' + cy + ')"' + (cls ? ' class="' + cls + '"' : '') + '>';
@@ -1104,11 +1263,15 @@ function hcLayer(n, st){
       s += '<ellipse cx="' + p[0] + '" cy="' + p[1] + '" rx="6" ry="2.6" fill="' + (i % 3 ? "#C9873F" : "#e3b774") + '"/>'; });
     s += '</g>';
   }
+  // 깜짝 놀람 ① — 이상 바퀴의 ① 유리에만 숨어 있다(glassScare 가 0.3초 켠다)
+  if (n === 0 && a) s += '<g class="jsface" opacity="0" clip-path="url(#clipGlass)"><rect x="66" y="186" width="228" height="280" fill="#0d1416" opacity=".55"/>' +
+    handprint(112, 250, .85, "#dfe8e5") + handprint(248, 250, .85, "#dfe8e5") + '<g transform="translate(180 318) scale(1.3)">' + ghostSVG() + '</g></g>';
   return s;
 }
 function faceSVG(n, st){
   var s = [face0, face1, face2, face3][n](st);
   s += '<rect class="dim" width="360" height="600" fill="#000" opacity="' + (st.dim || 0).toFixed(3) + '" pointer-events="none"/>';
+  s += '<rect class="atmoD" width="360" height="600" fill="#000" opacity=".14" pointer-events="none"/><rect width="360" height="600" fill="url(#gAtmo)" pointer-events="none"/>';   // 분위기(v2.1): 어둠 · 가장자리 그늘
   s += hcLayer(n, st);
   s += '<rect class="shade" width="360" height="600" fill="#030405" opacity="0" pointer-events="none"/>';
   s += '<rect width="360" height="600" fill="url(#gVig)" pointer-events="none"/>';
@@ -1147,7 +1310,7 @@ var INSPECT = {
     },
     acts: [
       { id: "up", label: "올려다보기", run: function(st){ return st.anom === "hum_water" ? { view: "up", text: "관 속에 물이 흐르고 있었다. 갓에 물방울이 맺혀 있었다.", loop: "trickle" } : { view: "up", text: "갓 안에 죽은 벌레가 있었다. 관 한쪽 끝이 검었다." }; } },
-      { id: "listen", label: "소리 듣기", run: function(){ return { text: "웅웅거렸다. 깜빡일 때마다 딸깍 소리가 났다." }; } },
+      { id: "listen", label: "소리 듣기", g: "hold", run: function(){ return { text: "웅웅거렸다. 깜빡일 때마다 딸깍 소리가 났다." }; } },
       { id: "label", label: "라벨 읽기", run: function(){ return { view: "label", text: "제조 연월이 닳아 읽히지 않았다." }; } }
     ] },
   glass: { name: "승강장 유리문", face: 0, cap: function(st){
@@ -1161,6 +1324,12 @@ var INSPECT = {
       if (st.headlights) s += '<circle cx="120" cy="150" r="60" fill="url(#gHead)"/><circle cx="200" cy="150" r="60" fill="url(#gHead)"/>';
       if (a === "water_rise") s += '<g clip-path="url(#clipIGlass)"><g class="iwr"><rect x="40" y="244" width="240" height="260" fill="url(#gWater)"/><path d="M40,244 q20,-5 40,0 t40,0 t40,0 t40,0 t40,0 t40,0" stroke="#a9c4c0" stroke-width="3" fill="none"/></g></g>';
       s += '<polygon points="60,16 100,16 70,244 44,244" fill="#E8E2D6" opacity=".05"/>';
+      if (v !== "out"){   // 안쪽에 서린 김 — 문지르면 닦인다(닦은 자리가 .wipes 에 선으로 쌓인다)
+        s += '<defs><mask id="mWipe" maskUnits="userSpaceOnUse" x="0" y="0" width="320" height="260"><rect width="320" height="260" fill="#fff"/><g class="wipes" fill="none" stroke="#000" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"></g></mask></defs>' +
+          '<g mask="url(#mWipe)"><rect x="40" y="16" width="240" height="228" fill="#cfd9d6" opacity=".3"/>';
+        for (var i = 0; i < 28; i++) s += '<circle cx="' + (50 + (i * 97) % 220) + '" cy="' + (26 + (i * 61) % 208) + '" r="' + (1.2 + (i % 3) * .6) + '" fill="#e8efec" opacity=".4"/>';
+        s += '</g>';
+      }
       if (v === "breath"){
         s += '<ellipse cx="160" cy="120" rx="70" ry="44" fill="#E8E2D6" opacity=".2"/>';
         if (a === "handprints_out") s += handprint(130, 118, .55) + handprint(186, 104, .5) + handprint(160, 150, .45) + '<path d="M130,132 v40 M186,118 v52 M160,164 v30" stroke="#8fb0ad" stroke-width="2" opacity=".6"/>';
@@ -1176,7 +1345,7 @@ var INSPECT = {
     },
     acts: [
       { id: "breath", label: "입김 불기", run: function(st){ return { view: "breath", text: st.anom === "handprints_out" ? "입김 너머, 바깥 면에 젖은 손자국이 여럿 드러났다." : "김이 서렸다가 금방 걷혔다." }; } },
-      { id: "out", label: "밖 들여다보기", run: function(st){ return { view: "out", text: st.anom === "handprints_out" ? "바깥 면에 젖은 손자국이 여럿 있었다. 밖에서 짚은 자국이었고, 물이 흘러내렸다." : "바깥 면에 종이가 테이프로 붙어 있었다. 뒷면만 보였고, 두 귀퉁이가 들려 있었다." }; } },
+      { id: "out", label: "밖 들여다보기", g: "rub", run: function(st){ return { view: "out", text: st.anom === "handprints_out" ? "바깥 면에 젖은 손자국이 여럿 있었다. 밖에서 짚은 자국이었고, 물이 흘러내렸다." : "바깥 면에 종이가 테이프로 붙어 있었다. 뒷면만 보였고, 두 귀퉁이가 들려 있었다." }; } },
       { id: "push", label: "밀어 보기", run: function(){ return { text: "밀면 열릴 것 같았다. 손을 뗐다.", sys: "행동은 아래 버튼으로 고릅니다." }; } }
     ] },
   shutter: { name: "매점 셔터 틈", face: 1, cap: function(st){
@@ -1196,7 +1365,7 @@ var INSPECT = {
     },
     acts: [
       { id: "look", label: "들여다보기", run: function(st){ return { text: shutterUp(st) ? "안은 어두웠다. 라디오 불빛 하나만 보였다." : "의자 다리 옆에 발이 하나 보였다. 발은 움직이지 않았다." }; } },
-      { id: "listen", label: "귀 대기", run: function(st){
+      { id: "listen", label: "귀 대기", g: "hold", run: function(st){
         if (shutterUp(st)) return { text: "라디오 잡음만 들렸다." };
         return { text: "셔터 안에서 낮은 목소리가 났다.\n" + (st.pos >= 5 ? "「짧게 할게. 두 장 다 봐.」" : "「종이 다 믿지 마. 누가 썼나 봐.」") }; } },
       { id: "knock", label: "두드리기", run: function(){ return { text: "라디오 소리가 잠깐 작아졌다가 돌아왔다.", duck: true }; } }
@@ -1228,24 +1397,24 @@ var INSPECT = {
     },
     acts: [
       { id: "look", label: "자세히 보기", run: function(){ return { view: "axis", text: "초침은 없었다. 축에 초침이 있던 자국만 남아 있었다." }; } },
-      { id: "listen", label: "귀 대기", run: function(st){ return { text: st.anom === "clock_back" && st.bigOn ? "째깍 소리가 거꾸로 났다." : "째깍 소리가 나지 않았다." }; } },
+      { id: "listen", label: "귀 대기", g: "hold", run: function(st){ return { text: st.anom === "clock_back" && st.bigOn ? "째깍 소리가 거꾸로 났다." : "째깍 소리가 나지 않았다." }; } },
       { id: "tap", label: "두드리기", run: function(){ return { view: "tap", text: "분침이 떨리다가 제자리로 돌아왔다." }; } }
     ] },
-  vend: { name: "자판기 진열창", face: 2, cap: function(){ return "캔이 두 줄로 꽂혀 있었다. 아랫줄 하나는 상표가 없었다."; },
+  vend: { name: "자판기 진열창", face: 2, garea: [36, 192, 248, 60], cap: function(){ return "캔이 두 줄로 꽂혀 있었다. 아랫줄 하나는 상표가 없었다."; },
     draw: function(v, st){
       var s = ibg("#101616");
       if (v === "can") return s + '<g transform="translate(118 20) scale(5)">' + can(0, 1, CANS[3]) + '</g>' + '<rect x="118" y="196" width="80" height="18" fill="#6f5a41" opacity=".6"/>' + sansT(158, 210, "2월 ○일", 13, "#E8E2D6", "middle");
       s += '<rect x="20" y="14" width="280" height="170" fill="#2a2119"/><rect x="20" y="14" width="280" height="170" fill="url(#gVend)"/>';
       for (var i = 0; i < 8; i++){ var row = i < 4 ? 0 : 1; s += '<g transform="translate(' + (44 + (i % 4) * 64) + ' ' + (row ? 104 : 26) + ') scale(2)">' + can(0, 1, CANS[i]) + '</g>'; }
       s += '<rect x="20" y="96" width="280" height="4" fill="#151b1b"/><rect x="40" y="200" width="240" height="46" rx="4" fill="#070909" stroke="#1a2222" stroke-width="2"/>';
-      return s + '<g transform="translate(150 206) rotate(90) scale(1.4)">' + can(0, 0, CANS[3]) + '</g>';
+      return s + '<g class="gcan"><g transform="translate(150 206) rotate(90) scale(1.4)">' + can(0, 0, CANS[3]) + '</g></g>';
     },
     acts: [
-      { id: "take", label: "캔 집기", run: function(){ return { view: "can", text: "꺼내는 곳의 캔은 미지근했다." }; } },
+      { id: "take", label: "캔 집기", g: "drag", run: function(){ return { view: "can", text: "꺼내는 곳의 캔은 미지근했다." }; } },
       { id: "date", label: "유통기한 읽기", run: function(){ return { view: "can", text: "「2월 ○일」. 이미 지난 날짜였다." }; } },
       { id: "shake", label: "흔들기", run: function(){ return { text: "흔들어도 아무 소리가 나지 않았다." }; } }
     ] },
-  coin: { name: "자판기 반환구", face: 2, cap: function(st){ return st.coinsOn ? "반환구에서 동전이 멎지 않고 떨어지고 있었다." : "동전 투입구 아래에 반환구 덮개가 있었다."; },
+  coin: { name: "자판기 반환구", face: 2, garea: [86, 140, 148, 110], cap: function(st){ return st.coinsOn ? "반환구에서 동전이 멎지 않고 떨어지고 있었다." : "동전 투입구 아래에 반환구 덮개가 있었다."; },
     draw: function(v, st){
       var s = ibg("#0f1414");
       if (v === "note") return s + '<rect x="20" y="20" width="280" height="220" fill="#050707"/><rect x="74" y="56" width="172" height="120" fill="#cbc4b2" transform="rotate(-3 160 116)"/>' +
@@ -1256,11 +1425,13 @@ var INSPECT = {
       if (v === "lid") s += '<rect x="96" y="150" width="128" height="26" rx="4" fill="#3a4847" transform="rotate(-18 96 176)"/><circle cx="160" cy="206" r="13" fill="#6b4a30"/><circle cx="160" cy="206" r="20" fill="url(#gRust)"/>';
       else s += '<rect x="96" y="176" width="128" height="20" rx="4" fill="#3a4847"/>';
       if (st.coinsOn) s += '<g class="coins on"><circle class="coin" cx="140" cy="214" r="8" fill="#C9873F"/><circle class="coin" cx="160" cy="214" r="8" fill="#d9a560" style="animation-delay:.23s"/><circle class="coin" cx="182" cy="214" r="8" fill="#C9873F" style="animation-delay:.47s"/></g>';
-      return s;
+      s += '<g class="ghand" opacity="0"><rect x="140" y="104" width="40" height="40" rx="10" fill="#c7b39c"/>';   // 누른 채 아래로 끌면 반환구로 들어가는 손
+      [26, 32, 30, 22].forEach(function(h, i){ s += '<rect x="' + (141 + i * 10) + '" y="136" width="8" height="' + h + '" rx="4" fill="#c7b39c"/>'; });
+      return s + '</g>';
     },
     acts: [
       { id: "lid", label: "덮개 들기", run: function(){ return { view: "lid", text: "덮개 안쪽에 녹슨 동전 하나가 붙어 있었다." }; } },
-      { id: "hand", label: "손 넣기", run: function(){ return { view: "note", text: "안쪽 벽 깊이 쪽지가 붙어 있었다. 물로 쓴 글씨가 말라 얼룩으로 남아 있었다.\n「옆에 앉아 주세요」" }; } },
+      { id: "hand", label: "손 넣기", g: "down", run: function(){ return { view: "note", text: "안쪽 벽 깊이 쪽지가 붙어 있었다. 물로 쓴 글씨가 말라 얼룩으로 남아 있었다.\n「옆에 앉아 주세요」" }; } },
       { id: "lever", label: "레버 돌리기", run: function(){ return { text: "레버는 헛돌았다. 아무 소리도 나지 않았다." }; } }
     ] },
   door: { name: "도로 쪽 문", face: 2, cap: function(st){ return st.anom === "door_open" ? "문이 안으로 한 뼘 열려 있었다." : "작은 창이 달린 문이었다."; },
@@ -1278,7 +1449,7 @@ var INSPECT = {
     },
     acts: [
       { id: "win", label: "창 내다보기", run: function(){ return { view: "window", text: "창밖에 가로등이 하나 있었다. 전봇대에 붙은 종이 한 장이 한쪽 테이프가 떨어져 펄럭였다." }; } },
-      { id: "listen", label: "귀 대기", run: function(){ return { text: "바람 소리뿐이었다." }; } },
+      { id: "listen", label: "귀 대기", g: "hold", run: function(){ return { text: "바람 소리뿐이었다." }; } },
       { id: "gap", label: "문틈 보기", run: function(st){ return { view: "gap", text: st.pos >= 5 ? "찬 바람이 들어왔다. 둘째 장이 들어온 자리였다." : "찬 바람이 들어왔다." }; } }
     ] },
   speaker: { name: "천장 스피커", face: 3, cap: function(){ return "둥근 격자 스피커였다. 방송 때만 작은 불이 켜졌다."; },
@@ -1294,7 +1465,7 @@ var INSPECT = {
     },
     acts: [
       { id: "grille", label: "그릴 틈 보기", run: function(){ return { view: "grille", text: "격자 안쪽의 선이 잘려 있었다. 종이 띠가 하나 끼어 있었다.\n「3. 방송이 승강장으로 나오라고 부르면 바로 승강장으로 나가십시오.」" }; } },
-      { id: "listen", label: "귀 대기", run: function(st){ return { text: st.phase === "broadcast" && !st.outside ? "방송 소리가 크게 들렸다." : "아무 소리도 나지 않았다." }; } }
+      { id: "listen", label: "귀 대기", g: "hold", run: function(st){ return { text: st.phase === "broadcast" && !st.outside ? "방송 소리가 크게 들렸다." : "아무 소리도 나지 않았다." }; } }
     ] },
   notice: { name: "관리소 공고", face: 3, cap: function(){ return "게시판 윗단에 공고 한 장과 시간표가 붙어 있었다."; },
     draw: function(v, st){
@@ -1315,39 +1486,39 @@ var INSPECT = {
     draw: function(v, st){ return flyerFadedSVG(v, st); },
     acts: [
       { id: "read", label: "읽기", run: function(){ return { view: "front", text: "「…터미널에서 마지막으로…」만 남아 있었다." }; } },
-      { id: "flip", label: "뒤집기", run: function(st, I){ return I.view === "back" ? { view: "front", text: "앞면으로 돌렸다." } : { view: "back", text: "핀 구멍은 하나뿐이었고, 녹이 종이까지 번져 있었다. 사진 자리 바로 뒤에 볼펜 글씨가 있었다.\n「저를 다시 붙여 주세요」" }; } },
+      { id: "flip", label: "뒤집기", g: "flip", run: function(st, I){ return I.view === "back" ? { view: "front", text: "앞면으로 돌렸다." } : { view: "back", text: "핀 구멍은 하나뿐이었고, 녹이 종이까지 번져 있었다. 사진 자리 바로 뒤에 볼펜 글씨가 있었다.\n「저를 다시 붙여 주세요」" }; } },
       { id: "photo", label: "사진 확대", run: function(st){ return st.anom === "flyer_room" ? { view: "photo", text: "하얗던 사진 자리에 이 대합실이 떠 있었다. 사진이 젖어 물이 떨어졌다. 왼쪽에서 다섯째 자리에 뒷모습이 하나 있었다." } : { view: "photo", text: "사진 자리는 하얗게 바래 있었다." }; } }
     ] },
   fallen: { name: "떨어진 전단", face: 3, cap: function(){ return "게시판의 전단이 떨어져 뒤집힌 채 발밑에 있었다."; },
     draw: function(v, st){ return flyerFadedSVG(v === "front" ? "front" : "back", st, true); },
     acts: [
-      { id: "flip", label: "뒤집기", run: function(st, I){ return I.view === "front" ? { view: "back", text: "뒷면으로 돌렸다. 「저를 다시 붙여 주세요」" } : { view: "front", text: "앞면은 누렇게 바래 있었다. 「…터미널에서 마지막으로…」만 남아 있었다." }; } },
+      { id: "flip", label: "뒤집기", g: "flip", run: function(st, I){ return I.view === "front" ? { view: "back", text: "뒷면으로 돌렸다. 「저를 다시 붙여 주세요」" } : { view: "front", text: "앞면은 누렇게 바래 있었다. 「…터미널에서 마지막으로…」만 남아 있었다." }; } },
       { id: "repin", label: "다시 붙인다", warn: true, run: function(){ return { repin: true }; } }
     ] },
   flyerOld: { name: "오래된 전단", face: 3, cap: function(){ return "날짜는 오래전인데 핀과 테이프는 새것이었다."; },
     draw: function(v, st){
       var s = ibg("#3a2d20") + '<rect width="320" height="260" fill="url(#pCork)" opacity=".8"/>';
-      if (v === "back") return s + '<rect x="70" y="14" width="180" height="232" fill="#d7d0c0"/>' +
+      if (v === "back") return s + '<g class="gflip"><rect x="70" y="14" width="180" height="232" fill="#d7d0c0"/>' +
         '<rect x="80" y="20" width="60" height="18" fill="#f3f0e8" opacity=".5" transform="rotate(-10 110 29)"/><rect x="90" y="26" width="60" height="18" fill="#f3f0e8" opacity=".4" transform="rotate(6 120 35)"/><rect x="180" y="210" width="60" height="18" fill="#f3f0e8" opacity=".45" transform="rotate(12 210 219)"/><rect x="170" y="216" width="60" height="18" fill="#f3f0e8" opacity=".35" transform="rotate(-8 200 225)"/>' +
-        penT(160, 130, "아직 찾습니다", 34, "#3b3f44", -2, "middle");
-      return s + '<rect x="70" y="14" width="180" height="232" fill="#ddd6c6"/><rect x="86" y="26" width="148" height="12" fill="#8f897e"/>' +
+        penT(160, 130, "아직 찾습니다", 34, "#3b3f44", -2, "middle") + '</g>';
+      return s + '<g class="gflip"><rect x="70" y="14" width="180" height="232" fill="#ddd6c6"/><rect x="86" y="26" width="148" height="12" fill="#8f897e"/>' +
         '<ellipse cx="160" cy="100" rx="42" ry="50" fill="#8a847a" opacity=".55"/><ellipse cx="160" cy="100" rx="24" ry="30" fill="#6f6a61" opacity=".4"/>' +
         sansT(160, 176, "…를 찾습니다", 16, "#3a3a38", "middle") + sansT(160, 204, "19__. __. __", 14, "#5a5650", "middle") +
-        '<rect x="60" y="6" width="44" height="14" fill="#f3f0e8" opacity=".85" transform="rotate(-20 82 13)"/><rect x="216" y="6" width="44" height="14" fill="#f3f0e8" opacity=".85" transform="rotate(20 238 13)"/>';
+        '<rect x="60" y="6" width="44" height="14" fill="#f3f0e8" opacity=".85" transform="rotate(-20 82 13)"/><rect x="216" y="6" width="44" height="14" fill="#f3f0e8" opacity=".85" transform="rotate(20 238 13)"/></g>';
     },
     acts: [
       { id: "read", label: "읽기", run: function(){ return { view: "front", text: "「…를 찾습니다」. 날짜는 앞 두 자리만 읽혔다." }; } },
-      { id: "flip", label: "뒤집기", run: function(st, I){ return I.view === "back" ? { view: "front", text: "앞면으로 돌렸다." } : { view: "back", text: "떨리는 글씨가 있었다.\n「아직 찾습니다」\n테이프 자국이 겹겹이 남아 있었다." }; } }
+      { id: "flip", label: "뒤집기", g: "flip", run: function(st, I){ return I.view === "back" ? { view: "front", text: "앞면으로 돌렸다." } : { view: "back", text: "떨리는 글씨가 있었다.\n「아직 찾습니다」\n테이프 자국이 겹겹이 남아 있었다." }; } }
     ] },
   lost: { name: "분실물 안내", face: 3, cap: function(){ return "손으로 쓴 목록 한 장이었다."; },
     draw: function(v, st){
-      var s = ibg("#3a2d20") + '<rect width="320" height="260" fill="url(#pCork)" opacity=".8"/><rect x="60" y="20" width="200" height="220" fill="#e3ddcf"/>';
-      if (v === "back") return s + '<rect x="96" y="100" width="130" height="40" fill="#b9b2a4" opacity=".55" rx="10"/>' + penT(160, 128, "사진 속 둘", 30, "#6b6a66", 0, "middle", .45) + '<path d="M96,116 L226,124 M98,128 L224,112" stroke="#8a867d" stroke-width="3" opacity=".6"/>';
-      return s + penT(160, 62, "분실물", 30, "#2b3438", 0, "middle") + penT(90, 120, "우산 1.", 28, "#2b3438") + penT(90, 164, "장갑 한 짝.", 28, "#2b3438");
+      var s = ibg("#3a2d20") + '<rect width="320" height="260" fill="url(#pCork)" opacity=".8"/><g class="gflip"><rect x="60" y="20" width="200" height="220" fill="#e3ddcf"/>';
+      if (v === "back") return s + '<rect x="96" y="100" width="130" height="40" fill="#b9b2a4" opacity=".55" rx="10"/>' + penT(160, 128, "사진 속 둘", 30, "#6b6a66", 0, "middle", .45) + '<path d="M96,116 L226,124 M98,128 L224,112" stroke="#8a867d" stroke-width="3" opacity=".6"/></g>';
+      return s + penT(160, 62, "분실물", 30, "#2b3438", 0, "middle") + penT(90, 120, "우산 1.", 28, "#2b3438") + penT(90, 164, "장갑 한 짝.", 28, "#2b3438") + '</g>';
     },
     acts: [
       { id: "read", label: "읽기", run: function(){ return { view: "front", text: "「우산 1. 장갑 한 짝.」" }; } },
-      { id: "flip", label: "뒤집기", run: function(st, I){ return I.view === "back" ? { view: "front", text: "앞면으로 돌렸다." } : { view: "back", text: "「사진 속 둘」이라고 썼다가 지운 자국이 있었다." }; } }
+      { id: "flip", label: "뒤집기", g: "flip", run: function(st, I){ return I.view === "back" ? { view: "front", text: "앞면으로 돌렸다." } : { view: "back", text: "「사진 속 둘」이라고 썼다가 지운 자국이 있었다." }; } }
     ] },
   chair: { name: "의자 — 내 자리", face: 3, cap: function(st){ return st.anom === "chairs_turned" ? "내 자리를 뺀 의자들이 벽 쪽으로 돌아앉아 있었다." : "플라스틱 의자는 차가웠다."; },
     draw: function(v, st){
@@ -1390,14 +1561,14 @@ function flyerFadedSVG(v, st, onFloor){
     return s;
   }
   var paper = onFloor ? "#c6b893" : "#cdbf98";
-  s += '<rect x="70" y="14" width="180" height="232" fill="' + paper + '"/>';
+  s += '<g class="gflip"><rect x="70" y="14" width="180" height="232" fill="' + paper + '"/>';
   if (v === "back"){
     s += '<circle cx="160" cy="24" r="4" fill="#2a1a10"/><circle cx="160" cy="28" r="18" fill="url(#gRust)"/>' + penT(160, 118, "저를 다시 붙여 주세요", 26, "#2c3a44", -2, "middle");
-    return s;
+    return s + '</g>';
   }
   s += '<rect x="86" y="24" width="148" height="12" fill="#9c8f70"/><rect x="110" y="48" width="100" height="92" fill="#efe9da"/><rect x="100" y="150" width="120" height="16" fill="#b3a784"/>' +
     sansT(160, 190, "…터미널에서 마지막으로…", 12, "#4a4436", "middle") + lines(90, 204, 140, 3, 10, "#a89a78") + '<circle cx="160" cy="20" r="5" fill="#6b4a30"/><circle cx="160" cy="24" r="14" fill="url(#gRust)"/>';
-  return s;
+  return s + '</g>';
 }
 // ── 죽음 장면 ── 5~8초. 장면 하나 = 배경(방의 면 / 승강장 / 내려다보기) + 시간표(tween·at) + 소리 + 한 줄.
 function faceArt(n, st){
@@ -1728,6 +1899,99 @@ D("normal.door", function(c){
     c.tw(0, 5, function(k){ l.setAttribute("transform", "translate(" + (Math.sin(k * 12 + i) * 8).toFixed(1) + " 0)"); }); })(i); }
   c.at(0.2, function(){ Snd.loopOn("slosh", { level: .22 }); }); c.at(4.4, function(){ Snd.loopOff("slosh", .4); });
 });
+// ── 죽음 뒤 설명 — 그 바퀴의 해당 면 정지 화면에 놓친 이상을 동그라미로 짚는다(v2.1) ──
+// c = [cx, cy, rx, ry](면 좌표 360×600) · zoom = [사물, 보기] 가까이 본 모습을 옆에 · zc = 그 안의 동그라미 · snd = [평소/이번 소리 듣기]
+var MARK = {
+  wet_steps: { f: 0, c: [[184, 532, 50, 66]] },
+  door_open: { f: 2, c: [[274, 334, 64, 146]] },
+  shutter_up: { f: 1, c: [[180, 205, 148, 74]] },
+  call_platform: { f: 3, c: [[300, 52, 28, 28]], snd: 1 },
+  lights_noengine: { f: 0, c: [[180, 356, 90, 58]], snd: 1 },
+  lamp_hang: { f: 2, c: [[180, 96, 110, 42]] },
+  coins_return: { f: 2, c: [[125, 382, 24, 24], [122, 498, 46, 24]] },
+  chairs_turned: { f: 3, c: [[180, 392, 168, 56]] },
+  platform_day: { f: 0, c: [[180, 326, 126, 148]] },
+  flyer_fallen: { f: 3, c: [[104, 190, 16, 16], [104, 511, 38, 30]] },
+  rule_write: { paper: 1, c: [[292, 225, 22, 92]] },
+  rule_wet: { paper: 1, c: [[180, 360, 126, 118]] },
+  rule_stamp: { paper: 1, c: [[268, 112, 32, 32]] },
+  flyer_room: { f: 3, c: [[104, 221, 38, 44]], zoom: ["flyerFaded", "photo"], zc: [213, 160, 28, 38] },
+  handprints_out: { f: 0, c: [[180, 300, 122, 128]], zoom: ["glass", "out"], zc: [160, 140, 112, 96] },
+  shoes_pair: { f: 3, c: [[seatX(2), 440, 30, 40]], zoom: ["chair", "next"], zc: [160, 214, 82, 28] },
+  hum_water: { f: 0, c: [[180, 37, 82, 20]], zoom: ["tubeA", "up"], zc: [160, 126, 126, 18] },
+  voice_outside: { f: 0, c: [[122, 262, 38, 28]], snd: 1 },
+  cut_name: { f: 3, c: [[300, 52, 28, 28]], snd: 1 },
+  knock3: { f: 2, c: [[274, 334, 64, 146]], snd: 1, extra: [300, 330, 360].map(function(y){ return '<path d="M212,' + (y - 8) + ' q-8,8 0,16 M205,' + (y - 13) + ' q-13,13 0,26" stroke="#E8E2D6" stroke-width="2" fill="none" opacity=".85"/>'; }).join("") },
+  light_sweep: { f: 2, c: [[274, 247, 38, 42]] },
+  clock_back: { f: 2, c: [[206, 130, 44, 44]], extra: '<path d="M255,110 A52,52 0 0 0 206,76" fill="none" stroke="#ef5a3c" stroke-width="3"/><polygon points="208,68 196,76 208,84" fill="#ef5a3c"/>' },
+  sitter: { f: 3, c: [[seatX(2), 400, 30, 36]] },
+  water_rise: { f: 0, c: [[180, 400, 122, 70]] },
+  shutter_rising: { f: 1, c: [[180, 205, 148, 74]] }
+};
+function ellC(a, b){ return Math.PI * (3 * (a + b) - Math.sqrt((3 * a + b) * (a + 3 * b))); }
+function markSVG(c){
+  var rx = c[2] + 8, ry = c[3] + 8, L = ellC(rx, ry).toFixed(1), tr = ' transform="rotate(-8 ' + c[0] + ' ' + c[1] + ')"';
+  return '<ellipse cx="' + c[0] + '" cy="' + c[1] + '" rx="' + rx + '" ry="' + ry + '" fill="none" stroke="#050607" stroke-width="9" opacity=".55"' + tr + '/>' +
+    '<ellipse class="mk" cx="' + c[0] + '" cy="' + c[1] + '" rx="' + rx + '" ry="' + ry + '" fill="none" stroke="#ef5a3c" stroke-width="4" stroke-dasharray="' + L + '" stroke-dashoffset="' + L + '"' + tr + '/>';
+}
+function paperStill(id){
+  var s = '<rect width="360" height="600" fill="#07090a"/><g transform="rotate(-2 180 290)"><rect x="46" y="70" width="268" height="440" fill="#E8E2D6"/>' + sansT(180, 102, "첫 차 대기 안내", 15, "#14161A", "middle", "700");
+  for (var i = 0; i < 6; i++){ var y = 136 + i * 56 + (i >= 2 ? 22 : 0); s += sansT(60, y + 7, (i + 1) + ".", 11, "#3a3a38") + lines(76, y, 206, 3, 10, "#8f897e"); }
+  s += sansT(60, 258, "특별 안내", 11, "#14161A", null, "700");
+  if (id === "rule_write") Array.from("첫 차 승객은 왼쪽").forEach(function(ch, i){ s += penT(292, 150 + i * 20, ch, 21, "#1f2d33", 0, "middle"); });
+  if (id === "rule_wet"){ s += '<rect x="46" y="300" width="268" height="210" fill="#2a3436" opacity=".22"/>'; for (var k = 0; k < 9; k++) s += '<rect x="' + (80 + k * 24) + '" y="' + (200 + (k % 3) * 40) + '" width="2.4" height="' + (90 + (k % 4) * 30) + '" fill="#4f6f73" opacity=".55"/>'; }
+  if (id === "rule_stamp") s += '<g transform="translate(268 112) rotate(-14)"><circle r="30" fill="none" stroke="#a8281e" stroke-width="5" opacity=".85"/>' + sansT(0, 7, "확인", 18, "#a8281e", "middle", "700") + '</g>';
+  return s + '</g>';
+}
+function stillTweak(svg, id){
+  var q = function(sel){ return [].slice.call(svg.querySelectorAll(sel)); };
+  if (id === "lights_noengine") q(".hl").forEach(function(e){ e.style.transition = "none"; e.classList.add("on"); });
+  if (id === "coins_return") q(".coins").forEach(function(e){ e.classList.add("on"); });
+  if (id === "water_rise") q(".wr, .wrhc").forEach(function(e){ e.setAttribute("transform", "translate(0 -120)"); });
+  if (id === "shutter_rising") setShutterH(svg, 40);
+  if (id === "clock_back"){ q(".clk .mh").forEach(function(e){ e.setAttribute("transform", "rotate(200)"); }); q(".clk .hh").forEach(function(e){ e.setAttribute("transform", "rotate(90)"); }); }
+  if (id === "light_sweep"){ q(".sweep").forEach(function(e){ e.setAttribute("opacity", .92); e.setAttribute("x", 256); }); q(".sweepf").forEach(function(e){ e.setAttribute("opacity", .3); }); }
+  if (id === "sitter"){ var ch = svg.querySelector(".chairs"); if (ch) ch.innerHTML = chairsSVG({ pressed: 2 }); var hc = svg.querySelector(".sitterhc"); if (hc) hc.innerHTML = sitterHC(2); }
+  if (id === "voice_outside") q(".fog").forEach(function(e){ e.style.transition = "none"; e.style.opacity = .3; });
+  if (id === "call_platform" || id === "cut_name") q(".spk").forEach(function(e){ e.classList.add("on"); });
+}
+function showStill(d){
+  var id = d.anom, M = MARK[id], svg = $("dStill");
+  svg.innerHTML = "";
+  if (!M) return false;
+  var st = { anom: id, min: P ? P.min : CT.START_MIN, dim: 0, pos: P ? P.pos : 5, bigOn: true, coinsOn: true, headlights: id === "lights_noengine", sitterIdx: 2, shutterFull: false, phase: "decide", outside: false };
+  var cs = M.c, top = Math.min.apply(null, cs.map(function(c){ return c[1] - c[3]; })), bot = Math.max.apply(null, cs.map(function(c){ return c[1] + c[3]; }));
+  var pic = $("dPic"), ar = pic.clientWidth > 0 ? pic.clientHeight / pic.clientWidth : 1;
+  var need = Math.min(600, bot - top + 28);                                                       // 동그라미를 다 담는 높이
+  var H = Math.round(Math.max(M.zoom ? 560 : 300, Math.min(M.zoom ? 760 : 600, 360 * ar)));   // 보이는 판 높이(면 좌표)
+  var fh = Math.round(Math.max(need, M.zoom ? H - 323 : H));                                   // 면 그림 높이
+  H = M.zoom ? fh + 323 : fh;
+  var y0 = Math.round(Math.max(0, Math.min(600 - fh, (top + bot) / 2 - fh / 2)));
+  var lab = (M.snd ? "소리가 난 곳 — " : "놓친 곳 — ") + (M.paper ? "규칙서 앞장" : "①②③④".charAt(M.f) + " " + Core.FACE_NAMES[M.f] + " 면");
+  var body = '<defs><clipPath id="cStill"><rect x="0" y="' + y0 + '" width="360" height="' + fh + '"/></clipPath></defs>' +
+    '<g transform="translate(0 ' + (-y0) + ')"><g clip-path="url(#cStill)"><g class="stArt">' + (M.paper ? paperStill(id) : faceArt(M.f, st)) + '</g>' + (M.extra || "") + cs.map(markSVG).join("") + '</g></g>' +
+    '<rect x="8" y="8" width="' + (24 + Array.from(lab).length * 12.4).toFixed(0) + '" height="26" rx="7" fill="#050607" opacity=".85"/>' + sansT(20, 26, lab, 13, "#E8E2D6");
+  if (M.zoom){
+    var zi = INSPECT[M.zoom[0]];
+    body += '<g transform="translate(0 ' + (fh + 26) + ') scale(1.125)"><rect x="-2" y="-2" width="324" height="264" fill="#050607"/><svg width="320" height="260" viewBox="0 0 320 260">' + zi.draw(M.zoom[1], st) + markSVG(M.zc) + '</svg></g>' +
+      sansT(8, fh + 18, "가까이 본 모습 — " + zi.name, 13, "#cfc8ba");
+  }
+  svg.setAttribute("viewBox", "0 0 360 " + H);
+  svg.innerHTML = body;
+  stillTweak(svg, id);
+  return true;
+}
+// 깜짝 놀람 ② — 죽음 장면 끝 한 박자: 무언가가 화면으로 달려든다(평소 바퀴의 죽음에는 없다)
+function addRush(c, dur){
+  var t0 = Math.max(0.6, dur - 0.62), g = mk('<g transform="translate(180 300) scale(.2)">' + ghostSVG() + '</g>'), fig = g.firstChild;
+  g.setAttribute("opacity", 0); c.fxL.ownerSVGElement.appendChild(g);   // 덮개(.cover) 뒤 = 맨 위
+  c.at(t0, function(){ g.setAttribute("opacity", 1); Snd.rush(); });
+  c.tw(t0, t0 + 0.32, function(k){ var e = k * k * k, jx = k > 0.7 && k < 1 ? (Math.random() * 2 - 1) * 8 : 0, jy = k > 0.7 && k < 1 ? (Math.random() * 2 - 1) * 8 : 0;
+    fig.setAttribute("transform", "translate(" + (180 + jx).toFixed(1) + " " + (300 - 20 * e + jy).toFixed(1) + ") scale(" + (0.2 + 5.8 * e).toFixed(3) + ")"); });
+  c.shake(t0 + 0.24, t0 + 0.52, 12);
+  c.at(t0 + 0.34, function(){ g.setAttribute("opacity", 0); });
+  c.cover(t0 + 0.33, t0 + 0.34, 0, 1, "#000");
+}
 // ── 상태 ──
 var S = null, P = null, phase = "title", gt = 0, evI = 0, bcT0 = 0, bcVoice = false, decideT0 = 0;
 var cur = 0, paperOpen = false, paperOpened = false, paperPage = 1, flipped = false, lit = false;
@@ -1736,10 +2000,13 @@ var capOn = lsGet(LSK.cap) === "on", stareT = 0, seen = [], anomSeen = false, lo
 var arr = {}, arriveReady = false, timers = [], dragging = false;
 var coinsOn = false, headlightsOn = false, stampOn = false, shutterFull = false, sitterIdx = -1, sitterBend = 0, lastTickAng = null, lastScratch = 0, lastCoin = 0;
 var deathRun = null;
+var VIBN = 0, SCN = 0, lis = null, ig = null, pg = null, litBtn = false, litHold = false, atmoT = 0, atmoPulse = 0, cmpH = null, cmpTm = [];
+var IS_ANDROID = /Android/i.test(navigator.userAgent);
+function vib(p){ VIBN++; if (IS_ANDROID && navigator.vibrate){ try{ navigator.vibrate(p); }catch(e){} } }   // 안드로이드만 짧게 떤다(iOS 는 조용히 지나감)
 var RUN = { wait: 1, broadcast: 1, decide: 1, arrive: 1 };
 var faces = [].slice.call(document.querySelectorAll(".face")), svgs = faces.map(function(f){ return f.querySelector("svg"); });
 var view = $("view");
-Snd.setFace(function(){ return lookFace() < 0 ? cur : lookFace(); });
+Snd.setFace(function(){ return phase === "death" ? 0 : (lookFace() < 0 ? cur : lookFace()); });   // 죽음 화면의 소리 비교는 정면에서
 
 function later(ms, fn){ var id = setTimeout(function(){ timers = timers.filter(function(x){ return x !== id; }); fn(); }, ms); timers.push(id); return id; }
 function clearLater(){ timers.forEach(clearTimeout); timers = []; }
@@ -1776,7 +2043,27 @@ function turn(dir){
   a.classList.add("anim"); b.classList.add("anim");
   a.style.transform = "translateX(" + (-dir * W) + "px)"; b.style.transform = "translateX(0)";
   dragging = true; turnTo = nxt; Snd.repan();
+  if (nxt === 0) glassScare();
   setTimeout(function(){ cur = nxt; turnTo = null; dragging = false; layoutFaces(); markSeen(); }, 230);
+}
+function shake(){ var a = $("app"); a.classList.remove("shake"); void a.offsetWidth; a.classList.add("shake"); later(360, function(){ a.classList.remove("shake"); }); }
+// 깜짝 놀람 ① — 이상 바퀴에서 ① 면으로 넘기는 순간 유리에 얼굴 0.3초 + 날카로운 소리 + 흔들림(바퀴마다 한 번). 평소 바퀴에는 없다.
+function glassScare(){
+  if (!P || !P.anomaly || !RUN[phase] || arr.scared) return;
+  arr.scared = true;
+  later(110, function(){
+    var g = svgs[0].querySelector(".jsface"); if (!g || !RUN[phase]) return;
+    g.setAttribute("opacity", 1); Snd.shriek(); shake(); vib([30, 20, 40]); SCN++;
+    logEv("scare", { kind: "glass" });
+    later(300, function(){ g.setAttribute("opacity", 0); });
+  });
+}
+// 깜짝 놀람 ③ — 큰 이상 시한이 끝나는 순간. 얼굴이 화면으로 달려든 뒤 죽음 장면.
+function deadlineScare(){
+  var sc = $("scare");
+  sc.innerHTML = '<svg viewBox="0 0 360 600" preserveAspectRatio="xMidYMid slice"><rect width="360" height="600" fill="#000"/><g transform="translate(180 290) scale(2.9)">' + ghostSVG() + '</g></svg>';
+  sc.classList.add("show"); Snd.shriek(); Snd.thud(); shake(); vib([40, 30, 70]); SCN++;
+  logEv("scare", { kind: "deadline" });
 }
 function interactive(){ return RUN[phase] && !paperOpen && !inspectId; }
 var ptr = null;
@@ -1809,7 +2096,7 @@ function endPtr(e, cancel){
     var commit = !cancel && (Math.abs(p.dx) > W * 0.18 || Math.abs(p.dx) / Math.max(1, dt) > 0.45);
     var a = faces[cur], b = faces[nb];
     a.classList.add("anim"); b.classList.add("anim"); dragging = true;
-    if (commit){ a.style.transform = "translateX(" + (-dir * W) + "px)"; b.style.transform = "translateX(0)"; turnTo = nb; Snd.repan(); }
+    if (commit){ a.style.transform = "translateX(" + (-dir * W) + "px)"; b.style.transform = "translateX(0)"; turnTo = nb; Snd.repan(); if (nb === 0) glassScare(); }
     else { a.style.transform = "translateX(0)"; b.style.transform = "translateX(" + (dir * W) + "px)"; }
     setTimeout(function(){ if (commit) cur = nb; turnTo = null; dragging = false; layoutFaces(); if (commit) markSeen(); }, 230);
     return;
@@ -1839,12 +2126,14 @@ function openInspect(id){
   $("inName").textContent = I.name;
   renderInspect();
   setInCap(I.cap(stInfo()), null);
-  var box = $("inActs"); box.innerHTML = "";
-  I.acts.forEach(function(a){
-    var b = document.createElement("button"); b.type = "button"; b.className = "btn" + (a.warn ? " warn" : ""); b.textContent = a.label; b.setAttribute("data-act", a.id);
-    b.addEventListener("click", function(){ doAct(a.id); });
+  var box = $("inActs"), hints = []; box.innerHTML = "";
+  I.acts.forEach(function(a){   // 몸짓이 있는 행동은 작은 보조 버튼(몸짓을 모르는 사람용)
+    var b = document.createElement("button"); b.type = "button"; b.className = "btn" + (a.warn ? " warn" : "") + (a.g ? " aux" : ""); b.textContent = a.label; b.setAttribute("data-act", a.id);
+    b.addEventListener("click", function(){ if (a.g === "hold") startListen(a, null, null, true); else doAct(a.id, a.g ? "button" : null); });
     box.appendChild(b);
+    if (a.g && hints.indexOf(GHINT[a.g]) < 0) hints.push(GHINT[a.g]);
   });
+  $("inHint").textContent = hints.join(" · ");
   $("inspect").classList.add("show");
   markSeen(I.face); loopInspects.push(id);
   Snd.tap(); Snd.repan();
@@ -1859,11 +2148,11 @@ function setInCap(text, sys){
   var el = $("inCap"); el.classList.toggle("sys", false);
   el.textContent = text + (sys ? "\n" + sys : "");
 }
-function doAct(actId){
+function doAct(actId, via){
   if (!inspectId || !RUN[phase]) return;
   var I = INSPECT[inspectId], a = I.acts.filter(function(x){ return x.id === actId; })[0]; if (!a) return;
   var r = a.run(stInfo(), { view: inspectView }) || {};
-  logEv("inspect", { obj: inspectId, act: actId });
+  logEv("inspect", { obj: inspectId, act: actId, via: via || null });
   if (r.repin){ closeInspect(true); resolve("repin"); return; }
   if (r.view) inspectView = r.view;
   renderInspect();
@@ -1871,16 +2160,108 @@ function doAct(actId){
   if (inspectLoop && inspectLoop !== r.loop){ Snd.loopOff(inspectLoop, .3); inspectLoop = null; }
   if (r.loop && !inspectLoop){ Snd.loopOn(r.loop, { level: .16 }); inspectLoop = r.loop; }
   if (r.duck){ Snd.loopLevel("radio", .005, .05); later(900, function(){ Snd.loopLevel("radio", radioLevel(), .3); }); }
-  Snd.paper();
+  if (via !== "hold" && a.g !== "hold") Snd.paper();
 }
 function closeInspect(silent){
   if (!inspectId) return;
+  stopListen(); ig = null;
   inspectId = null; $("inspect").classList.remove("show");
   if (inspectLoop){ Snd.loopOff(inspectLoop, .3); inspectLoop = null; }
   if (!silent) Snd.tap();
   Snd.repan();
 }
 $("inClose").addEventListener("click", function(){ closeInspect(); });
+// ── 확대 몸짓 ── 길게 누르기 = 귀 대기(소리가 점점 커진다) · 문지르기 = 김 닦기 · 옆으로 끌기 = 뒤집기 · 반환구 누른 채 아래로 = 손 넣기 · 캔 끌기 = 꺼내기
+var GHINT = { hold: "길게 누르면 귀를 댑니다", rub: "유리를 문지르면 김이 닦입니다", flip: "옆으로 끌면 뒤집습니다", down: "반환구를 누른 채 아래로 끌면 손을 넣습니다", drag: "꺼내는 곳의 캔을 끌면 꺼냅니다" };
+var GLASS_R = [40, 16, 240, 228], RUB_NEED = 420;
+function actG(I, g){ return I.acts.filter(function(a){ return a.g === g; })[0] || null; }
+function inR(p, r){ return !!r && p.x >= r[0] && p.x <= r[0] + r[2] && p.y >= r[1] && p.y <= r[1] + r[3]; }
+function svgPt(e){ var sv = $("inSvg"), m = sv.getScreenCTM(); if (!m) return { x: 0, y: 0 }; var p = sv.createSVGPoint(); p.x = e.clientX; p.y = e.clientY; p = p.matrixTransform(m.inverse()); return { x: p.x, y: p.y }; }
+function listenKind(id, st){
+  if (id === "shutter") return shutterUp(st) ? { k: "radio" } : { k: "voice", text: st.pos >= 5 ? "짧게 할게. 두 장 다 봐." : "종이 다 믿지 마. 누가 썼나 봐." };
+  if (id === "speaker") return { k: "dead", boost: st.phase === "broadcast" && !st.outside };
+  if (id === "door") return { k: "wind" };
+  if (id === "clock") return st.anom === "clock_back" && st.bigOn ? { k: "tickback" } : { k: "dead" };
+  if (id === "tubeA") return { k: "buzz", water: st.anom === "hum_water" };
+  return { k: "dead" };
+}
+function startListen(act, x, y, auto){
+  if (lis) stopListen();
+  var L = listenKind(inspectId, stInfo());
+  lis = { act: act, obj: inspectId, t0: performance.now(), shown: false, auto: !!auto, boost: !!L.boost, h: Snd.listen(L.k, { text: L.text, water: L.water }) };
+  var ear = $("ear"), pr = $("inspect").getBoundingClientRect();
+  if (x == null){ var r = $("inSvg").getBoundingClientRect(); x = r.left + r.width / 2; y = r.top + r.height / 2; }
+  ear.style.left = (x - pr.left) + "px"; ear.style.top = (y - pr.top) + "px"; ear.style.transform = "scale(.4)"; ear.classList.add("on");
+  vib(12);
+}
+function listenStep(nowMs){
+  if (!lis) return;
+  if (!inspectId || inspectId !== lis.obj || !RUN[phase]){ stopListen(); return; }
+  var k = clamp((nowMs - lis.t0) / 1800);
+  lis.h.set(k);
+  if (lis.boost && bcHandle && bcHandle.boost) bcHandle.boost(1 + 1.2 * k);
+  $("ear").style.transform = "scale(" + (0.4 + 0.9 * k).toFixed(3) + ")"; $("ear").style.opacity = (0.35 + 0.65 * k).toFixed(2);
+  if (!lis.shown && nowMs - lis.t0 >= 1100){ lis.shown = true; doAct(lis.act.id, lis.auto ? "button" : "hold"); }
+  if (lis && lis.auto && nowMs - lis.t0 >= 2600) stopListen();
+}
+function stopListen(){
+  if (!lis) return;
+  lis.h.stop(); if (lis.boost && bcHandle && bcHandle.boost) bcHandle.boost(1);
+  $("ear").classList.remove("on"); lis = null;
+}
+function commitG(act, via){ if (!act) return; vib(15); doAct(act.id, via); }
+$("inSvg").addEventListener("pointerdown", function(e){
+  if (!inspectId || !RUN[phase] || ig) return;   // 이미 몸짓 중이면 다른 손가락은 무시(쥔 손가락이 화면에 닿아 있어도 새 손가락은 받는다)
+  var I = INSPECT[inspectId], p = svgPt(e);
+  ig = { id: e.pointerId, x0: e.clientX, y0: e.clientY, p0: p, last: p, mode: null, I: I, obj: inspectId, rub: 0, pl: null };
+  try{ $("inSvg").setPointerCapture(e.pointerId); }catch(err){}
+  var h = actG(I, "hold");
+  if (h) ig.timer = setTimeout(function(){ if (ig && !ig.mode && inspectId === ig.obj){ ig.mode = "hold"; startListen(h, ig.x0, ig.y0); } }, 260);
+});
+$("inSvg").addEventListener("pointermove", function(e){
+  if (!ig || e.pointerId !== ig.id) return;
+  if (!inspectId || inspectId !== ig.obj || !RUN[phase]){ clearTimeout(ig.timer); ig = null; return; }
+  var dx = e.clientX - ig.x0, dy = e.clientY - ig.y0, p = svgPt(e), I = ig.I, sv = $("inSvg");
+  if (!ig.mode){
+    if (Math.abs(dx) < 9 && Math.abs(dy) < 9) return;
+    clearTimeout(ig.timer);
+    if (actG(I, "rub") && inspectView !== "out" && inR(ig.p0, GLASS_R)) ig.mode = "rub";
+    else if (actG(I, "flip") && Math.abs(dx) > Math.abs(dy)) ig.mode = "flip";
+    else if (actG(I, "down") && inR(ig.p0, I.garea) && dy > 0 && Math.abs(dy) >= Math.abs(dx)) ig.mode = "down";
+    else if (actG(I, "drag") && inR(ig.p0, I.garea)) ig.mode = "drag";
+    else ig.mode = "none";
+  }
+  if (ig.mode === "rub"){
+    var wp = sv.querySelector(".wipes");
+    if (wp){
+      if (!ig.pl){ ig.pl = document.createElementNS("http://www.w3.org/2000/svg", "polyline"); ig.pl.setAttribute("points", ig.last.x.toFixed(1) + "," + ig.last.y.toFixed(1)); wp.appendChild(ig.pl); }
+      ig.pl.setAttribute("points", ig.pl.getAttribute("points") + " " + p.x.toFixed(1) + "," + p.y.toFixed(1));
+    }
+    ig.rub += Math.hypot(p.x - ig.last.x, p.y - ig.last.y); ig.last = p;
+    if (ig.rub >= RUB_NEED){ ig.mode = "done"; commitG(actG(I, "rub"), "rub"); }
+  } else if (ig.mode === "flip"){
+    var gf = sv.querySelector(".gflip"), k = Math.min(1, Math.abs(dx) / 140);
+    if (gf) gf.setAttribute("transform", "translate(160 0) scale(" + Math.max(0.04, Math.cos(k * Math.PI / 2)).toFixed(3) + " 1) translate(-160 0)");
+  } else if (ig.mode === "down"){
+    var d = Math.max(0, p.y - ig.p0.y), gh = sv.querySelector(".ghand");
+    if (gh){ gh.setAttribute("opacity", 1); gh.setAttribute("transform", "translate(0 " + Math.min(70, d).toFixed(1) + ")"); }
+    if (d >= 48){ ig.mode = "done"; commitG(actG(I, "down"), "down"); }
+  } else if (ig.mode === "drag"){
+    var gc = sv.querySelector(".gcan"), ddx = p.x - ig.p0.x, ddy = p.y - ig.p0.y;
+    if (gc) gc.setAttribute("transform", "translate(" + ddx.toFixed(1) + " " + ddy.toFixed(1) + ")");
+    if (Math.hypot(ddx, ddy) >= 56){ ig.mode = "done"; commitG(actG(I, "drag"), "drag"); }
+  }
+});
+function endIg(e, cancel){
+  if (!ig || e.pointerId !== ig.id) return;
+  var g = ig; ig = null; clearTimeout(g.timer);
+  if (lis && !lis.auto) stopListen();
+  if (g.mode === "hold" || !inspectId || inspectId !== g.obj) return;
+  if (g.mode === "flip"){ if (!cancel && Math.abs(e.clientX - g.x0) > 60) commitG(actG(g.I, "flip"), "flip"); else renderInspect(); return; }
+  if (g.mode === "down" || g.mode === "drag") renderInspect();   // 끝까지 안 끌었으면 제자리로
+}
+$("inSvg").addEventListener("pointerup", function(e){ endIg(e, false); });
+$("inSvg").addEventListener("pointercancel", function(e){ endIg(e, true); });
 
 // ── 종이(규칙서) ── 앞장: 기본 2 + 특별 4 · 둘째 장(03:51~): 특별 3. 비추면 6·8번 밑 손글씨, 1~5는 원판 번짐.
 var RULES1 = ["대합실이 평소와 다르면 도로 쪽 문으로 나갔다 다시 들어오십시오.", "평소와 같으면 그대로 앉아 계십시오.",
@@ -1912,21 +2293,66 @@ function renderPaper(){
   $("card").classList.toggle("wet", a === "rule_wet" && paperPage === 1);
   $("tab1").classList.toggle("on", paperPage === 1); $("tab2").classList.toggle("on", paperPage === 2);
   $("tab2").disabled = !(P && P.sheet2);
-  $("bLit").textContent = lit ? "비추기 그만" : "형광등에 비추기";
+  $("bLit").textContent = litBtn ? "비추기 그만" : "형광등에 비추기";
+  fitPaper();
 }
+// 판 높이에 맞춰 글자를 줄인다(14px → 9px). 그래도 넘치면 스크롤. 비치는 글은 자리를 차지하지 않으므로 비추기로 줄이 움직이지 않는다.
+function fitPaper(){
+  if (!paperOpen) return;
+  [$("sideF"), $("sideB")].forEach(function(sd){
+    var fs = 14; sd.style.fontSize = fs + "px"; sd.classList.remove("scroll");
+    for (var i = 0; i < 11 && sd.scrollHeight > sd.clientHeight + 1 && fs > 9; i++){ fs -= 0.5; sd.style.fontSize = fs + "px"; }
+    if (sd.scrollHeight > sd.clientHeight + 1) sd.classList.add("scroll");
+  });
+}
+window.addEventListener("resize", function(){ fitPaper(); });
 function openPaper(){
   if (!RUN[phase] && phase !== "resolve") return;
   if (inspectId) closeInspect(true);
   paperOpen = true; paperOpened = true; paperN++; $("bPaper").classList.remove("pulse");
-  flipped = false; lit = false; renderPaper();
-  $("paper").classList.add("show"); Snd.paper(); Snd.repan();
+  flipped = false; lit = false; litBtn = false; litHold = false;
+  $("paper").classList.add("show"); renderPaper(); Snd.paper(); Snd.repan();
   logEv("paper", { page: paperPage, act: "open" });
 }
-function closePaper(silent){ if (!paperOpen) return; paperOpen = false; $("paper").classList.remove("show"); if (!silent) Snd.paper(); Snd.repan(); }
+function closePaper(silent){ if (!paperOpen) return; paperOpen = false; pg = null; litHold = false; var cd = $("card"); cd.classList.remove("drag"); cd.style.transform = ""; cd.querySelector(".inner").style.transform = ""; $("paper").classList.remove("show"); if (!silent) Snd.paper(); Snd.repan(); }
 $("bPaper").addEventListener("click", function(){ paperOpen ? closePaper() : openPaper(); });
 $("paClose").addEventListener("click", function(){ closePaper(); });
-$("bFlip").addEventListener("click", function(){ flipped = !flipped; renderPaper(); Snd.paper(); logEv("paper", { page: paperPage, act: flipped ? "back" : "front" }); });
-$("bLit").addEventListener("click", function(){ lit = !lit; if (lit) litN++; renderPaper(); Snd.tap(); logEv("paper", { page: paperPage, act: lit ? "lit" : "unlit" }); });
+function doFlip(via){ flipped = !flipped; renderPaper(); Snd.paper(); if (via !== "button") vib(12); logEv("paper", { page: paperPage, act: flipped ? "back" : "front", via: via }); }
+function applyLit(){ lit = litBtn || litHold; $("card").classList.toggle("lit", lit); $("bLit").textContent = litBtn ? "비추기 그만" : "형광등에 비추기"; }
+$("bFlip").addEventListener("click", function(){ doFlip("button"); });
+$("bLit").addEventListener("click", function(){ litBtn = !litBtn; applyLit(); if (litBtn) litN++; Snd.tap(); logEv("paper", { page: paperPage, act: litBtn ? "lit" : "unlit", via: "button" }); });
+// 종이 몸짓 — 위로 끌어 올리면 형광등에 비춘다(떼면 내려온다) · 옆으로 끌면 뒤집는다
+$("card").addEventListener("pointerdown", function(e){
+  if (!paperOpen || pg) return;
+  pg = { id: e.pointerId, x0: e.clientX, y0: e.clientY, mode: null, dx: 0, dy: 0 };
+  try{ $("card").setPointerCapture(e.pointerId); }catch(err){}
+});
+$("card").addEventListener("pointermove", function(e){
+  if (!pg || e.pointerId !== pg.id || !paperOpen) return;
+  var dx = e.clientX - pg.x0, dy = e.clientY - pg.y0, cd = $("card");
+  if (!pg.mode){
+    if (Math.abs(dx) < 10 && Math.abs(dy) < 10) return;
+    pg.mode = Math.abs(dy) > Math.abs(dx) ? (dy < 0 ? "lift" : "none") : "flip";
+    if (pg.mode !== "none") cd.classList.add("drag");
+  }
+  pg.dx = dx; pg.dy = dy;
+  if (pg.mode === "lift"){
+    cd.style.transform = "translateY(" + Math.min(0, Math.max(-80, dy * 0.6)).toFixed(1) + "px)";
+    var on = dy < -40;
+    if (on !== litHold){ litHold = on; applyLit(); if (on){ vib(10); Snd.tap(); litN++; logEv("paper", { page: paperPage, act: "lit", via: "lift" }); } }
+  } else if (pg.mode === "flip"){
+    cd.querySelector(".inner").style.transform = "rotateY(" + ((flipped ? 180 : 0) + Math.max(-180, Math.min(180, dx * 0.9))).toFixed(1) + "deg)";
+  }
+});
+function endPg(e, cancel){
+  if (!pg || e.pointerId !== pg.id) return;
+  var p = pg, cd = $("card"); pg = null;
+  cd.classList.remove("drag"); cd.style.transform = ""; cd.querySelector(".inner").style.transform = "";
+  if (litHold){ litHold = false; applyLit(); }
+  if (p.mode === "flip" && !cancel && Math.abs(p.dx) > 60) doFlip("drag");
+}
+$("card").addEventListener("pointerup", function(e){ endPg(e, false); });
+$("card").addEventListener("pointercancel", function(e){ endPg(e, true); });
 $("tab1").addEventListener("click", function(){ paperPage = 1; flipped = false; renderPaper(); Snd.paper(); });
 $("tab2").addEventListener("click", function(){ if (!(P && P.sheet2)) return; paperPage = 2; flipped = false; renderPaper(); Snd.paper(); logEv("paper", { page: 2, act: "open" }); });
 
@@ -1974,11 +2400,20 @@ function flicker(nowMs){
     }
     var st = false;
     tb.q = tb.q.filter(function(w){ if (nowMs >= w[0] && nowMs < w[1]) st = true; return nowMs < w[1]; });
-    if (st !== tb.off){ tb.off = st; changed = true; if (st && RUN[phase]) Snd.blink(tb.face); }
+    if (st !== tb.off){ tb.off = st; changed = true; if (st && RUN[phase]) Snd.blink(tb.face); if (st){ atmoPulse = 1; atmoT = 0; } }
   });
   if (changed) applyTubes();
 }
 
+// 분위기 — 방 전체 어둠(--dark). 형광등이 꺼지는 순간 더 어둡고, 그 뒤 잠깐 명암이 흔들린다.
+function atmoStep(nowMs){
+  if (STILL || !P) return;
+  if (nowMs - atmoT < 70) return;
+  atmoT = nowMs;
+  var j = (Math.random() - 0.5) * 0.03 * (1 + 4 * atmoPulse), v = Math.max(0, 0.14 + (tubes.tA.off ? 0.18 : 0) + j).toFixed(3);
+  atmoPulse *= 0.78;
+  svgs.forEach(function(sv){ var r = sv.querySelector(".atmoD"); if (r) r.setAttribute("opacity", v); });
+}
 // ── 한 바퀴 ──
 function setActs(enabled){ $("bSit").disabled = !enabled; $("bDoor").disabled = !enabled; }
 function showPlat(v){ $("bPlat").classList.toggle("show", !!v); }
@@ -2185,7 +2620,8 @@ function resolve(choice){
   phase = "resolve";
   setActs(false); showPlat(false); closePaper(true); closeInspect(true); status("");
   if (P.ending){ endSeq(); return; }
-  if (choice === "stare" || choice === "timeout" || choice === "repin"){ finish(res); return; }
+  if (choice === "timeout"){ deadlineScare(); later(560, function(){ finish(res); }); return; }
+  if (choice === "stare" || choice === "repin"){ finish(res); return; }
   if (choice === "sit"){ fadeTo(0.72, 400); later(CT.SIT * 1000, function(){ finish(res); }); }
   else if (choice === "door"){ fadeTo(1, 350); Snd.door(); sndCap("[문 여닫는 소리]", 1800); later(CT.DOOR * 1000, function(){ finish(res); }); }
   else { fadeTo(1, 300); Snd.door(); later(CT.PLAT * 1000, function(){ finish(res); }); }
@@ -2209,12 +2645,17 @@ function die(d){
   markSeenDeath(d.scene);
   $("dLine").textContent = d.line; $("dLine").classList.remove("on");
   $("dSys1").textContent = d.sys[0]; $("dSys2").textContent = d.sys[1]; $("dSys").classList.remove("on");
+  $("dCmp").innerHTML = d.cmp ? '<div><b>평소엔</b>' + esc(d.cmp[0]) + '</div><div class="now"><b>이번엔</b>' + esc(d.cmp[1]) + '</div>' : "";
+  var M = MARK[d.anom]; $("dSnd").classList.toggle("on", !!(M && M.snd)); $("dSndCap").textContent = ""; $("dNext").classList.remove("on");
+  $("death").classList.remove("expl"); $("dStill").innerHTML = "";
+  $("scare").classList.remove("show"); $("scare").innerHTML = "";
   $("dSkip").classList.toggle("on", !first);
   $("death").classList.add("show"); fadeTo(0, 10);
   var sc = sceneCtx($("dSvg"));
   sc.k0 = P && P.big ? clamp((gt - P.bigStart) / (P.deadline - P.bigStart)) : 1; sc.gt0 = gt;   // 시한 전에 앉으면 남은 움직임을 줄여 튼다
   try{ (DS[d.scene] || DS["normal.door"])(sc); }catch(e){ console.error(e); }
-  deathRun = { el: 0, dur: d.dur, sc: sc, first: first, stage: "scene", d: d, skipped: false };
+  if (d.anom) addRush(sc, d.dur);
+  deathRun = { el: 0, dur: d.dur, sc: sc, first: first, stage: "scene", d: d, skipped: false, nextOn: false, cmpN: 0 };
 }
 // 시간은 틱의 dt(0.1초로 자름)를 쌓는다 — 뒤로 갔다 돌아와도 처음 보는 장면이 한꺼번에 지나가지 않는다.
 function deathStep(dt){
@@ -2224,29 +2665,48 @@ function deathStep(dt){
     R.sc.run(R.el);
     if (R.el >= R.dur - 2.2) $("dLine").classList.add("on");
     if (R.el >= R.dur) toSys();
-  } else if (R.stage === "sys"){
-    if (R.el - R.sysAt >= CT.SYS) endDeath();
+  } else if (R.stage === "sys"){   // 설명은 누를 때까지 둔다. 처음 보는 죽음은 SYS 초가 지나야 넘어간다.
+    if (!R.nextOn && R.el - R.sysAt >= (R.first ? CT.SYS : 0.6)){ R.nextOn = true; $("dNext").classList.add("on"); }
   }
 }
 function toSys(){
   var R = deathRun; if (!R || R.stage !== "scene") return;
   Snd.quiet(true); try{ R.sc.finish(); }catch(e){} Snd.quiet(false);   // 넘긴 장면의 남은 소리는 틀지 않는다
   R.stage = "sys"; R.sysAt = R.el;
-  $("dLine").classList.add("on"); $("dSys").classList.add("on"); $("dSkip").classList.toggle("on", !R.first);
+  $("dLine").classList.add("on"); $("dSys").classList.add("on"); $("dSkip").classList.remove("on");
+  try{ if (showStill(R.d)) $("death").classList.add("expl"); }catch(e){ console.error(e); }
   Snd.allLoopsOff(0.2); Snd.humOff(); Snd.deathSting();
 }
+// 소리 이상 — [평소 소리 듣기] [이번 소리 듣기]
+function stopCmp(){ cmpTm.forEach(clearTimeout); cmpTm = []; if (cmpH){ try{ cmpH.stop(); }catch(e){} cmpH = null; } Snd.loopOff("engine", .2); }
+function playCmp(which){
+  var R = deathRun; if (!R || R.stage !== "sys") return;
+  Snd.init(); Snd.resume(); stopCmp(); R.cmpN++;
+  var id = R.d.anom, n = which === "n", cap = "";
+  function bc(key, mode){ var b = Core.BC[key]; Snd.chime(); cmpTm.push(setTimeout(function(){ cmpH = Snd.voice(Core.speech(b.text, b.cut), mode, b.cut) || null; }, CT.CHIME * 1000)); return b.text + (b.cut ? " ―" : ""); }
+  function hush(ms){ cmpH = Snd.listen("dead"); cmpH.set(1); cmpTm.push(setTimeout(stopCmp, ms)); }
+  if (id === "call_platform") cap = "[방송 — 천장 스피커] " + bc(n ? "normal" : "call", "pa");
+  else if (id === "cut_name") cap = "[방송 — 천장 스피커] " + bc(n ? "normal" : "cut", "pa");
+  else if (id === "voice_outside") cap = (n ? "[방송 — 천장 스피커] " : "[방송 — 유리문 밖에서] ") + bc("normal", n ? "pa" : "outside");
+  else if (id === "knock3"){ if (n){ hush(1800); cap = "[도로 쪽 문 — 아무 소리 없음]"; } else { Snd.knock(0, 3); cap = "[노크 세 번 — 도로 쪽 문]"; } }
+  else if (id === "lights_noengine"){ if (n){ Snd.loopOn("engine", { face: 0, muffle: 700, level: .5, rise: .6 }); cmpTm.push(setTimeout(function(){ Snd.loopOff("engine", .5); }, 2600)); cap = "[엔진 소리 — 헤드라이트와 함께]"; } else { hush(2600); cap = "[헤드라이트 — 엔진 소리 없음]"; } }
+  $("dSndCap").textContent = (n ? "평소: " : "이번: ") + cap;
+  logEv("death_cmp", { which: which, anom: id });
+}
+$("dSnd").addEventListener("click", function(e){ e.stopPropagation(); });
+["dSndN", "dSndT"].forEach(function(k){ $(k).addEventListener("click", function(e){ e.stopPropagation(); playCmp(k === "dSndN" ? "n" : "t"); }); });
 function endDeath(){
   var R = deathRun; if (!R) return;
   deathRun = null;
-  logEv("death_end", { scene: R.d.scene, skipped: R.skipped });
+  stopCmp();
+  logEv("death_end", { scene: R.d.scene, skipped: R.skipped, t_sys: R.sysAt != null ? +(R.el - R.sysAt).toFixed(1) : null, cmp: R.cmpN });
   Snd.allLoopsOff(0.05);
   $("death").classList.remove("show"); fadeTo(1, 0); beginLoop();
 }
 $("death").addEventListener("click", function(){
   var R = deathRun; if (!R) return;
-  if (R.first) return;   // 처음 보는 죽음은 장면도 시스템 줄도 끝까지
-  if (R.stage === "scene"){ R.skipped = true; toSys(); }
-  else if (R.stage === "sys" && R.el - R.sysAt > 0.6) endDeath();
+  if (R.stage === "scene"){ if (R.first) return; R.skipped = true; toSys(); }   // 처음 보는 죽음은 장면을 끝까지
+  else if (R.stage === "sys" && R.nextOn) endDeath();
 });
 function tickClock(){
   phase = "tick";
@@ -2276,7 +2736,7 @@ function endSeq(){
   });
 }
 function startSession(){
-  clearLater(); deathRun = null; $("death").classList.remove("show");
+  clearLater(); deathRun = null; $("death").classList.remove("show"); $("scare").classList.remove("show"); stopCmp();
   S = Core.newSession({ seed: SEEDQ, anomaly: forced, startLoop: LOOPQ, fast: FAST });
   events = []; evSeq = 0; sessT0 = Date.now(); hiddenMs = 0;
   runNo = (parseInt(lsGet(LSK.runs) || "0", 10) || 0) + 1; if (!TEST) lsSet(LSK.runs, String(runNo));
@@ -2313,12 +2773,13 @@ function tick(nowMs){
   }
   if (phase === "death") deathStep(dt);
   flicker(nowMs);
+  atmoStep(nowMs); listenStep(nowMs);
   if (capOn) renderSndCap();
   requestAnimationFrame(tick);
 }
 requestAnimationFrame(tick);
 syncChips();
-if (TEST) $("tagLine").textContent = "proto-room01 v2 · 시험 모드(기록 안 보냄)";
+if (TEST) $("tagLine").textContent = "proto-room01 v2.1 · 시험 모드(기록 안 보냄)";
 
 if (TEST){
   window.__room = {
@@ -2329,16 +2790,19 @@ if (TEST){
       big: P ? !!P.big : false, wait: P ? P.wait : null, bEnd: P ? P.bEnd : null, deadline: P ? P.deadline : null, arrive: P ? P.arrive : null, passes: P ? P.passes : null,
       sheet2: P ? !!P.sheet2 : false, stareT: +stareT.toFixed(2), caption: $("capText").textContent, sit: !$("bSit").disabled, plat: $("bPlat").classList.contains("show"),
       death: deathRun ? { scene: deathRun.d.scene, stage: deathRun.stage, first: deathRun.first, line: deathRun.d.line, sys: deathRun.d.sys } : null,
-      end: $("end").classList.contains("show"), snd: Snd.state(), capOn: capOn, events: events.length, sitterIdx: sitterIdx, shutterFull: shutterFull, coinsOn: coinsOn }; },
+      end: $("end").classList.contains("show"), snd: Snd.state(), capOn: capOn, events: events.length, sitterIdx: sitterIdx, shutterFull: shutterFull, coinsOn: coinsOn,
+      vib: VIBN, scares: SCN, listening: !!lis, litBtn: litBtn, litHold: litHold, inHint: $("inHint").textContent, expl: $("death").classList.contains("expl"), next: $("dNext").classList.contains("on"),
+      scareOn: $("scare").classList.contains("show"), glassFace: svgs[0].querySelector(".jsface") ? +svgs[0].querySelector(".jsface").getAttribute("opacity") : null }; },
     start: function(){ Snd.init(); startSession(); },
     face: function(n){ cur = n; layoutFaces(); markSeen(); },
     skipTo: function(type){ if (!P) return; var e = P.events.filter(function(x){ return x.type === type; })[0]; if (e) gt = Math.max(gt, e.t - 0.05); },
     skip: function(t){ gt = t; },
-    still: function(){ STILL = true; tubes.tA.off = false; tubes.tA.q = []; applyTubes(); },
+    still: function(){ STILL = true; document.documentElement.classList.add("still"); tubes.tA.off = false; tubes.tA.q = []; applyTubes(); },
     captions: function(v){ capOn = !!v; syncChips(); },
     choose: resolve,
     inspect: openInspect, act: doAct, closeInspect: closeInspect,
-    paper: function(page, flip, litOn){ if (!paperOpen) openPaper(); if (page === 2 && !(P && P.sheet2)) return false; paperPage = page || 1; flipped = !!flip; lit = !!litOn; renderPaper(); return true; },
+    paper: function(page, flip, litOn){ if (!paperOpen) openPaper(); if (page === 2 && !(P && P.sheet2)) return false; paperPage = page || 1; flipped = !!flip; lit = !!litOn; litBtn = lit; renderPaper(); return true; },
+    cmp: playCmp,
     closePaper: closePaper,
     tapDeath: function(){ $("death").click(); },
     dieWith: function(id, cause){ if (!P) return; phase = "resolve"; closeInspect(true); closePaper(true); die(Core.deathOf(id ? Core.byId(id) : null, cause)); },
