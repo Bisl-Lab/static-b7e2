@@ -1,0 +1,4169 @@
+{
+ "version": "room01-sound-1",
+ "created": "2026-09-29",
+ "about": "room01 「대합실 03:47」 소리 파일 목록(확정 2026-09-29). 게임에 붙이는 것은 게임 세션 몫(index.html 은 이 세션에서 고치지 않았다). status: 사용 = 가져갈 것 · 대안 = 효과 없는 원음(기본은 alt_of) · 사용 안 함 = 목소리(게임은 기존 합성 목소리와 자막).",
+ "voice": {
+  "status": "사용 안 함",
+  "note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다.",
+  "ids_prefix": "vo."
+ },
+ "format": "AAC-LC .m4a · 48 kHz · 모노 · faststart. 반복 소리는 loop_start~loop_end 를 BufferSource.loopStart/loopEnd 로(앞뒤 0.25초 여유 = 같은 주기의 연속).",
+ "levels": {
+  "rule": "파일 크기가 등급 기준에 맞춰져 있다 — volume 1.0 = 기준 크기. 같은 등급 안에서는 평소 · 이상이 같은 크기(크기가 정답 신호가 되지 않게). 게임이 늘리고 줄이는 연출(물 차오름 · 응시 경고 · 지나가는 엔진)은 그 위에 얹는다.",
+  "voice_reference": "등급은 목소리 integrated −18 LUFS 를 기준으로 잡았다. 목소리 파일은 쓰지 않으므로, 게임의 합성 목소리(방송 · 매점 · 속삭임)를 이 크기 근처에 맞추면 등급 관계(바탕은 목소리보다 12~16 dB 작고, 사건음은 목소리 봉우리보다 작다)가 그대로 선다.",
+  "classes": {
+   "vo": "목소리 — 기준 크기(integrated −18 LUFS)",
+   "whisper": "속삭임(−22 LUFS)",
+   "loop": "반복(바탕 · 사건 루프 — 형광등 −30 · 공기 −33 · 라디오 −34 · 사건 루프 −30)",
+   "listen": "귀 대기 루프(−26 LUFS)",
+   "evt": "방 안 사건음 — 평소 · 이상 공통(100 ms 최대 −16 LUFS)",
+   "ui": "조작음(−22)",
+   "dsfx": "죽음 장면 효과(−14)",
+   "death": "죽음 1인칭 층(−22, 꼬리 −24)",
+   "scare": "깜짝 — 유일하게 크다(−5, 낮은 소리 −9)"
+  }
+ },
+ "candidates": {
+  "status": "사용 안 함",
+  "note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다.",
+  "vo.bc": {
+   "choose_one_of": [
+    "A",
+    "B"
+   ],
+   "all": [
+    "A",
+    "B",
+    "C"
+   ],
+   "terms_unverified": [
+    "C"
+   ],
+   "terms_note": "약관 확인 안 됨 — Gemini TTS 를 Replicate 로 거쳐 만들어 상업 사용 조건의 원문 근거가 약하다. 쓰지 않는 쪽(사용자 결정 2026-09-29)",
+   "chosen": null,
+   "notes": {
+    "A": "Qwen3-TTS 기본 목소리 Sohee + 말투 지시(차분 · 공손 · 느리게)",
+    "B": "Qwen3-TTS 목소리 설계(30대 여성 역무원 · 낮고 맑은 톤 · 사무적)",
+    "C": "Gemini 3.1 Flash TTS 목소리 Erinome + 말투 지시(시골 터미널 밤 안내 방송) — 가장 느림"
+   },
+   "ids": [
+    "vo.bc.call",
+    "vo.bc.cut",
+    "vo.bc.normal",
+    "vo.bc.outside",
+    "vo.sc.cut_tail",
+    "vo.sc.outside_tail",
+    "vo.sc.rule3",
+    "vo.sc.stamp",
+    "vo.sc.stamp.pa"
+   ]
+  },
+  "vo.adv": {
+   "choose_one_of": [
+    "A",
+    "B"
+   ],
+   "all": [
+    "A",
+    "B",
+    "C"
+   ],
+   "terms_unverified": [
+    "C"
+   ],
+   "terms_note": "약관 확인 안 됨 — Gemini TTS 를 Replicate 로 거쳐 만들어 상업 사용 조건의 원문 근거가 약하다. 쓰지 않는 쪽(사용자 결정 2026-09-29)",
+   "chosen": null,
+   "notes": {
+    "A": "Qwen3-TTS 목소리 설계(일흔 넘은 남자 · 쉰 목소리 · 말끝 흐림)",
+    "B": "Qwen3-TTS 목소리 설계(예순 후반 · 거친 저음 · 무뚝뚝하고 피곤)",
+    "C": "Gemini 3.1 Flash TTS 목소리 Algenib(거친 남성) + 말투 지시 — 가장 느리고 쉼이 김"
+   },
+   "ids": [
+    "vo.adv.first_correct",
+    "vo.adv.first_death",
+    "vo.adv.sheet2"
+   ]
+  },
+  "vo.whisper": {
+   "choose_one_of": [
+    "B",
+    "D",
+    "E"
+   ],
+   "all": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E"
+   ],
+   "terms_unverified": [
+    "A",
+    "C"
+   ],
+   "terms_note": "약관 확인 안 됨 — Gemini TTS 를 Replicate 로 거쳐 만들어 상업 사용 조건의 원문 근거가 약하다. 쓰지 않는 쪽(사용자 결정 2026-09-29)",
+   "chosen": null,
+   "notes": {
+    "A": "Gemini 3.1 Flash TTS 목소리 Achernar(부드러운 여성) + [whispering]",
+    "B": "Qwen3-TTS 목소리 설계(성별을 알기 어려운 차가운 속삭임)",
+    "C": "Gemini 3.1 Flash TTS 목소리 Enceladus(숨 섞인 남성) + [whispering]",
+    "D": "Qwen3-TTS 목소리 설계(귓가 바로 옆 젊은 여자 · 숨 많이 섞임 · 또박또박)",
+    "E": "Qwen3-TTS 기본 목소리 Sohee + 말투 지시(귀에 대고 작게 · 한 음절씩 또렷하게)"
+   },
+   "ids": [
+    "vo.whisper"
+   ]
+  }
+ },
+ "variants": {
+  "sfx.coin": [
+   "sfx.coin.1",
+   "sfx.coin.2",
+   "sfx.coin.3",
+   "sfx.coin.4"
+  ],
+  "sfx.drip": [
+   "sfx.drip.1",
+   "sfx.drip.2",
+   "sfx.drip.3",
+   "sfx.drip.4"
+  ],
+  "sfx.creak": [
+   "sfx.creak.1",
+   "sfx.creak.2",
+   "sfx.creak.3"
+  ]
+ },
+ "totals": {
+  "files": 124,
+  "files_use": 58,
+  "bytes_all_files": 5552478,
+  "bytes_game_uses_all": 2446514,
+  "bytes_always_loaded_per_play": 1652172,
+  "bytes_voice_unused": 2762405,
+  "spend_usd_by_model": {
+   "qwen/qwen3-tts": 0.0148,
+   "google/gemini-3.1-flash-tts": 0.0951,
+   "google/lyria-2": 0.06,
+   "stability-ai/stable-audio-2.5": 1.8,
+   "hnesk/whisper-wordtimestamps": 0.0215
+  },
+  "spend_usd_total": 1.9914
+ },
+ "sounds": {
+  "amb.hum": {
+   "file": "amb/hum.m4a",
+   "loop": true,
+   "volume": 1.0,
+   "class": "loop",
+   "where": "모든 바퀴 내내(정적 1초에 끊기고 신호 2.5초 뒤 돌아옴). 바퀴마다 코드가 음높이를 조금 내린다(detune)",
+   "dur": 16.5,
+   "bytes": 136478,
+   "lufs_i": -30.0,
+   "lpk100": -28.8,
+   "peak_db": -21.2,
+   "normal_loop": true,
+   "loop_start": 0.25,
+   "loop_end": 16.25,
+   "loop_len": 16.0,
+   "effect": "거리감 구움(가까이 들을 때는 listen.buzz)",
+   "sources": [
+    {
+     "kind": "CC0 녹음",
+     "site": "freesound.org",
+     "id": "454098",
+     "title": "neon tube fluorescent light hum cu2.flac by kyles",
+     "author": "kyles",
+     "url": "https://freesound.org/people/kyles/sounds/454098/",
+     "license": "CC0 1.0 (Public Domain Dedication)",
+     "license_url": "http://creativecommons.org/publicdomain/zero/1.0/",
+     "note": "천장 거리로 멀게(5.2 kHz 아래 · 방 울림 0.9초)"
+    }
+   ],
+   "license": "CC0 1.0 (Public Domain Dedication)",
+   "status": "사용"
+  },
+  "amb.air": {
+   "file": "amb/air.m4a",
+   "loop": true,
+   "volume": 1.0,
+   "class": "loop",
+   "where": "모든 바퀴 내내 — 지금 코드에 없는 새 자리(지시로 추가). 정적 1초에 함께 끊을지는 게임이 정한다",
+   "dur": 14.5,
+   "bytes": 120052,
+   "lufs_i": -33.0,
+   "lpk100": -27.3,
+   "peak_db": -13.1,
+   "normal_loop": true,
+   "loop_start": 0.25,
+   "loop_end": 14.25,
+   "loop_len": 14.0,
+   "effect": "없음(생성 그대로)",
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "stability-ai/stable-audio-2.5",
+     "prediction": "https://replicate.com/p/t1g6pxtza5rmt0d0xfqv19j00c",
+     "job": "amb_air",
+     "license": "Stable Audio 2.5 출력물 — 상업 사용 가능(원문 확인)",
+     "terms_checked": [
+      "https://replicate.com/terms — 5.1: 출력물(Customer Data)은 고객 소유 · Additional Terms 「STABILITY AI」: 제한 대상은 모델 · 가중치 · 문서이며 파생물 정의에서 모델 출력은 제외",
+      "https://stability.ai/terms-of-use — 출력물에 대한 권리를 사용자에게 넘김(you own the Output)",
+      "https://stability.ai/news/stability-ai-introduces-stable-audio-25-the-first-audio-model-built-for-enterprise-sound-production-at-scale — commercially safe · fully licensed dataset"
+     ],
+     "usd": 0.2
+    }
+   ],
+   "license": "Stable Audio 2.5 출력물 — 상업 사용 가능(원문 확인)",
+   "status": "사용"
+  },
+  "amb.radio": {
+   "file": "amb/radio.m4a",
+   "loop": true,
+   "volume": 1.0,
+   "class": "loop",
+   "where": "평소 바퀴 내내(매점 쪽). shutter_up 에선 처음부터 없음 · shutter_rising 은 끝까지 오르면 끊김 · 정적 1초에 끊김",
+   "dur": 39.5,
+   "bytes": 326437,
+   "lufs_i": -34.0,
+   "lpk100": -26.9,
+   "peak_db": -18.3,
+   "normal_loop": true,
+   "loop_start": 0.25,
+   "loop_end": 39.25,
+   "loop_len": 39.0,
+   "effect": "작은 라디오(260~1700 Hz · 찌그러짐 · 잡음) + 매점 안 울림 구움 — 말은 알아들을 수 없게 웅얼거림",
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "stability-ai/stable-audio-2.5",
+     "prediction": "https://replicate.com/p/zw7dr3p5t1rmw0d0xh197p9r10",
+     "job": "radio_music_sa",
+     "license": "Stable Audio 2.5 출력물 — 상업 사용 가능(원문 확인)",
+     "terms_checked": [
+      "https://replicate.com/terms — 5.1: 출력물(Customer Data)은 고객 소유 · Additional Terms 「STABILITY AI」: 제한 대상은 모델 · 가중치 · 문서이며 파생물 정의에서 모델 출력은 제외",
+      "https://stability.ai/terms-of-use — 출력물에 대한 권리를 사용자에게 넘김(you own the Output)",
+      "https://stability.ai/news/stability-ai-introduces-stable-audio-25-the-first-audio-model-built-for-enterprise-sound-production-at-scale — commercially safe · fully licensed dataset"
+     ],
+     "usd": 0.2
+    },
+    {
+     "kind": "생성",
+     "model": "qwen/qwen3-tts",
+     "prediction": "https://replicate.com/p/1e0xnekdm9rmw0d0xfq8g67esw",
+     "job": "radio_talk",
+     "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+     "terms_checked": [
+      "https://huggingface.co/datasets/choosealicense/licenses/blob/main/markdown/apache-2.0.md — Replicate 모델 페이지의 라이선스 주소",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유"
+     ],
+     "usd": 0.0032
+    },
+    {
+     "kind": "CC0 녹음",
+     "site": "freesound.org",
+     "id": "730772",
+     "title": "Radio static by penyasounds",
+     "author": "penyasounds",
+     "url": "https://freesound.org/people/penyasounds/sounds/730772/",
+     "license": "CC0 1.0 (Public Domain Dedication)",
+     "license_url": "http://creativecommons.org/publicdomain/zero/1.0/",
+     "note": "잡음 층"
+    }
+   ],
+   "license": "Stable Audio 2.5 출력물 — 상업 사용 가능(원문 확인) + Qwen3-TTS — Apache-2.0(상업 사용 가능) + CC0 1.0 (Public Domain Dedication)",
+   "status": "사용"
+  },
+  "amb.radio.raw": {
+   "file": "amb/radio_raw.m4a",
+   "loop": true,
+   "volume": 1.0,
+   "class": "loop",
+   "where": "원음(노래 + 말, 라디오 효과 없음) — 게임이 효과를 얹을 때",
+   "dur": 39.5,
+   "bytes": 327128,
+   "lufs_i": -34.0,
+   "lpk100": -26.9,
+   "peak_db": -16.4,
+   "normal_loop": true,
+   "loop_start": 0.25,
+   "loop_end": 39.25,
+   "loop_len": 39.0,
+   "effect": "원음 — 이대로 틀면 말이 알아들린다",
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "stability-ai/stable-audio-2.5",
+     "prediction": "https://replicate.com/p/zw7dr3p5t1rmw0d0xh197p9r10",
+     "job": "radio_music_sa",
+     "license": "Stable Audio 2.5 출력물 — 상업 사용 가능(원문 확인)",
+     "terms_checked": [
+      "https://replicate.com/terms — 5.1: 출력물(Customer Data)은 고객 소유 · Additional Terms 「STABILITY AI」: 제한 대상은 모델 · 가중치 · 문서이며 파생물 정의에서 모델 출력은 제외",
+      "https://stability.ai/terms-of-use — 출력물에 대한 권리를 사용자에게 넘김(you own the Output)",
+      "https://stability.ai/news/stability-ai-introduces-stable-audio-25-the-first-audio-model-built-for-enterprise-sound-production-at-scale — commercially safe · fully licensed dataset"
+     ],
+     "usd": 0.2
+    },
+    {
+     "kind": "생성",
+     "model": "qwen/qwen3-tts",
+     "prediction": "https://replicate.com/p/1e0xnekdm9rmw0d0xfq8g67esw",
+     "job": "radio_talk",
+     "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+     "terms_checked": [
+      "https://huggingface.co/datasets/choosealicense/licenses/blob/main/markdown/apache-2.0.md — Replicate 모델 페이지의 라이선스 주소",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유"
+     ],
+     "usd": 0.0032
+    }
+   ],
+   "license": "Stable Audio 2.5 출력물 — 상업 사용 가능(원문 확인) + Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+   "status": "대안",
+   "alt_of": "amb.radio",
+   "status_note": "원음 대안 — 기본은 amb.radio(효과를 구운 판). 게임이 효과를 따로 얹을 때만"
+  },
+  "death.breath": {
+   "file": "death/breath.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "death",
+   "where": "모든 죽음 장면 밑에 — 내 숨(가빠지다 멎음). 장면이 끝나도 설명 화면까지 이어진다",
+   "dur": 19.452,
+   "bytes": 158622,
+   "lufs_i": -22.0,
+   "lpk100": -17.5,
+   "peak_db": -6.2,
+   "normal_loop": false,
+   "effect": "없음(1인칭 가까이 녹음으로 생성)",
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "stability-ai/stable-audio-2.5",
+     "prediction": "https://replicate.com/p/5qq8jdvp61rmw0d0xfqs8vt53g",
+     "job": "death_breath",
+     "license": "Stable Audio 2.5 출력물 — 상업 사용 가능(원문 확인)",
+     "terms_checked": [
+      "https://replicate.com/terms — 5.1: 출력물(Customer Data)은 고객 소유 · Additional Terms 「STABILITY AI」: 제한 대상은 모델 · 가중치 · 문서이며 파생물 정의에서 모델 출력은 제외",
+      "https://stability.ai/terms-of-use — 출력물에 대한 권리를 사용자에게 넘김(you own the Output)",
+      "https://stability.ai/news/stability-ai-introduces-stable-audio-25-the-first-audio-model-built-for-enterprise-sound-production-at-scale — commercially safe · fully licensed dataset"
+     ],
+     "usd": 0.2
+    }
+   ],
+   "license": "Stable Audio 2.5 출력물 — 상업 사용 가능(원문 확인)",
+   "status": "사용"
+  },
+  "death.coldwater": {
+   "file": "death/coldwater.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "death",
+   "where": "물이 닿는 죽음 — 찬물이 발 · 손 · 어깨에 닿고 스민다",
+   "dur": 21.582,
+   "bytes": 178988,
+   "lufs_i": -22.0,
+   "lpk100": -14.6,
+   "peak_db": -4.5,
+   "normal_loop": false,
+   "effect": "없음(1인칭 가까이 녹음으로 생성)",
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "stability-ai/stable-audio-2.5",
+     "prediction": "https://replicate.com/p/ezejkqwc0nrmw0d0xfqtzrf2qm",
+     "job": "death_coldwater",
+     "license": "Stable Audio 2.5 출력물 — 상업 사용 가능(원문 확인)",
+     "terms_checked": [
+      "https://replicate.com/terms — 5.1: 출력물(Customer Data)은 고객 소유 · Additional Terms 「STABILITY AI」: 제한 대상은 모델 · 가중치 · 문서이며 파생물 정의에서 모델 출력은 제외",
+      "https://stability.ai/terms-of-use — 출력물에 대한 권리를 사용자에게 넘김(you own the Output)",
+      "https://stability.ai/news/stability-ai-introduces-stable-audio-25-the-first-audio-model-built-for-enterprise-sound-production-at-scale — commercially safe · fully licensed dataset"
+     ],
+     "usd": 0.2
+    }
+   ],
+   "license": "Stable Audio 2.5 출력물 — 상업 사용 가능(원문 확인)",
+   "status": "사용"
+  },
+  "death.wet_near": {
+   "file": "death/wet_near.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "death",
+   "where": "옆에 오는 죽음(sitter · shoes_pair · cut_name · face_glass 등) — 바로 옆 젖은 소리",
+   "dur": 19.849,
+   "bytes": 169468,
+   "lufs_i": -21.9,
+   "lpk100": -9.2,
+   "peak_db": -1.3,
+   "normal_loop": false,
+   "effect": "없음(1인칭 가까이 녹음으로 생성)",
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "stability-ai/stable-audio-2.5",
+     "prediction": "https://replicate.com/p/96ch60wvxdrmy0d0xfqv20nq9r",
+     "job": "death_wetnear",
+     "license": "Stable Audio 2.5 출력물 — 상업 사용 가능(원문 확인)",
+     "terms_checked": [
+      "https://replicate.com/terms — 5.1: 출력물(Customer Data)은 고객 소유 · Additional Terms 「STABILITY AI」: 제한 대상은 모델 · 가중치 · 문서이며 파생물 정의에서 모델 출력은 제외",
+      "https://stability.ai/terms-of-use — 출력물에 대한 권리를 사용자에게 넘김(you own the Output)",
+      "https://stability.ai/news/stability-ai-introduces-stable-audio-25-the-first-audio-model-built-for-enterprise-sound-production-at-scale — commercially safe · fully licensed dataset"
+     ],
+     "usd": 0.2
+    }
+   ],
+   "license": "Stable Audio 2.5 출력물 — 상업 사용 가능(원문 확인)",
+   "status": "사용"
+  },
+  "death.tail": {
+   "file": "death/tail.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "death",
+   "where": "모든 죽음 → 설명 화면 — 긴 꼬리(지금 deathSting · audio/death.mp3 자리)",
+   "dur": 24.387,
+   "bytes": 200821,
+   "lufs_i": -24.0,
+   "lpk100": -18.7,
+   "peak_db": -10.2,
+   "normal_loop": false,
+   "effect": "없음(1인칭 가까이 녹음으로 생성)",
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "stability-ai/stable-audio-2.5",
+     "prediction": "https://replicate.com/p/k67v8fnan9rmw0d0xfqvpr7fv8",
+     "job": "death_tail",
+     "license": "Stable Audio 2.5 출력물 — 상업 사용 가능(원문 확인)",
+     "terms_checked": [
+      "https://replicate.com/terms — 5.1: 출력물(Customer Data)은 고객 소유 · Additional Terms 「STABILITY AI」: 제한 대상은 모델 · 가중치 · 문서이며 파생물 정의에서 모델 출력은 제외",
+      "https://stability.ai/terms-of-use — 출력물에 대한 권리를 사용자에게 넘김(you own the Output)",
+      "https://stability.ai/news/stability-ai-introduces-stable-audio-25-the-first-audio-model-built-for-enterprise-sound-production-at-scale — commercially safe · fully licensed dataset"
+     ],
+     "usd": 0.2
+    }
+   ],
+   "license": "Stable Audio 2.5 출력물 — 상업 사용 가능(원문 확인)",
+   "status": "사용"
+  },
+  "scare.shriek": {
+   "file": "scare/shriek.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "scare",
+   "where": "큰 이상 시한 끝(지금 shriek + thud)",
+   "dur": 2.65,
+   "bytes": 28088,
+   "lufs_i": -10.0,
+   "lpk100": -5.1,
+   "peak_db": -1.1,
+   "normal_loop": false,
+   "effect": "없음",
+   "shape": "높은 현악 긁힘 — 2~6 kHz 중심",
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "stability-ai/stable-audio-2.5",
+     "prediction": "https://replicate.com/p/ascxvhntxxrmr0d0xfqsev8pt4",
+     "job": "scare_shriek",
+     "license": "Stable Audio 2.5 출력물 — 상업 사용 가능(원문 확인)",
+     "terms_checked": [
+      "https://replicate.com/terms — 5.1: 출력물(Customer Data)은 고객 소유 · Additional Terms 「STABILITY AI」: 제한 대상은 모델 · 가중치 · 문서이며 파생물 정의에서 모델 출력은 제외",
+      "https://stability.ai/terms-of-use — 출력물에 대한 권리를 사용자에게 넘김(you own the Output)",
+      "https://stability.ai/news/stability-ai-introduces-stable-audio-25-the-first-audio-model-built-for-enterprise-sound-production-at-scale — commercially safe · fully licensed dataset"
+     ],
+     "usd": 0.2
+    }
+   ],
+   "license": "Stable Audio 2.5 출력물 — 상업 사용 가능(원문 확인)",
+   "status": "사용"
+  },
+  "scare.rush": {
+   "file": "scare/rush.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "scare",
+   "where": "모든 이상 죽음 장면 끝 달려듦(0.3초 부푼 뒤 부딪힘)",
+   "dur": 2.4,
+   "bytes": 25554,
+   "lufs_i": -9.2,
+   "lpk100": -5.2,
+   "peak_db": -1.2,
+   "normal_loop": false,
+   "effect": "없음",
+   "hit_at": 1.1,
+   "shape": "공기 · 젖은 숨이 달려와 부딪힘 — 부딪힘은 시작 약 1.1초",
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "stability-ai/stable-audio-2.5",
+     "prediction": "https://replicate.com/p/6bcmaqy98xrmr0d0xfqsmqmdcc",
+     "job": "scare_rush",
+     "license": "Stable Audio 2.5 출력물 — 상업 사용 가능(원문 확인)",
+     "terms_checked": [
+      "https://replicate.com/terms — 5.1: 출력물(Customer Data)은 고객 소유 · Additional Terms 「STABILITY AI」: 제한 대상은 모델 · 가중치 · 문서이며 파생물 정의에서 모델 출력은 제외",
+      "https://stability.ai/terms-of-use — 출력물에 대한 권리를 사용자에게 넘김(you own the Output)",
+      "https://stability.ai/news/stability-ai-introduces-stable-audio-25-the-first-audio-model-built-for-enterprise-sound-production-at-scale — commercially safe · fully licensed dataset"
+     ],
+     "usd": 0.2
+    }
+   ],
+   "license": "Stable Audio 2.5 출력물 — 상업 사용 가능(원문 확인)",
+   "status": "사용"
+  },
+  "scare.low": {
+   "file": "scare/low.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "scare",
+   "where": "face_glass 형체를 처음 볼 때(진동 60 ms 와 함께) — 낮고 짧게, 큰 비명 없음",
+   "dur": 0.84,
+   "bytes": 9580,
+   "lufs_i": -15.0,
+   "lpk100": -9.1,
+   "peak_db": -1.2,
+   "normal_loop": false,
+   "effect": "없음",
+   "hit_at": 0.14,
+   "shape": "낮은 누름 — 앞소리 0.14초 뒤 누름, 120~350 Hz 화음(휴대폰 스피커용)",
+   "sources": [
+    {
+     "kind": "합성",
+     "by": "이 세션 numpy 합성(tools/snd_build.py)",
+     "what": "빨려 드는 저역 잡음 + 58→36 Hz 저음 + 110 · 116.5 · 165 Hz 어긋난 톱니 화음(650 Hz 아래)",
+     "license": "CC0 1.0 — 이 프로젝트가 만든 것, 제한 없음"
+    }
+   ],
+   "license": "CC0 1.0 — 이 프로젝트가 만든 것, 제한 없음",
+   "status": "사용"
+  },
+  "loop.static": {
+   "file": "loop/static.m4a",
+   "loop": true,
+   "volume": 1.0,
+   "class": "loop",
+   "where": "shutter_up · shutter_rising 응시 경고(게임이 점점 키움) · 죽음 장면",
+   "dur": 6.5,
+   "bytes": 54537,
+   "lufs_i": -30.0,
+   "lpk100": -27.7,
+   "peak_db": -14.6,
+   "normal_loop": false,
+   "loop_start": 0.25,
+   "loop_end": 6.25,
+   "loop_len": 6.0,
+   "effect": "없음",
+   "sources": [
+    {
+     "kind": "CC0 녹음",
+     "site": "freesound.org",
+     "id": "730772",
+     "title": "Radio static by penyasounds",
+     "author": "penyasounds",
+     "url": "https://freesound.org/people/penyasounds/sounds/730772/",
+     "license": "CC0 1.0 (Public Domain Dedication)",
+     "license_url": "http://creativecommons.org/publicdomain/zero/1.0/"
+    }
+   ],
+   "license": "CC0 1.0 (Public Domain Dedication)",
+   "status": "사용"
+  },
+  "loop.motor": {
+   "file": "loop/motor.m4a",
+   "loop": true,
+   "volume": 1.0,
+   "class": "loop",
+   "where": "shutter_rising 신호 ~ 셔터가 끝까지 · 죽음 장면",
+   "dur": 8.5,
+   "bytes": 70911,
+   "lufs_i": -30.0,
+   "lpk100": -23.8,
+   "peak_db": -8.8,
+   "normal_loop": false,
+   "loop_start": 0.25,
+   "loop_end": 8.25,
+   "loop_len": 8.0,
+   "effect": "없음",
+   "sources": [
+    {
+     "kind": "CC0 녹음",
+     "site": "freesound.org",
+     "id": "335364",
+     "title": "roller shutter by nicola_ariutti",
+     "author": "nicola_ariutti",
+     "url": "https://freesound.org/people/nicola_ariutti/sounds/335364/",
+     "license": "CC0 1.0 (Public Domain Dedication)",
+     "license_url": "http://creativecommons.org/publicdomain/zero/1.0/",
+     "note": "전동 셔터가 오르는 구간"
+    }
+   ],
+   "license": "CC0 1.0 (Public Domain Dedication)",
+   "status": "사용"
+  },
+  "loop.engine": {
+   "file": "loop/engine.m4a",
+   "loop": true,
+   "volume": 1.0,
+   "class": "loop",
+   "where": "light_sweep(지나갈 때 게임이 키움) · 끝 바퀴 첫 차 도착 · 설명 lights_noengine [평소 소리] · 죽음 장면 3",
+   "dur": 14.5,
+   "bytes": 121066,
+   "lufs_i": -30.0,
+   "lpk100": -26.3,
+   "peak_db": -14.0,
+   "normal_loop": null,
+   "loop_start": 0.25,
+   "loop_end": 14.25,
+   "loop_len": 14.0,
+   "effect": "없음 — 유리문 밖 먹먹함은 게임이 거른다(지금 코드 muffle 700)",
+   "sources": [
+    {
+     "kind": "CC0 녹음",
+     "site": "freesound.org",
+     "id": "450808",
+     "title": "school bus old rattly idle various diesel truck semi dump.wav by kyles",
+     "author": "kyles",
+     "url": "https://freesound.org/people/kyles/sounds/450808/",
+     "license": "CC0 1.0 (Public Domain Dedication)",
+     "license_url": "http://creativecommons.org/publicdomain/zero/1.0/",
+     "note": "오래된 버스 디젤 공회전(밖)"
+    }
+   ],
+   "license": "CC0 1.0 (Public Domain Dedication)",
+   "status": "사용"
+  },
+  "loop.slosh": {
+   "file": "loop/slosh.m4a",
+   "loop": true,
+   "volume": 1.0,
+   "class": "loop",
+   "where": "water_rise 신호 ~ 시한(게임이 점점 키움) · 죽음 장면 2",
+   "dur": 8.0,
+   "bytes": 66765,
+   "lufs_i": -30.0,
+   "lpk100": -27.4,
+   "peak_db": -16.4,
+   "normal_loop": false,
+   "loop_start": 0.25,
+   "loop_end": 7.75,
+   "loop_len": 7.5,
+   "effect": "없음",
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "stability-ai/stable-audio-2.5",
+     "prediction": "https://replicate.com/p/ybg9mqppysrmy0d0xfqva0xfdm",
+     "job": "loop_slosh",
+     "license": "Stable Audio 2.5 출력물 — 상업 사용 가능(원문 확인)",
+     "terms_checked": [
+      "https://replicate.com/terms — 5.1: 출력물(Customer Data)은 고객 소유 · Additional Terms 「STABILITY AI」: 제한 대상은 모델 · 가중치 · 문서이며 파생물 정의에서 모델 출력은 제외",
+      "https://stability.ai/terms-of-use — 출력물에 대한 권리를 사용자에게 넘김(you own the Output)",
+      "https://stability.ai/news/stability-ai-introduces-stable-audio-25-the-first-audio-model-built-for-enterprise-sound-production-at-scale — commercially safe · fully licensed dataset"
+     ],
+     "usd": 0.2
+    }
+   ],
+   "license": "Stable Audio 2.5 출력물 — 상업 사용 가능(원문 확인)",
+   "status": "사용"
+  },
+  "loop.trickle": {
+   "file": "loop/trickle.m4a",
+   "loop": true,
+   "volume": 1.0,
+   "class": "loop",
+   "where": "hum_water 형광등 올려다보기 · sitter 죽음 2",
+   "dur": 9.0,
+   "bytes": 74983,
+   "lufs_i": -30.0,
+   "lpk100": -24.1,
+   "peak_db": -10.3,
+   "normal_loop": false,
+   "loop_start": 0.25,
+   "loop_end": 8.75,
+   "loop_len": 8.5,
+   "effect": "없음",
+   "sources": [
+    {
+     "kind": "CC0 녹음",
+     "site": "freesound.org",
+     "id": "553257",
+     "title": "Water Pipe by NachtmahrTV",
+     "author": "NachtmahrTV",
+     "url": "https://freesound.org/people/NachtmahrTV/sounds/553257/",
+     "license": "CC0 1.0 (Public Domain Dedication)",
+     "license_url": "http://creativecommons.org/publicdomain/zero/1.0/"
+    }
+   ],
+   "license": "CC0 1.0 (Public Domain Dedication)",
+   "status": "사용"
+  },
+  "listen.wind": {
+   "file": "listen/wind.m4a",
+   "loop": true,
+   "volume": 1.0,
+   "class": "listen",
+   "where": "도로 쪽 문 [귀 대기](길게 누르는 동안 게임이 키움)",
+   "dur": 10.5,
+   "bytes": 87313,
+   "lufs_i": -26.0,
+   "lpk100": -22.3,
+   "peak_db": -11.6,
+   "normal_loop": true,
+   "loop_start": 0.25,
+   "loop_end": 10.25,
+   "loop_len": 10.0,
+   "effect": "없음",
+   "sources": [
+    {
+     "kind": "CC0 녹음",
+     "site": "freesound.org",
+     "id": "502180",
+     "title": "ATRL door constant low ventilation wind tone TK01 by thaighaudio",
+     "author": "thaighaudio",
+     "url": "https://freesound.org/people/thaighaudio/sounds/502180/",
+     "license": "CC0 1.0 (Public Domain Dedication)",
+     "license_url": "http://creativecommons.org/publicdomain/zero/1.0/"
+    }
+   ],
+   "license": "CC0 1.0 (Public Domain Dedication)",
+   "status": "사용"
+  },
+  "listen.buzz": {
+   "file": "listen/buzz.m4a",
+   "loop": true,
+   "volume": 1.0,
+   "class": "listen",
+   "where": "형광등 [귀 대기] — 가까이",
+   "dur": 8.5,
+   "bytes": 70916,
+   "lufs_i": -26.0,
+   "lpk100": -25.7,
+   "peak_db": -17.2,
+   "normal_loop": true,
+   "loop_start": 0.25,
+   "loop_end": 8.25,
+   "loop_len": 8.0,
+   "effect": "가까이(거의 그대로)",
+   "sources": [
+    {
+     "kind": "CC0 녹음",
+     "site": "freesound.org",
+     "id": "454098",
+     "title": "neon tube fluorescent light hum cu2.flac by kyles",
+     "author": "kyles",
+     "url": "https://freesound.org/people/kyles/sounds/454098/",
+     "license": "CC0 1.0 (Public Domain Dedication)",
+     "license_url": "http://creativecommons.org/publicdomain/zero/1.0/"
+    }
+   ],
+   "license": "CC0 1.0 (Public Domain Dedication)",
+   "status": "사용"
+  },
+  "listen.buzz_water": {
+   "file": "listen/buzz_water.m4a",
+   "loop": true,
+   "volume": 1.0,
+   "class": "listen",
+   "where": "hum_water 바퀴의 형광등 [귀 대기] — 관 속 물",
+   "dur": 8.5,
+   "bytes": 70970,
+   "lufs_i": -26.0,
+   "lpk100": -23.3,
+   "peak_db": -10.0,
+   "normal_loop": false,
+   "loop_start": 0.25,
+   "loop_end": 8.25,
+   "loop_len": 8.0,
+   "effect": "형광등 가까이 + 관 속 물 섞음",
+   "sources": [
+    {
+     "kind": "CC0 녹음",
+     "site": "freesound.org",
+     "id": "454098",
+     "title": "neon tube fluorescent light hum cu2.flac by kyles",
+     "author": "kyles",
+     "url": "https://freesound.org/people/kyles/sounds/454098/",
+     "license": "CC0 1.0 (Public Domain Dedication)",
+     "license_url": "http://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+     "kind": "CC0 녹음",
+     "site": "freesound.org",
+     "id": "553257",
+     "title": "Water Pipe by NachtmahrTV",
+     "author": "NachtmahrTV",
+     "url": "https://freesound.org/people/NachtmahrTV/sounds/553257/",
+     "license": "CC0 1.0 (Public Domain Dedication)",
+     "license_url": "http://creativecommons.org/publicdomain/zero/1.0/"
+    }
+   ],
+   "license": "CC0 1.0 (Public Domain Dedication)",
+   "status": "사용"
+  },
+  "listen.tickback": {
+   "file": "listen/tickback.m4a",
+   "loop": true,
+   "volume": 1.0,
+   "class": "listen",
+   "where": "clock_back 시계 [귀 대기]",
+   "dur": 3.1,
+   "bytes": 26609,
+   "lufs_i": -26.0,
+   "lpk100": -21.9,
+   "peak_db": -7.5,
+   "normal_loop": false,
+   "loop_start": 0.25,
+   "loop_end": 2.85,
+   "loop_len": 2.6,
+   "effect": "째깍을 뒤집어 0.26초마다",
+   "sources": [
+    {
+     "kind": "CC0 녹음",
+     "site": "freesound.org",
+     "id": "666582",
+     "title": "clock_ticking_mono.wav by Greaseball",
+     "author": "Greaseball",
+     "url": "https://freesound.org/people/Greaseball/sounds/666582/",
+     "license": "CC0 1.0 (Public Domain Dedication)",
+     "license_url": "http://creativecommons.org/publicdomain/zero/1.0/",
+     "note": "째깍을 뒤집음"
+    }
+   ],
+   "license": "CC0 1.0 (Public Domain Dedication)",
+   "status": "사용"
+  },
+  "listen.dead": {
+   "file": "listen/dead.m4a",
+   "loop": true,
+   "volume": 1.0,
+   "class": "listen",
+   "where": "스피커 · 시계 [귀 대기] · 설명의 「아무 소리 없음」",
+   "dur": 8.0,
+   "bytes": 67929,
+   "lufs_i": -26.0,
+   "lpk100": -22.4,
+   "peak_db": -11.7,
+   "normal_loop": true,
+   "loop_start": 0.25,
+   "loop_end": 7.75,
+   "loop_len": 7.5,
+   "effect": "대합실 공기에서 320 Hz 아래만(빈 공기)",
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "stability-ai/stable-audio-2.5",
+     "prediction": "https://replicate.com/p/t1g6pxtza5rmt0d0xfqv19j00c",
+     "job": "amb_air",
+     "license": "Stable Audio 2.5 출력물 — 상업 사용 가능(원문 확인)",
+     "terms_checked": [
+      "https://replicate.com/terms — 5.1: 출력물(Customer Data)은 고객 소유 · Additional Terms 「STABILITY AI」: 제한 대상은 모델 · 가중치 · 문서이며 파생물 정의에서 모델 출력은 제외",
+      "https://stability.ai/terms-of-use — 출력물에 대한 권리를 사용자에게 넘김(you own the Output)",
+      "https://stability.ai/news/stability-ai-introduces-stable-audio-25-the-first-audio-model-built-for-enterprise-sound-production-at-scale — commercially safe · fully licensed dataset"
+     ],
+     "usd": 0.2
+    }
+   ],
+   "license": "Stable Audio 2.5 출력물 — 상업 사용 가능(원문 확인)",
+   "status": "사용"
+  },
+  "sfx.chime": {
+   "file": "sfx/chime.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "evt",
+   "where": "모든 바퀴 방송 앞(띵동 1.1초) · clock_back 죽음 · 설명 대조",
+   "dur": 3.452,
+   "bytes": 24425,
+   "lufs_i": -20.6,
+   "lpk100": -16.0,
+   "peak_db": -11.1,
+   "normal_loop": true,
+   "effect": "천장 스피커 구움",
+   "sources": [
+    {
+     "kind": "합성",
+     "by": "이 세션 numpy 합성(tools/snd_build.py)",
+     "what": "두 음 종소리 E5→C5",
+     "license": "CC0 1.0 — 이 프로젝트가 만든 것, 제한 없음"
+    }
+   ],
+   "license": "CC0 1.0 — 이 프로젝트가 만든 것, 제한 없음",
+   "status": "사용"
+  },
+  "sfx.chime.raw": {
+   "file": "sfx/chime_raw.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "evt",
+   "where": "원음",
+   "dur": 2.0,
+   "bytes": 16431,
+   "lufs_i": -20.8,
+   "lpk100": -16.0,
+   "peak_db": -9.6,
+   "normal_loop": true,
+   "effect": "원음",
+   "sources": [
+    {
+     "kind": "합성",
+     "by": "이 세션 numpy 합성(tools/snd_build.py)",
+     "what": "두 음 종소리 E5→C5",
+     "license": "CC0 1.0 — 이 프로젝트가 만든 것, 제한 없음"
+    }
+   ],
+   "license": "CC0 1.0 — 이 프로젝트가 만든 것, 제한 없음",
+   "status": "대안",
+   "alt_of": "sfx.chime",
+   "status_note": "원음 대안 — 기본은 sfx.chime(효과를 구운 판). 게임이 효과를 따로 얹을 때만"
+  },
+  "sfx.knock3": {
+   "file": "sfx/knock3.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "evt",
+   "where": "knock3 바퀴(1.3초) · 설명 [이번 소리]",
+   "dur": 1.1,
+   "bytes": 7611,
+   "lufs_i": -22.9,
+   "lpk100": -16.0,
+   "peak_db": -1.4,
+   "normal_loop": false,
+   "effect": "없음(도로 쪽 문 자리는 게임이 소리 방향으로)",
+   "sources": [
+    {
+     "kind": "CC0 녹음",
+     "site": "freesound.org",
+     "id": "661640",
+     "title": "knocking on metalic door.wav by bruno.auzet",
+     "author": "bruno.auzet",
+     "url": "https://freesound.org/people/bruno.auzet/sounds/661640/",
+     "license": "CC0 1.0 (Public Domain Dedication)",
+     "license_url": "http://creativecommons.org/publicdomain/zero/1.0/",
+     "note": "노크 셋을 떼어 0 · 0.34 · 0.66초에"
+    }
+   ],
+   "license": "CC0 1.0 (Public Domain Dedication)",
+   "status": "사용"
+  },
+  "sfx.knock1": {
+   "file": "sfx/knock1.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "dsfx",
+   "where": "knock3 죽음 장면(두 번 — 둘째는 등 뒤)",
+   "dur": 0.21,
+   "bytes": 2766,
+   "lufs_i": -19.5,
+   "lpk100": -14.0,
+   "peak_db": -1.5,
+   "normal_loop": false,
+   "effect": "없음",
+   "sources": [
+    {
+     "kind": "CC0 녹음",
+     "site": "freesound.org",
+     "id": "661640",
+     "title": "knocking on metalic door.wav by bruno.auzet",
+     "author": "bruno.auzet",
+     "url": "https://freesound.org/people/bruno.auzet/sounds/661640/",
+     "license": "CC0 1.0 (Public Domain Dedication)",
+     "license_url": "http://creativecommons.org/publicdomain/zero/1.0/"
+    }
+   ],
+   "license": "CC0 1.0 (Public Domain Dedication)",
+   "status": "사용"
+  },
+  "sfx.stamp_wet": {
+   "file": "sfx/stamp_wet.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "evt",
+   "where": "rule_stamp 바퀴(1.3초) · flyer_fallen 죽음 2",
+   "dur": 0.55,
+   "bytes": 5735,
+   "lufs_i": -21.1,
+   "lpk100": -16.3,
+   "peak_db": -1.0,
+   "normal_loop": false,
+   "effect": "눅눅하게(높은 음 줄임)",
+   "sources": [
+    {
+     "kind": "CC0 녹음",
+     "site": "freesound.org",
+     "id": "448474",
+     "title": "es-stamp.wav by eddies2000",
+     "author": "eddies2000",
+     "url": "https://freesound.org/people/eddies2000/sounds/448474/",
+     "license": "CC0 1.0 (Public Domain Dedication)",
+     "license_url": "http://creativecommons.org/publicdomain/zero/1.0/",
+     "note": "3.5 kHz 아래로 눅눅하게"
+    }
+   ],
+   "license": "CC0 1.0 (Public Domain Dedication)",
+   "status": "사용"
+  },
+  "sfx.stamp_hit": {
+   "file": "sfx/stamp_hit.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "dsfx",
+   "where": "call_platform 죽음 · rule_stamp 죽음(네 번)",
+   "dur": 0.65,
+   "bytes": 6426,
+   "lufs_i": -20.9,
+   "lpk100": -14.0,
+   "peak_db": -2.5,
+   "normal_loop": false,
+   "effect": "없음",
+   "sources": [
+    {
+     "kind": "CC0 녹음",
+     "site": "freesound.org",
+     "id": "470710",
+     "title": "traditional stamp.wav by I.fekry",
+     "author": "I.fekry",
+     "url": "https://freesound.org/people/I.fekry/sounds/470710/",
+     "license": "CC0 1.0 (Public Domain Dedication)",
+     "license_url": "http://creativecommons.org/publicdomain/zero/1.0/"
+    }
+   ],
+   "license": "CC0 1.0 (Public Domain Dedication)",
+   "status": "사용"
+  },
+  "sfx.coin.1": {
+   "file": "sfx/coin_1.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "evt",
+   "where": "coins_return 바퀴 내내(0.32초마다 — 판을 돌려 가며) · 죽음",
+   "dur": 0.31,
+   "bytes": 3723,
+   "lufs_i": -19.6,
+   "lpk100": -16.0,
+   "peak_db": -2.3,
+   "normal_loop": false,
+   "effect": "없음",
+   "variant_of": "sfx.coin",
+   "sources": [
+    {
+     "kind": "CC0 녹음",
+     "site": "freesound.org",
+     "id": "119558",
+     "title": "Office_vending machine_coin return.aif by vrodge",
+     "author": "vrodge",
+     "url": "https://freesound.org/people/vrodge/sounds/119558/",
+     "license": "CC0 1.0 (Public Domain Dedication)",
+     "license_url": "http://creativecommons.org/publicdomain/zero/1.0/"
+    }
+   ],
+   "license": "CC0 1.0 (Public Domain Dedication)",
+   "status": "사용"
+  },
+  "sfx.coin.2": {
+   "file": "sfx/coin_2.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "evt",
+   "where": "coins_return 바퀴 내내(0.32초마다 — 판을 돌려 가며) · 죽음",
+   "dur": 0.31,
+   "bytes": 3767,
+   "lufs_i": -18.7,
+   "lpk100": -16.0,
+   "peak_db": -1.3,
+   "normal_loop": false,
+   "effect": "없음",
+   "variant_of": "sfx.coin",
+   "sources": [
+    {
+     "kind": "CC0 녹음",
+     "site": "freesound.org",
+     "id": "119558",
+     "title": "Office_vending machine_coin return.aif by vrodge",
+     "author": "vrodge",
+     "url": "https://freesound.org/people/vrodge/sounds/119558/",
+     "license": "CC0 1.0 (Public Domain Dedication)",
+     "license_url": "http://creativecommons.org/publicdomain/zero/1.0/"
+    }
+   ],
+   "license": "CC0 1.0 (Public Domain Dedication)",
+   "status": "사용"
+  },
+  "sfx.coin.3": {
+   "file": "sfx/coin_3.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "evt",
+   "where": "coins_return 바퀴 내내(0.32초마다 — 판을 돌려 가며) · 죽음",
+   "dur": 0.31,
+   "bytes": 3718,
+   "lufs_i": -18.9,
+   "lpk100": -16.0,
+   "peak_db": -1.9,
+   "normal_loop": false,
+   "effect": "없음",
+   "variant_of": "sfx.coin",
+   "sources": [
+    {
+     "kind": "CC0 녹음",
+     "site": "freesound.org",
+     "id": "119558",
+     "title": "Office_vending machine_coin return.aif by vrodge",
+     "author": "vrodge",
+     "url": "https://freesound.org/people/vrodge/sounds/119558/",
+     "license": "CC0 1.0 (Public Domain Dedication)",
+     "license_url": "http://creativecommons.org/publicdomain/zero/1.0/"
+    }
+   ],
+   "license": "CC0 1.0 (Public Domain Dedication)",
+   "status": "사용"
+  },
+  "sfx.coin.4": {
+   "file": "sfx/coin_4.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "evt",
+   "where": "coins_return 바퀴 내내(0.32초마다 — 판을 돌려 가며) · 죽음",
+   "dur": 0.31,
+   "bytes": 3727,
+   "lufs_i": -21.3,
+   "lpk100": -16.0,
+   "peak_db": -3.8,
+   "normal_loop": false,
+   "effect": "없음",
+   "variant_of": "sfx.coin",
+   "sources": [
+    {
+     "kind": "CC0 녹음",
+     "site": "freesound.org",
+     "id": "119558",
+     "title": "Office_vending machine_coin return.aif by vrodge",
+     "author": "vrodge",
+     "url": "https://freesound.org/people/vrodge/sounds/119558/",
+     "license": "CC0 1.0 (Public Domain Dedication)",
+     "license_url": "http://creativecommons.org/publicdomain/zero/1.0/"
+    }
+   ],
+   "license": "CC0 1.0 (Public Domain Dedication)",
+   "status": "사용"
+  },
+  "sfx.coin_spill": {
+   "file": "sfx/coin_spill.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "evt",
+   "where": "coins_return 시작(1.5초) · 죽음(새 자리 — 지금은 coin 반복)",
+   "dur": 2.55,
+   "bytes": 22128,
+   "lufs_i": -22.9,
+   "lpk100": -16.0,
+   "peak_db": -7.6,
+   "normal_loop": false,
+   "effect": "없음",
+   "sources": [
+    {
+     "kind": "CC0 녹음",
+     "site": "freesound.org",
+     "id": "119558",
+     "title": "Office_vending machine_coin return.aif by vrodge",
+     "author": "vrodge",
+     "url": "https://freesound.org/people/vrodge/sounds/119558/",
+     "license": "CC0 1.0 (Public Domain Dedication)",
+     "license_url": "http://creativecommons.org/publicdomain/zero/1.0/"
+    }
+   ],
+   "license": "CC0 1.0 (Public Domain Dedication)",
+   "status": "사용"
+  },
+  "sfx.drip.1": {
+   "file": "sfx/drip_1.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "evt",
+   "where": "hum_water 바퀴 내내(0.9~1.3초) · sitter 신호 · 걸음 · 죽음 여럿",
+   "dur": 0.35,
+   "bytes": 4097,
+   "lufs_i": -22.4,
+   "lpk100": -16.4,
+   "peak_db": -1.1,
+   "normal_loop": false,
+   "effect": "없음",
+   "variant_of": "sfx.drip",
+   "sources": [
+    {
+     "kind": "CC0 녹음",
+     "site": "freesound.org",
+     "id": "815419",
+     "title": "AAD WATER DRIPPING INTO WATER by AwenAudio",
+     "author": "AwenAudio",
+     "url": "https://freesound.org/people/AwenAudio/sounds/815419/",
+     "license": "CC0 1.0 (Public Domain Dedication)",
+     "license_url": "http://creativecommons.org/publicdomain/zero/1.0/"
+    }
+   ],
+   "license": "CC0 1.0 (Public Domain Dedication)",
+   "status": "사용"
+  },
+  "sfx.drip.2": {
+   "file": "sfx/drip_2.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "evt",
+   "where": "hum_water 바퀴 내내(0.9~1.3초) · sitter 신호 · 걸음 · 죽음 여럿",
+   "dur": 0.35,
+   "bytes": 4024,
+   "lufs_i": -21.8,
+   "lpk100": -16.0,
+   "peak_db": -1.3,
+   "normal_loop": false,
+   "effect": "없음",
+   "variant_of": "sfx.drip",
+   "sources": [
+    {
+     "kind": "CC0 녹음",
+     "site": "freesound.org",
+     "id": "815419",
+     "title": "AAD WATER DRIPPING INTO WATER by AwenAudio",
+     "author": "AwenAudio",
+     "url": "https://freesound.org/people/AwenAudio/sounds/815419/",
+     "license": "CC0 1.0 (Public Domain Dedication)",
+     "license_url": "http://creativecommons.org/publicdomain/zero/1.0/"
+    }
+   ],
+   "license": "CC0 1.0 (Public Domain Dedication)",
+   "status": "사용"
+  },
+  "sfx.drip.3": {
+   "file": "sfx/drip_3.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "evt",
+   "where": "hum_water 바퀴 내내(0.9~1.3초) · sitter 신호 · 걸음 · 죽음 여럿",
+   "dur": 0.35,
+   "bytes": 3932,
+   "lufs_i": -22.0,
+   "lpk100": -16.0,
+   "peak_db": -3.2,
+   "normal_loop": false,
+   "effect": "없음",
+   "variant_of": "sfx.drip",
+   "sources": [
+    {
+     "kind": "CC0 녹음",
+     "site": "freesound.org",
+     "id": "815419",
+     "title": "AAD WATER DRIPPING INTO WATER by AwenAudio",
+     "author": "AwenAudio",
+     "url": "https://freesound.org/people/AwenAudio/sounds/815419/",
+     "license": "CC0 1.0 (Public Domain Dedication)",
+     "license_url": "http://creativecommons.org/publicdomain/zero/1.0/"
+    }
+   ],
+   "license": "CC0 1.0 (Public Domain Dedication)",
+   "status": "사용"
+  },
+  "sfx.drip.4": {
+   "file": "sfx/drip_4.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "evt",
+   "where": "hum_water 바퀴 내내(0.9~1.3초) · sitter 신호 · 걸음 · 죽음 여럿",
+   "dur": 0.35,
+   "bytes": 4034,
+   "lufs_i": -21.9,
+   "lpk100": -16.0,
+   "peak_db": -1.1,
+   "normal_loop": false,
+   "effect": "없음",
+   "variant_of": "sfx.drip",
+   "sources": [
+    {
+     "kind": "CC0 녹음",
+     "site": "freesound.org",
+     "id": "815419",
+     "title": "AAD WATER DRIPPING INTO WATER by AwenAudio",
+     "author": "AwenAudio",
+     "url": "https://freesound.org/people/AwenAudio/sounds/815419/",
+     "license": "CC0 1.0 (Public Domain Dedication)",
+     "license_url": "http://creativecommons.org/publicdomain/zero/1.0/"
+    }
+   ],
+   "license": "CC0 1.0 (Public Domain Dedication)",
+   "status": "사용"
+  },
+  "sfx.pour": {
+   "file": "sfx/pour.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "dsfx",
+   "where": "water_rise 신호(1.6초만 틀어도 됨) · 죽음 여럿(1.5~4초)",
+   "dur": 4.2,
+   "bytes": 37229,
+   "lufs_i": -18.8,
+   "lpk100": -14.2,
+   "peak_db": -1.2,
+   "normal_loop": false,
+   "effect": "없음",
+   "note": "water_rise 신호는 evt 크기 — 게임 음량 0.6 권장",
+   "sources": [
+    {
+     "kind": "CC0 녹음",
+     "site": "freesound.org",
+     "id": "770039",
+     "title": "Water - Pouring on the ground, in a jar by Vrymaa",
+     "author": "Vrymaa",
+     "url": "https://freesound.org/people/Vrymaa/sounds/770039/",
+     "license": "CC0 1.0 (Public Domain Dedication)",
+     "license_url": "http://creativecommons.org/publicdomain/zero/1.0/"
+    }
+   ],
+   "license": "CC0 1.0 (Public Domain Dedication)",
+   "status": "사용"
+  },
+  "sfx.creak.1": {
+   "file": "sfx/creak_1.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "evt",
+   "where": "sitter 신호 · 걸음(의자 쪽) · 죽음 여럿 — 젖은 옷이 의자에 닿는 삐걱",
+   "dur": 0.55,
+   "bytes": 5765,
+   "lufs_i": -20.8,
+   "lpk100": -16.0,
+   "peak_db": -3.3,
+   "normal_loop": false,
+   "effect": "의자 삐걱 + 젖은 옷 스침 조금",
+   "variant_of": "sfx.creak",
+   "sources": [
+    {
+     "kind": "CC0 녹음",
+     "site": "freesound.org",
+     "id": "276473",
+     "title": "Chair creaking back and forth 01.wav by unkleceeg",
+     "author": "unkleceeg",
+     "url": "https://freesound.org/people/unkleceeg/sounds/276473/",
+     "license": "CC0 1.0 (Public Domain Dedication)",
+     "license_url": "http://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+     "kind": "생성",
+     "model": "stability-ai/stable-audio-2.5",
+     "prediction": "https://replicate.com/p/96ch60wvxdrmy0d0xfqv20nq9r",
+     "job": "death_wetnear",
+     "license": "Stable Audio 2.5 출력물 — 상업 사용 가능(원문 확인)",
+     "terms_checked": [
+      "https://replicate.com/terms — 5.1: 출력물(Customer Data)은 고객 소유 · Additional Terms 「STABILITY AI」: 제한 대상은 모델 · 가중치 · 문서이며 파생물 정의에서 모델 출력은 제외",
+      "https://stability.ai/terms-of-use — 출력물에 대한 권리를 사용자에게 넘김(you own the Output)",
+      "https://stability.ai/news/stability-ai-introduces-stable-audio-25-the-first-audio-model-built-for-enterprise-sound-production-at-scale — commercially safe · fully licensed dataset"
+     ],
+     "usd": 0.2
+    }
+   ],
+   "license": "CC0 1.0 (Public Domain Dedication) + Stable Audio 2.5 출력물 — 상업 사용 가능(원문 확인)",
+   "status": "사용"
+  },
+  "sfx.creak.2": {
+   "file": "sfx/creak_2.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "evt",
+   "where": "sitter 신호 · 걸음(의자 쪽) · 죽음 여럿 — 젖은 옷이 의자에 닿는 삐걱",
+   "dur": 0.56,
+   "bytes": 5749,
+   "lufs_i": -19.6,
+   "lpk100": -16.0,
+   "peak_db": -1.2,
+   "normal_loop": false,
+   "effect": "의자 삐걱 + 젖은 옷 스침 조금",
+   "variant_of": "sfx.creak",
+   "sources": [
+    {
+     "kind": "CC0 녹음",
+     "site": "freesound.org",
+     "id": "276473",
+     "title": "Chair creaking back and forth 01.wav by unkleceeg",
+     "author": "unkleceeg",
+     "url": "https://freesound.org/people/unkleceeg/sounds/276473/",
+     "license": "CC0 1.0 (Public Domain Dedication)",
+     "license_url": "http://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+     "kind": "생성",
+     "model": "stability-ai/stable-audio-2.5",
+     "prediction": "https://replicate.com/p/96ch60wvxdrmy0d0xfqv20nq9r",
+     "job": "death_wetnear",
+     "license": "Stable Audio 2.5 출력물 — 상업 사용 가능(원문 확인)",
+     "terms_checked": [
+      "https://replicate.com/terms — 5.1: 출력물(Customer Data)은 고객 소유 · Additional Terms 「STABILITY AI」: 제한 대상은 모델 · 가중치 · 문서이며 파생물 정의에서 모델 출력은 제외",
+      "https://stability.ai/terms-of-use — 출력물에 대한 권리를 사용자에게 넘김(you own the Output)",
+      "https://stability.ai/news/stability-ai-introduces-stable-audio-25-the-first-audio-model-built-for-enterprise-sound-production-at-scale — commercially safe · fully licensed dataset"
+     ],
+     "usd": 0.2
+    }
+   ],
+   "license": "CC0 1.0 (Public Domain Dedication) + Stable Audio 2.5 출력물 — 상업 사용 가능(원문 확인)",
+   "status": "사용"
+  },
+  "sfx.creak.3": {
+   "file": "sfx/creak_3.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "evt",
+   "where": "sitter 신호 · 걸음(의자 쪽) · 죽음 여럿 — 젖은 옷이 의자에 닿는 삐걱",
+   "dur": 0.65,
+   "bytes": 6505,
+   "lufs_i": -23.5,
+   "lpk100": -16.1,
+   "peak_db": -1.1,
+   "normal_loop": false,
+   "effect": "의자 삐걱 + 젖은 옷 스침 조금",
+   "variant_of": "sfx.creak",
+   "sources": [
+    {
+     "kind": "CC0 녹음",
+     "site": "freesound.org",
+     "id": "556763",
+     "title": "Squeaky Chair by jashngooyen",
+     "author": "jashngooyen",
+     "url": "https://freesound.org/people/jashngooyen/sounds/556763/",
+     "license": "CC0 1.0 (Public Domain Dedication)",
+     "license_url": "http://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+     "kind": "생성",
+     "model": "stability-ai/stable-audio-2.5",
+     "prediction": "https://replicate.com/p/96ch60wvxdrmy0d0xfqv20nq9r",
+     "job": "death_wetnear",
+     "license": "Stable Audio 2.5 출력물 — 상업 사용 가능(원문 확인)",
+     "terms_checked": [
+      "https://replicate.com/terms — 5.1: 출력물(Customer Data)은 고객 소유 · Additional Terms 「STABILITY AI」: 제한 대상은 모델 · 가중치 · 문서이며 파생물 정의에서 모델 출력은 제외",
+      "https://stability.ai/terms-of-use — 출력물에 대한 권리를 사용자에게 넘김(you own the Output)",
+      "https://stability.ai/news/stability-ai-introduces-stable-audio-25-the-first-audio-model-built-for-enterprise-sound-production-at-scale — commercially safe · fully licensed dataset"
+     ],
+     "usd": 0.2
+    }
+   ],
+   "license": "CC0 1.0 (Public Domain Dedication) + Stable Audio 2.5 출력물 — 상업 사용 가능(원문 확인)",
+   "status": "사용"
+  },
+  "sfx.hinge": {
+   "file": "sfx/hinge.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "dsfx",
+   "where": "죽음 3(반환구 덮개 · 문)",
+   "dur": 1.5,
+   "bytes": 13453,
+   "lufs_i": -15.5,
+   "lpk100": -14.2,
+   "peak_db": -1.2,
+   "normal_loop": false,
+   "effect": "없음",
+   "sources": [
+    {
+     "kind": "CC0 녹음",
+     "site": "freesound.org",
+     "id": "530126",
+     "title": "Ungreased Door Hinges Creak.wav by FullMetalJedi",
+     "author": "FullMetalJedi",
+     "url": "https://freesound.org/people/FullMetalJedi/sounds/530126/",
+     "license": "CC0 1.0 (Public Domain Dedication)",
+     "license_url": "http://creativecommons.org/publicdomain/zero/1.0/"
+    }
+   ],
+   "license": "CC0 1.0 (Public Domain Dedication)",
+   "status": "사용"
+  },
+  "sfx.tick": {
+   "file": "sfx/tick.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "evt",
+   "where": "clock_back 분침이 한 칸 넘어갈 때마다",
+   "dur": 0.18,
+   "bytes": 2600,
+   "lufs_i": -22.0,
+   "lpk100": -16.0,
+   "peak_db": -2.3,
+   "normal_loop": false,
+   "effect": "없음",
+   "sources": [
+    {
+     "kind": "CC0 녹음",
+     "site": "freesound.org",
+     "id": "666582",
+     "title": "clock_ticking_mono.wav by Greaseball",
+     "author": "Greaseball",
+     "url": "https://freesound.org/people/Greaseball/sounds/666582/",
+     "license": "CC0 1.0 (Public Domain Dedication)",
+     "license_url": "http://creativecommons.org/publicdomain/zero/1.0/"
+    }
+   ],
+   "license": "CC0 1.0 (Public Domain Dedication)",
+   "status": "사용"
+  },
+  "sfx.tick_back": {
+   "file": "sfx/tick_back.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "evt",
+   "where": "clock_back 신호 — 거꾸로 째깍(커졌다 뚝)",
+   "dur": 0.36,
+   "bytes": 3848,
+   "lufs_i": -21.7,
+   "lpk100": -16.0,
+   "peak_db": -5.6,
+   "normal_loop": false,
+   "effect": "없음",
+   "sources": [
+    {
+     "kind": "CC0 녹음",
+     "site": "freesound.org",
+     "id": "666582",
+     "title": "clock_ticking_mono.wav by Greaseball",
+     "author": "Greaseball",
+     "url": "https://freesound.org/people/Greaseball/sounds/666582/",
+     "license": "CC0 1.0 (Public Domain Dedication)",
+     "license_url": "http://creativecommons.org/publicdomain/zero/1.0/",
+     "note": "째깍을 뒤집고 앞에 끌림"
+    }
+   ],
+   "license": "CC0 1.0 (Public Domain Dedication)",
+   "status": "사용"
+  },
+  "sfx.whoosh": {
+   "file": "sfx/whoosh.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "evt",
+   "where": "light_sweep 신호 — 차가 젖은 길을 지나감",
+   "dur": 5.2,
+   "bytes": 43555,
+   "lufs_i": -22.4,
+   "lpk100": -16.0,
+   "peak_db": -5.2,
+   "normal_loop": false,
+   "effect": "없음",
+   "sources": [
+    {
+     "kind": "CC0 녹음",
+     "site": "freesound.org",
+     "id": "462862",
+     "title": "Passing Car (Wet road) by Breviceps",
+     "author": "Breviceps",
+     "url": "https://freesound.org/people/Breviceps/sounds/462862/",
+     "license": "CC0 1.0 (Public Domain Dedication)",
+     "license_url": "http://creativecommons.org/publicdomain/zero/1.0/"
+    }
+   ],
+   "license": "CC0 1.0 (Public Domain Dedication)",
+   "status": "사용"
+  },
+  "sfx.blink": {
+   "file": "sfx/blink.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "evt",
+   "where": "형광등이 깜빡일 때(평소) — 딸깍",
+   "dur": 0.1,
+   "bytes": 1958,
+   "lufs_i": -22.2,
+   "lpk100": -16.2,
+   "peak_db": -1.2,
+   "normal_loop": true,
+   "effect": "없음",
+   "sources": [
+    {
+     "kind": "CC0 녹음",
+     "site": "freesound.org",
+     "id": "637863",
+     "title": "switch breaker flip on off click close various.flac by kyles",
+     "author": "kyles",
+     "url": "https://freesound.org/people/kyles/sounds/637863/",
+     "license": "CC0 1.0 (Public Domain Dedication)",
+     "license_url": "http://creativecommons.org/publicdomain/zero/1.0/"
+    }
+   ],
+   "license": "CC0 1.0 (Public Domain Dedication)",
+   "status": "사용"
+  },
+  "sfx.tuk": {
+   "file": "sfx/tuk.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "evt",
+   "where": "바퀴 사이 — 분 넘어간 뒤 전원 툭",
+   "dur": 0.15,
+   "bytes": 2271,
+   "lufs_i": -22.0,
+   "lpk100": -16.1,
+   "peak_db": -1.1,
+   "normal_loop": true,
+   "effect": "없음",
+   "sources": [
+    {
+     "kind": "CC0 녹음",
+     "site": "freesound.org",
+     "id": "637863",
+     "title": "switch breaker flip on off click close various.flac by kyles",
+     "author": "kyles",
+     "url": "https://freesound.org/people/kyles/sounds/637863/",
+     "license": "CC0 1.0 (Public Domain Dedication)",
+     "license_url": "http://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+     "kind": "합성",
+     "by": "이 세션 numpy 합성(tools/snd_build.py)",
+     "what": "95 Hz 짧은 쿵",
+     "license": "CC0 1.0 — 이 프로젝트가 만든 것, 제한 없음"
+    }
+   ],
+   "license": "CC0 1.0 (Public Domain Dedication) + CC0 1.0 — 이 프로젝트가 만든 것, 제한 없음",
+   "status": "사용"
+  },
+  "sfx.clunk": {
+   "file": "sfx/clunk.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "evt",
+   "where": "바퀴 사이 — 벽시계 분침이 넘어감",
+   "dur": 0.205,
+   "bytes": 2753,
+   "lufs_i": -22.2,
+   "lpk100": -16.1,
+   "peak_db": -1.0,
+   "normal_loop": true,
+   "effect": "없음",
+   "sources": [
+    {
+     "kind": "CC0 녹음",
+     "site": "freesound.org",
+     "id": "637863",
+     "title": "switch breaker flip on off click close various.flac by kyles",
+     "author": "kyles",
+     "url": "https://freesound.org/people/kyles/sounds/637863/",
+     "license": "CC0 1.0 (Public Domain Dedication)",
+     "license_url": "http://creativecommons.org/publicdomain/zero/1.0/",
+     "note": "음높이 낮춤"
+    }
+   ],
+   "license": "CC0 1.0 (Public Domain Dedication)",
+   "status": "사용"
+  },
+  "sfx.door": {
+   "file": "sfx/door.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "evt",
+   "where": "문으로 나감 · 승강장으로 나감 · 끝",
+   "dur": 2.95,
+   "bytes": 25293,
+   "lufs_i": -26.8,
+   "lpk100": -16.0,
+   "peak_db": -1.2,
+   "normal_loop": true,
+   "effect": "없음",
+   "sources": [
+    {
+     "kind": "CC0 녹음",
+     "site": "freesound.org",
+     "id": "402460",
+     "title": "Door Close Heavy Metal Glass Medium Creak Seal Theatre by LampEight",
+     "author": "LampEight",
+     "url": "https://freesound.org/people/LampEight/sounds/402460/",
+     "license": "CC0 1.0 (Public Domain Dedication)",
+     "license_url": "http://creativecommons.org/publicdomain/zero/1.0/"
+    }
+   ],
+   "license": "CC0 1.0 (Public Domain Dedication)",
+   "status": "사용"
+  },
+  "sfx.paper": {
+   "file": "sfx/paper.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "ui",
+   "where": "종이 · 수첩 · 확대 열고 닫기",
+   "dur": 0.62,
+   "bytes": 4891,
+   "lufs_i": -28.6,
+   "lpk100": -22.0,
+   "peak_db": -7.9,
+   "normal_loop": true,
+   "effect": "없음",
+   "sources": [
+    {
+     "kind": "CC0 녹음",
+     "site": "freesound.org",
+     "id": "749880",
+     "title": "Page turned by Beussa",
+     "author": "Beussa",
+     "url": "https://freesound.org/people/Beussa/sounds/749880/",
+     "license": "CC0 1.0 (Public Domain Dedication)",
+     "license_url": "http://creativecommons.org/publicdomain/zero/1.0/"
+    }
+   ],
+   "license": "CC0 1.0 (Public Domain Dedication)",
+   "status": "사용"
+  },
+  "sfx.paper_slide": {
+   "file": "sfx/paper_slide.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "evt",
+   "where": "바퀴 사이 — 둘째 장이 문틈으로 밀려 들어옴",
+   "dur": 0.9,
+   "bytes": 8452,
+   "lufs_i": -24.4,
+   "lpk100": -16.3,
+   "peak_db": -1.0,
+   "normal_loop": true,
+   "effect": "없음",
+   "sources": [
+    {
+     "kind": "CC0 녹음",
+     "site": "freesound.org",
+     "id": "450803",
+     "title": "paper sheets flip through turn page nice various.wav by kyles",
+     "author": "kyles",
+     "url": "https://freesound.org/people/kyles/sounds/450803/",
+     "license": "CC0 1.0 (Public Domain Dedication)",
+     "license_url": "http://creativecommons.org/publicdomain/zero/1.0/"
+    }
+   ],
+   "license": "CC0 1.0 (Public Domain Dedication)",
+   "status": "사용"
+  },
+  "sfx.tap": {
+   "file": "sfx/tap.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "ui",
+   "where": "면 넘기기 · 닫기",
+   "dur": 0.14,
+   "bytes": 1883,
+   "lufs_i": -27.6,
+   "lpk100": -22.3,
+   "peak_db": -1.1,
+   "normal_loop": true,
+   "effect": "없음",
+   "sources": [
+    {
+     "kind": "CC0 녹음",
+     "site": "freesound.org",
+     "id": "690300",
+     "title": "Flashlight Switch Click by Ralph0o7",
+     "author": "Ralph0o7",
+     "url": "https://freesound.org/people/Ralph0o7/sounds/690300/",
+     "license": "CC0 1.0 (Public Domain Dedication)",
+     "license_url": "http://creativecommons.org/publicdomain/zero/1.0/"
+    }
+   ],
+   "license": "CC0 1.0 (Public Domain Dedication)",
+   "status": "사용"
+  },
+  "sfx.scratch": {
+   "file": "sfx/scratch.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "evt",
+   "where": "rule_write(4초부터 2.6초마다) · 의심 표시 · 죽음",
+   "dur": 0.48,
+   "bytes": 5173,
+   "lufs_i": -21.6,
+   "lpk100": -16.5,
+   "peak_db": -1.1,
+   "normal_loop": null,
+   "effect": "없음",
+   "sources": [
+    {
+     "kind": "CC0 녹음",
+     "site": "freesound.org",
+     "id": "631971",
+     "title": "Pen Clicks and Writing on Paper.wav by PDaefaul",
+     "author": "PDaefaul",
+     "url": "https://freesound.org/people/PDaefaul/sounds/631971/",
+     "license": "CC0 1.0 (Public Domain Dedication)",
+     "license_url": "http://creativecommons.org/publicdomain/zero/1.0/"
+    }
+   ],
+   "license": "CC0 1.0 (Public Domain Dedication)",
+   "status": "사용"
+  },
+  "sfx.cut_click": {
+   "file": "sfx/cut_click.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "evt",
+   "where": "cut_name 방송 끊김 · 죽음 여럿 — 스피커 딸깍",
+   "dur": 0.12,
+   "bytes": 2042,
+   "lufs_i": -22.0,
+   "lpk100": -16.0,
+   "peak_db": -2.4,
+   "normal_loop": false,
+   "effect": "없음",
+   "sources": [
+    {
+     "kind": "CC0 녹음",
+     "site": "freesound.org",
+     "id": "584729",
+     "title": "switch kick click wav by Ambiabstract",
+     "author": "Ambiabstract",
+     "url": "https://freesound.org/people/Ambiabstract/sounds/584729/",
+     "license": "CC0 1.0 (Public Domain Dedication)",
+     "license_url": "http://creativecommons.org/publicdomain/zero/1.0/"
+    }
+   ],
+   "license": "CC0 1.0 (Public Domain Dedication)",
+   "status": "사용"
+  },
+  "sfx.thud": {
+   "file": "sfx/thud.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "dsfx",
+   "where": "죽음 여럿 · 큰 이상 시한 끝(깜짝과 함께)",
+   "dur": 1.05,
+   "bytes": 9676,
+   "lufs_i": -21.2,
+   "lpk100": -14.1,
+   "peak_db": -1.2,
+   "normal_loop": false,
+   "effect": "없음",
+   "sources": [
+    {
+     "kind": "CC0 녹음",
+     "site": "freesound.org",
+     "id": "673424",
+     "title": "Falling body hits the floor by courtneyeck",
+     "author": "courtneyeck",
+     "url": "https://freesound.org/people/courtneyeck/sounds/673424/",
+     "license": "CC0 1.0 (Public Domain Dedication)",
+     "license_url": "http://creativecommons.org/publicdomain/zero/1.0/"
+    }
+   ],
+   "license": "CC0 1.0 (Public Domain Dedication)",
+   "status": "사용"
+  },
+  "sfx.thump": {
+   "file": "sfx/thump.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "dsfx",
+   "where": "죽음 여럿 · face_glass 영상 2 · 4초(유리를 짚음)",
+   "dur": 0.38,
+   "bytes": 4253,
+   "lufs_i": -20.1,
+   "lpk100": -14.4,
+   "peak_db": -1.1,
+   "normal_loop": false,
+   "effect": "없음",
+   "sources": [
+    {
+     "kind": "CC0 녹음",
+     "site": "freesound.org",
+     "id": "333788",
+     "title": "Window_tapping.wav by ceich93",
+     "author": "ceich93",
+     "url": "https://freesound.org/people/ceich93/sounds/333788/",
+     "license": "CC0 1.0 (Public Domain Dedication)",
+     "license_url": "http://creativecommons.org/publicdomain/zero/1.0/"
+    }
+   ],
+   "license": "CC0 1.0 (Public Domain Dedication)",
+   "status": "사용"
+  },
+  "sfx.bang": {
+   "file": "sfx/bang.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "dsfx",
+   "where": "shutter_up 응시 죽음 — 셔터가 쾅 내려옴",
+   "dur": 0.98,
+   "bytes": 9188,
+   "lufs_i": -20.1,
+   "lpk100": -14.0,
+   "peak_db": -1.2,
+   "normal_loop": false,
+   "effect": "없음",
+   "sources": [
+    {
+     "kind": "CC0 녹음",
+     "site": "freesound.org",
+     "id": "617980",
+     "title": "RollerShutter_IT.wav by uniuniversal",
+     "author": "uniuniversal",
+     "url": "https://freesound.org/people/uniuniversal/sounds/617980/",
+     "license": "CC0 1.0 (Public Domain Dedication)",
+     "license_url": "http://creativecommons.org/publicdomain/zero/1.0/"
+    }
+   ],
+   "license": "CC0 1.0 (Public Domain Dedication)",
+   "status": "사용"
+  },
+  "sfx.glass": {
+   "file": "sfx/glass.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "dsfx",
+   "where": "lamp_hang 죽음 — 형광등 유리 깨짐",
+   "dur": 2.2,
+   "bytes": 18840,
+   "lufs_i": -25.9,
+   "lpk100": -14.1,
+   "peak_db": -5.0,
+   "normal_loop": false,
+   "effect": "없음",
+   "sources": [
+    {
+     "kind": "CC0 녹음",
+     "site": "freesound.org",
+     "id": "558969",
+     "title": "Fluorescent Lightbulb Break.wav by sandb1ns",
+     "author": "sandb1ns",
+     "url": "https://freesound.org/people/sandb1ns/sounds/558969/",
+     "license": "CC0 1.0 (Public Domain Dedication)",
+     "license_url": "http://creativecommons.org/publicdomain/zero/1.0/"
+    }
+   ],
+   "license": "CC0 1.0 (Public Domain Dedication)",
+   "status": "사용"
+  },
+  "sfx.wind_gust": {
+   "file": "sfx/wind_gust.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "dsfx",
+   "where": "죽음 3(door_open · lights_noengine · platform_day) — 문 틈이 열림",
+   "dur": 5.0,
+   "bytes": 42015,
+   "lufs_i": -17.7,
+   "lpk100": -14.0,
+   "peak_db": -2.3,
+   "normal_loop": false,
+   "effect": "없음",
+   "sources": [
+    {
+     "kind": "CC0 녹음",
+     "site": "freesound.org",
+     "id": "815100",
+     "title": "Low Wind Howling Indoor by Kinoton",
+     "author": "Kinoton",
+     "url": "https://freesound.org/people/Kinoton/sounds/815100/",
+     "license": "CC0 1.0 (Public Domain Dedication)",
+     "license_url": "http://creativecommons.org/publicdomain/zero/1.0/"
+    }
+   ],
+   "license": "CC0 1.0 (Public Domain Dedication)",
+   "status": "사용"
+  },
+  "sfx.camera": {
+   "file": "sfx/camera.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "dsfx",
+   "where": "flyer_room 죽음 — 옛 필름 카메라 셔터",
+   "dur": 0.6,
+   "bytes": 6190,
+   "lufs_i": -18.8,
+   "lpk100": -14.3,
+   "peak_db": -1.0,
+   "normal_loop": false,
+   "effect": "없음",
+   "sources": [
+    {
+     "kind": "CC0 녹음",
+     "site": "freesound.org",
+     "id": "676375",
+     "title": "Film Camera Click Shutter by drewtait",
+     "author": "drewtait",
+     "url": "https://freesound.org/people/drewtait/sounds/676375/",
+     "license": "CC0 1.0 (Public Domain Dedication)",
+     "license_url": "http://creativecommons.org/publicdomain/zero/1.0/"
+    }
+   ],
+   "license": "CC0 1.0 (Public Domain Dedication)",
+   "status": "사용"
+  },
+  "sfx.breath_glass": {
+   "file": "sfx/breath_glass.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "dsfx",
+   "where": "face_glass 죽음 — 유리 너머 입김",
+   "dur": 2.152,
+   "bytes": 16732,
+   "lufs_i": -16.5,
+   "lpk100": -14.0,
+   "peak_db": -2.2,
+   "normal_loop": false,
+   "effect": "유리 너머(1.3 kHz 아래)",
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "stability-ai/stable-audio-2.5",
+     "prediction": "https://replicate.com/p/5qq8jdvp61rmw0d0xfqs8vt53g",
+     "job": "death_breath",
+     "license": "Stable Audio 2.5 출력물 — 상업 사용 가능(원문 확인)",
+     "terms_checked": [
+      "https://replicate.com/terms — 5.1: 출력물(Customer Data)은 고객 소유 · Additional Terms 「STABILITY AI」: 제한 대상은 모델 · 가중치 · 문서이며 파생물 정의에서 모델 출력은 제외",
+      "https://stability.ai/terms-of-use — 출력물에 대한 권리를 사용자에게 넘김(you own the Output)",
+      "https://stability.ai/news/stability-ai-introduces-stable-audio-25-the-first-audio-model-built-for-enterprise-sound-production-at-scale — commercially safe · fully licensed dataset"
+     ],
+     "usd": 0.2
+    }
+   ],
+   "license": "Stable Audio 2.5 출력물 — 상업 사용 가능(원문 확인)",
+   "status": "사용"
+  },
+  "vo.bc.normal.A": {
+   "file": "vo/bc_A/normal.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "vo",
+   "where": "모든 바퀴 3초 방송(띵동 뒤) · 설명 [평소 소리]",
+   "dur": 5.016,
+   "bytes": 41545,
+   "lufs_i": -18.0,
+   "lpk100": -8.9,
+   "peak_db": -1.4,
+   "normal_loop": true,
+   "effect": "천장 스피커(좁은 음역 · 찌그러짐 · 대합실 울림 1.15초) 구움",
+   "candidate": "A",
+   "text": "첫 차 승객께서는 대합실에서 기다려 주십시오.",
+   "speech_dur": 3.56,
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "qwen/qwen3-tts",
+     "prediction": "https://replicate.com/p/27h85ym3snrmt0d0xfnscw4cx4",
+     "job": "vo_bc_A",
+     "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+     "terms_checked": [
+      "https://huggingface.co/datasets/choosealicense/licenses/blob/main/markdown/apache-2.0.md — Replicate 모델 페이지의 라이선스 주소",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유"
+     ],
+     "usd": 0.00242
+    }
+   ],
+   "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+   "status": "사용 안 함",
+   "status_note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다."
+  },
+  "vo.bc.normal.A.raw": {
+   "file": "vo/bc_A/normal_raw.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "vo",
+   "where": "원음(효과 없음) — 게임이 효과를 얹을 때",
+   "dur": 3.564,
+   "bytes": 30324,
+   "lufs_i": -18.0,
+   "lpk100": -9.5,
+   "peak_db": -1.2,
+   "normal_loop": true,
+   "effect": "원음",
+   "candidate": "A",
+   "raw_of": "vo.bc.normal.A",
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "qwen/qwen3-tts",
+     "prediction": "https://replicate.com/p/27h85ym3snrmt0d0xfnscw4cx4",
+     "job": "vo_bc_A",
+     "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+     "terms_checked": [
+      "https://huggingface.co/datasets/choosealicense/licenses/blob/main/markdown/apache-2.0.md — Replicate 모델 페이지의 라이선스 주소",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유"
+     ],
+     "usd": 0.00242
+    }
+   ],
+   "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+   "status": "사용 안 함",
+   "status_note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다."
+  },
+  "vo.bc.call.A": {
+   "file": "vo/bc_A/call.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "vo",
+   "where": "call_platform 바퀴 방송 · 설명 [이번 소리]",
+   "dur": 4.313,
+   "bytes": 35700,
+   "lufs_i": -18.0,
+   "lpk100": -10.6,
+   "peak_db": -1.1,
+   "normal_loop": false,
+   "effect": "천장 스피커(좁은 음역 · 찌그러짐 · 대합실 울림 1.15초) 구움",
+   "candidate": "A",
+   "text": "승객 한 분, 바로 승강장으로 나와 주십시오.",
+   "speech_dur": 2.86,
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "qwen/qwen3-tts",
+     "prediction": "https://replicate.com/p/27h85ym3snrmt0d0xfnscw4cx4",
+     "job": "vo_bc_A",
+     "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+     "terms_checked": [
+      "https://huggingface.co/datasets/choosealicense/licenses/blob/main/markdown/apache-2.0.md — Replicate 모델 페이지의 라이선스 주소",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유"
+     ],
+     "usd": 0.00242
+    }
+   ],
+   "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+   "status": "사용 안 함",
+   "status_note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다."
+  },
+  "vo.bc.call.A.raw": {
+   "file": "vo/bc_A/call_raw.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "vo",
+   "where": "원음(효과 없음) — 게임이 효과를 얹을 때",
+   "dur": 2.861,
+   "bytes": 24605,
+   "lufs_i": -18.0,
+   "lpk100": -11.0,
+   "peak_db": -1.1,
+   "normal_loop": false,
+   "effect": "원음",
+   "candidate": "A",
+   "raw_of": "vo.bc.call.A",
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "qwen/qwen3-tts",
+     "prediction": "https://replicate.com/p/27h85ym3snrmt0d0xfnscw4cx4",
+     "job": "vo_bc_A",
+     "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+     "terms_checked": [
+      "https://huggingface.co/datasets/choosealicense/licenses/blob/main/markdown/apache-2.0.md — Replicate 모델 페이지의 라이선스 주소",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유"
+     ],
+     "usd": 0.00242
+    }
+   ],
+   "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+   "status": "사용 안 함",
+   "status_note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다."
+  },
+  "vo.bc.outside.A": {
+   "file": "vo/bc_A/normal_outside.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "vo",
+   "where": "voice_outside 바퀴 방송(유리문 밖) · 설명 [이번 소리]",
+   "dur": 4.484,
+   "bytes": 36518,
+   "lufs_i": -18.0,
+   "lpk100": -11.4,
+   "peak_db": -2.2,
+   "normal_loop": false,
+   "effect": "유리문 밖(850 Hz 아래만 · 바깥 울림) 구움 — 원음은 normal_raw",
+   "candidate": "A",
+   "text": "첫 차 승객께서는 대합실에서 기다려 주십시오.",
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "qwen/qwen3-tts",
+     "prediction": "https://replicate.com/p/27h85ym3snrmt0d0xfnscw4cx4",
+     "job": "vo_bc_A",
+     "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+     "terms_checked": [
+      "https://huggingface.co/datasets/choosealicense/licenses/blob/main/markdown/apache-2.0.md — Replicate 모델 페이지의 라이선스 주소",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유"
+     ],
+     "usd": 0.00242
+    }
+   ],
+   "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+   "status": "사용 안 함",
+   "status_note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다."
+  },
+  "vo.bc.cut.A": {
+   "file": "vo/bc_A/cut.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "vo",
+   "where": "cut_name 바퀴 방송 — 「첫 차 승객」에서 끊김 · 설명 [이번 소리]",
+   "dur": 2.204,
+   "bytes": 18845,
+   "lufs_i": -18.0,
+   "lpk100": -11.9,
+   "peak_db": -2.3,
+   "normal_loop": false,
+   "effect": "평소 방송 녹음을 「승객」 뒤에서 자름 + 천장 스피커 구움. 끊김 딸깍은 sfx.cut_click 을 게임이 같이 튼다",
+   "candidate": "A",
+   "text": "첫 차 승객",
+   "cut_at": 0.74,
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "qwen/qwen3-tts",
+     "prediction": "https://replicate.com/p/27h85ym3snrmt0d0xfnscw4cx4",
+     "job": "vo_bc_A",
+     "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+     "terms_checked": [
+      "https://huggingface.co/datasets/choosealicense/licenses/blob/main/markdown/apache-2.0.md — Replicate 모델 페이지의 라이선스 주소",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유"
+     ],
+     "usd": 0.00242
+    }
+   ],
+   "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+   "status": "사용 안 함",
+   "status_note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다."
+  },
+  "vo.bc.cut.A.raw": {
+   "file": "vo/bc_A/cut_raw.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "vo",
+   "where": "원음",
+   "dur": 0.752,
+   "bytes": 7297,
+   "lufs_i": -18.0,
+   "lpk100": -14.1,
+   "peak_db": -4.2,
+   "normal_loop": false,
+   "effect": "원음",
+   "candidate": "A",
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "qwen/qwen3-tts",
+     "prediction": "https://replicate.com/p/27h85ym3snrmt0d0xfnscw4cx4",
+     "job": "vo_bc_A",
+     "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+     "terms_checked": [
+      "https://huggingface.co/datasets/choosealicense/licenses/blob/main/markdown/apache-2.0.md — Replicate 모델 페이지의 라이선스 주소",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유"
+     ],
+     "usd": 0.00242
+    }
+   ],
+   "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+   "status": "사용 안 함",
+   "status_note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다."
+  },
+  "vo.sc.rule3.A": {
+   "file": "vo/bc_A/sc_rule3.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "vo",
+   "where": "call_platform 승강장 죽음 장면 — 규칙서 셋째 줄 낭독",
+   "dur": 7.045,
+   "bytes": 58224,
+   "lufs_i": -18.0,
+   "lpk100": -9.4,
+   "peak_db": -1.1,
+   "normal_loop": false,
+   "effect": "가까이(좁은 울림 조금) 구움",
+   "candidate": "A",
+   "text": "\"승객 한 분, 바로 승강장으로 나와 주십시오.\" 하는 방송이 나오면 지체 없이 승강장으로 나가십시오.",
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "qwen/qwen3-tts",
+     "prediction": "https://replicate.com/p/27h85ym3snrmt0d0xfnscw4cx4",
+     "job": "vo_bc_A",
+     "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+     "terms_checked": [
+      "https://huggingface.co/datasets/choosealicense/licenses/blob/main/markdown/apache-2.0.md — Replicate 모델 페이지의 라이선스 주소",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유"
+     ],
+     "usd": 0.00242
+    }
+   ],
+   "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+   "status": "사용 안 함",
+   "status_note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다."
+  },
+  "vo.sc.stamp.A": {
+   "file": "vo/bc_A/sc_stamp.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "vo",
+   "where": "call_platform 승강장 죽음 · rule_stamp 죽음 — 「확인되었습니다.」 (rule_stamp 는 지금 코드가 스피커로 튼다 — 게임이 pa 를 얹거나 vo.sc.stamp.pa 를 쓴다)",
+   "dur": 1.36,
+   "bytes": 11739,
+   "lufs_i": -18.0,
+   "lpk100": -11.8,
+   "peak_db": -1.4,
+   "normal_loop": false,
+   "effect": "가까이 구움",
+   "candidate": "A",
+   "text": "확인되었습니다.",
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "qwen/qwen3-tts",
+     "prediction": "https://replicate.com/p/27h85ym3snrmt0d0xfnscw4cx4",
+     "job": "vo_bc_A",
+     "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+     "terms_checked": [
+      "https://huggingface.co/datasets/choosealicense/licenses/blob/main/markdown/apache-2.0.md — Replicate 모델 페이지의 라이선스 주소",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유"
+     ],
+     "usd": 0.00242
+    }
+   ],
+   "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+   "status": "사용 안 함",
+   "status_note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다."
+  },
+  "vo.sc.stamp.pa.A": {
+   "file": "vo/bc_A/sc_stamp_pa.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "vo",
+   "where": "rule_stamp 죽음 장면(스피커)",
+   "dur": 2.338,
+   "bytes": 19906,
+   "lufs_i": -18.0,
+   "lpk100": -11.5,
+   "peak_db": -2.4,
+   "normal_loop": false,
+   "effect": "천장 스피커 구움",
+   "candidate": "A",
+   "text": "확인되었습니다.",
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "qwen/qwen3-tts",
+     "prediction": "https://replicate.com/p/27h85ym3snrmt0d0xfnscw4cx4",
+     "job": "vo_bc_A",
+     "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+     "terms_checked": [
+      "https://huggingface.co/datasets/choosealicense/licenses/blob/main/markdown/apache-2.0.md — Replicate 모델 페이지의 라이선스 주소",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유"
+     ],
+     "usd": 0.00242
+    }
+   ],
+   "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+   "status": "사용 안 함",
+   "status_note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다."
+  },
+  "vo.sc.outside_tail.A": {
+   "file": "vo/bc_A/sc_outside_tail.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "vo",
+   "where": "voice_outside 죽음 장면 끝말 「기다려 주십시오.」(안으로 들어온 방송)",
+   "dur": 1.59,
+   "bytes": 13276,
+   "lufs_i": -18.0,
+   "lpk100": -11.1,
+   "peak_db": -1.1,
+   "normal_loop": false,
+   "effect": "평소 방송 녹음의 끝말을 자름 + 가까이 구움",
+   "candidate": "A",
+   "text": "기다려 주십시오.",
+   "cut_at": 2.464,
+   "check": "자른 자리 확인 필요(들어 보기)",
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "qwen/qwen3-tts",
+     "prediction": "https://replicate.com/p/27h85ym3snrmt0d0xfnscw4cx4",
+     "job": "vo_bc_A",
+     "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+     "terms_checked": [
+      "https://huggingface.co/datasets/choosealicense/licenses/blob/main/markdown/apache-2.0.md — Replicate 모델 페이지의 라이선스 주소",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유"
+     ],
+     "usd": 0.00242
+    }
+   ],
+   "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+   "status": "사용 안 함",
+   "status_note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다."
+  },
+  "vo.sc.cut_tail.A": {
+   "file": "vo/bc_A/sc_cut_tail.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "vo",
+   "where": "cut_name 죽음 장면 — 끊긴 방송이 옆자리에서 이어짐 「―께서는 대합실에서 기다려 주십시오.」",
+   "dur": 3.228,
+   "bytes": 26619,
+   "lufs_i": -18.0,
+   "lpk100": -9.1,
+   "peak_db": -1.1,
+   "normal_loop": false,
+   "effect": "평소 방송 녹음의 끊긴 뒤쪽 + 가까이 구움",
+   "candidate": "A",
+   "text": "―께서는 대합실에서 기다려 주십시오.",
+   "cut_at": 0.82,
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "qwen/qwen3-tts",
+     "prediction": "https://replicate.com/p/27h85ym3snrmt0d0xfnscw4cx4",
+     "job": "vo_bc_A",
+     "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+     "terms_checked": [
+      "https://huggingface.co/datasets/choosealicense/licenses/blob/main/markdown/apache-2.0.md — Replicate 모델 페이지의 라이선스 주소",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유"
+     ],
+     "usd": 0.00242
+    }
+   ],
+   "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+   "status": "사용 안 함",
+   "status_note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다."
+  },
+  "vo.adv.first_correct.A": {
+   "file": "vo/adv_A/first_correct.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "vo",
+   "where": "바퀴 사이 — 첫 정답 뒤 시계 전진",
+   "dur": 11.545,
+   "bytes": 95904,
+   "lufs_i": -18.0,
+   "lpk100": -9.0,
+   "peak_db": -3.3,
+   "normal_loop": null,
+   "effect": "셔터 너머(1.3 kHz 아래 · 300 Hz 부풂) + 라디오 잡음 · 앞 0.5초 잡음으로 시작 구움",
+   "candidate": "A",
+   "text": "그 종이 다 믿지 마. 3번은 가짜야. 승강장 문에 붙은 거 봐. 나머지는… 여기 남은 것들이랑 맞춰 봐.",
+   "speech_dur": 10.07,
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "qwen/qwen3-tts",
+     "prediction": "https://replicate.com/p/s7jxj0nghnrmr0d0xfpbnn9v2m",
+     "job": "vo_adv_A",
+     "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+     "terms_checked": [
+      "https://huggingface.co/datasets/choosealicense/licenses/blob/main/markdown/apache-2.0.md — Replicate 모델 페이지의 라이선스 주소",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유"
+     ],
+     "usd": 0.00278
+    }
+   ],
+   "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+   "status": "사용 안 함",
+   "status_note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다."
+  },
+  "vo.adv.first_correct.A.raw": {
+   "file": "vo/adv_A/first_correct_raw.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "vo",
+   "where": "원음",
+   "dur": 10.069,
+   "bytes": 85187,
+   "lufs_i": -18.0,
+   "lpk100": -11.6,
+   "peak_db": -3.9,
+   "normal_loop": null,
+   "effect": "원음",
+   "candidate": "A",
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "qwen/qwen3-tts",
+     "prediction": "https://replicate.com/p/s7jxj0nghnrmr0d0xfpbnn9v2m",
+     "job": "vo_adv_A",
+     "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+     "terms_checked": [
+      "https://huggingface.co/datasets/choosealicense/licenses/blob/main/markdown/apache-2.0.md — Replicate 모델 페이지의 라이선스 주소",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유"
+     ],
+     "usd": 0.00278
+    }
+   ],
+   "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+   "status": "사용 안 함",
+   "status_note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다."
+  },
+  "vo.adv.sheet2.A": {
+   "file": "vo/adv_A/sheet2.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "vo",
+   "where": "바퀴 사이 — 03:51 둘째 장",
+   "dur": 8.65,
+   "bytes": 71360,
+   "lufs_i": -18.0,
+   "lpk100": -10.8,
+   "peak_db": -3.1,
+   "normal_loop": null,
+   "effect": "셔터 너머(1.3 kHz 아래 · 300 Hz 부풂) + 라디오 잡음 · 앞 0.5초 잡음으로 시작 구움",
+   "candidate": "A",
+   "text": "둘째 장이야. 거기도 섞여 있어. …어느 줄인지는 모르겠다. 미안하다.",
+   "speech_dur": 7.17,
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "qwen/qwen3-tts",
+     "prediction": "https://replicate.com/p/s7jxj0nghnrmr0d0xfpbnn9v2m",
+     "job": "vo_adv_A",
+     "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+     "terms_checked": [
+      "https://huggingface.co/datasets/choosealicense/licenses/blob/main/markdown/apache-2.0.md — Replicate 모델 페이지의 라이선스 주소",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유"
+     ],
+     "usd": 0.00278
+    }
+   ],
+   "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+   "status": "사용 안 함",
+   "status_note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다."
+  },
+  "vo.adv.sheet2.A.raw": {
+   "file": "vo/adv_A/sheet2_raw.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "vo",
+   "where": "원음",
+   "dur": 7.174,
+   "bytes": 61237,
+   "lufs_i": -18.0,
+   "lpk100": -12.4,
+   "peak_db": -4.0,
+   "normal_loop": null,
+   "effect": "원음",
+   "candidate": "A",
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "qwen/qwen3-tts",
+     "prediction": "https://replicate.com/p/s7jxj0nghnrmr0d0xfpbnn9v2m",
+     "job": "vo_adv_A",
+     "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+     "terms_checked": [
+      "https://huggingface.co/datasets/choosealicense/licenses/blob/main/markdown/apache-2.0.md — Replicate 모델 페이지의 라이선스 주소",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유"
+     ],
+     "usd": 0.00278
+    }
+   ],
+   "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+   "status": "사용 안 함",
+   "status_note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다."
+  },
+  "vo.adv.first_death.A": {
+   "file": "vo/adv_A/first_death.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "vo",
+   "where": "바퀴 사이 — 첫 죽음 뒤 돌아왔을 때",
+   "dur": 7.658,
+   "bytes": 63102,
+   "lufs_i": -18.0,
+   "lpk100": -10.0,
+   "peak_db": -4.0,
+   "normal_loop": null,
+   "effect": "셔터 너머(1.3 kHz 아래 · 300 Hz 부풂) + 라디오 잡음 · 앞 0.5초 잡음으로 시작 구움",
+   "candidate": "A",
+   "text": "돌아왔구나. 나도 여기서 몇 번이나 그랬어. …난 아직 여기 있어.",
+   "speech_dur": 6.18,
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "qwen/qwen3-tts",
+     "prediction": "https://replicate.com/p/s7jxj0nghnrmr0d0xfpbnn9v2m",
+     "job": "vo_adv_A",
+     "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+     "terms_checked": [
+      "https://huggingface.co/datasets/choosealicense/licenses/blob/main/markdown/apache-2.0.md — Replicate 모델 페이지의 라이선스 주소",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유"
+     ],
+     "usd": 0.00278
+    }
+   ],
+   "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+   "status": "사용 안 함",
+   "status_note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다."
+  },
+  "vo.adv.first_death.A.raw": {
+   "file": "vo/adv_A/first_death_raw.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "vo",
+   "where": "원음",
+   "dur": 6.182,
+   "bytes": 53277,
+   "lufs_i": -18.0,
+   "lpk100": -12.3,
+   "peak_db": -2.6,
+   "normal_loop": null,
+   "effect": "원음",
+   "candidate": "A",
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "qwen/qwen3-tts",
+     "prediction": "https://replicate.com/p/s7jxj0nghnrmr0d0xfpbnn9v2m",
+     "job": "vo_adv_A",
+     "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+     "terms_checked": [
+      "https://huggingface.co/datasets/choosealicense/licenses/blob/main/markdown/apache-2.0.md — Replicate 모델 페이지의 라이선스 주소",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유"
+     ],
+     "usd": 0.00278
+    }
+   ],
+   "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+   "status": "사용 안 함",
+   "status_note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다."
+  },
+  "vo.bc.normal.B": {
+   "file": "vo/bc_B/normal.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "vo",
+   "where": "모든 바퀴 3초 방송(띵동 뒤) · 설명 [평소 소리]",
+   "dur": 5.089,
+   "bytes": 42033,
+   "lufs_i": -18.0,
+   "lpk100": -11.0,
+   "peak_db": -2.4,
+   "normal_loop": true,
+   "effect": "천장 스피커(좁은 음역 · 찌그러짐 · 대합실 울림 1.15초) 구움",
+   "candidate": "B",
+   "text": "첫 차 승객께서는 대합실에서 기다려 주십시오.",
+   "speech_dur": 3.64,
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "qwen/qwen3-tts",
+     "prediction": "https://replicate.com/p/f2gpmw5xcsrmw0d0xfnswd355m",
+     "job": "vo_bc_B",
+     "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+     "terms_checked": [
+      "https://huggingface.co/datasets/choosealicense/licenses/blob/main/markdown/apache-2.0.md — Replicate 모델 페이지의 라이선스 주소",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유"
+     ],
+     "usd": 0.00242
+    }
+   ],
+   "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+   "status": "사용 안 함",
+   "status_note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다."
+  },
+  "vo.bc.normal.B.raw": {
+   "file": "vo/bc_B/normal_raw.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "vo",
+   "where": "원음(효과 없음) — 게임이 효과를 얹을 때",
+   "dur": 3.637,
+   "bytes": 31154,
+   "lufs_i": -18.0,
+   "lpk100": -12.5,
+   "peak_db": -3.6,
+   "normal_loop": true,
+   "effect": "원음",
+   "candidate": "B",
+   "raw_of": "vo.bc.normal.B",
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "qwen/qwen3-tts",
+     "prediction": "https://replicate.com/p/f2gpmw5xcsrmw0d0xfnswd355m",
+     "job": "vo_bc_B",
+     "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+     "terms_checked": [
+      "https://huggingface.co/datasets/choosealicense/licenses/blob/main/markdown/apache-2.0.md — Replicate 모델 페이지의 라이선스 주소",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유"
+     ],
+     "usd": 0.00242
+    }
+   ],
+   "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+   "status": "사용 안 함",
+   "status_note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다."
+  },
+  "vo.bc.call.B": {
+   "file": "vo/bc_B/call.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "vo",
+   "where": "call_platform 바퀴 방송 · 설명 [이번 소리]",
+   "dur": 4.558,
+   "bytes": 37617,
+   "lufs_i": -18.0,
+   "lpk100": -12.1,
+   "peak_db": -2.4,
+   "normal_loop": false,
+   "effect": "천장 스피커(좁은 음역 · 찌그러짐 · 대합실 울림 1.15초) 구움",
+   "candidate": "B",
+   "text": "승객 한 분, 바로 승강장으로 나와 주십시오.",
+   "speech_dur": 3.11,
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "qwen/qwen3-tts",
+     "prediction": "https://replicate.com/p/f2gpmw5xcsrmw0d0xfnswd355m",
+     "job": "vo_bc_B",
+     "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+     "terms_checked": [
+      "https://huggingface.co/datasets/choosealicense/licenses/blob/main/markdown/apache-2.0.md — Replicate 모델 페이지의 라이선스 주소",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유"
+     ],
+     "usd": 0.00242
+    }
+   ],
+   "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+   "status": "사용 안 함",
+   "status_note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다."
+  },
+  "vo.bc.call.B.raw": {
+   "file": "vo/bc_B/call_raw.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "vo",
+   "where": "원음(효과 없음) — 게임이 효과를 얹을 때",
+   "dur": 3.106,
+   "bytes": 26692,
+   "lufs_i": -18.0,
+   "lpk100": -11.9,
+   "peak_db": -4.7,
+   "normal_loop": false,
+   "effect": "원음",
+   "candidate": "B",
+   "raw_of": "vo.bc.call.B",
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "qwen/qwen3-tts",
+     "prediction": "https://replicate.com/p/f2gpmw5xcsrmw0d0xfnswd355m",
+     "job": "vo_bc_B",
+     "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+     "terms_checked": [
+      "https://huggingface.co/datasets/choosealicense/licenses/blob/main/markdown/apache-2.0.md — Replicate 모델 페이지의 라이선스 주소",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유"
+     ],
+     "usd": 0.00242
+    }
+   ],
+   "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+   "status": "사용 안 함",
+   "status_note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다."
+  },
+  "vo.bc.outside.B": {
+   "file": "vo/bc_B/normal_outside.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "vo",
+   "where": "voice_outside 바퀴 방송(유리문 밖) · 설명 [이번 소리]",
+   "dur": 4.557,
+   "bytes": 36654,
+   "lufs_i": -18.0,
+   "lpk100": -11.9,
+   "peak_db": -4.1,
+   "normal_loop": false,
+   "effect": "유리문 밖(850 Hz 아래만 · 바깥 울림) 구움 — 원음은 normal_raw",
+   "candidate": "B",
+   "text": "첫 차 승객께서는 대합실에서 기다려 주십시오.",
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "qwen/qwen3-tts",
+     "prediction": "https://replicate.com/p/f2gpmw5xcsrmw0d0xfnswd355m",
+     "job": "vo_bc_B",
+     "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+     "terms_checked": [
+      "https://huggingface.co/datasets/choosealicense/licenses/blob/main/markdown/apache-2.0.md — Replicate 모델 페이지의 라이선스 주소",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유"
+     ],
+     "usd": 0.00242
+    }
+   ],
+   "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+   "status": "사용 안 함",
+   "status_note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다."
+  },
+  "vo.bc.cut.B": {
+   "file": "vo/bc_B/cut.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "vo",
+   "where": "cut_name 바퀴 방송 — 「첫 차 승객」에서 끊김 · 설명 [이번 소리]",
+   "dur": 2.144,
+   "bytes": 18277,
+   "lufs_i": -18.0,
+   "lpk100": -13.7,
+   "peak_db": -5.1,
+   "normal_loop": false,
+   "effect": "평소 방송 녹음을 「승객」 뒤에서 자름 + 천장 스피커 구움. 끊김 딸깍은 sfx.cut_click 을 게임이 같이 튼다",
+   "candidate": "B",
+   "text": "첫 차 승객",
+   "cut_at": 0.68,
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "qwen/qwen3-tts",
+     "prediction": "https://replicate.com/p/f2gpmw5xcsrmw0d0xfnswd355m",
+     "job": "vo_bc_B",
+     "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+     "terms_checked": [
+      "https://huggingface.co/datasets/choosealicense/licenses/blob/main/markdown/apache-2.0.md — Replicate 모델 페이지의 라이선스 주소",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유"
+     ],
+     "usd": 0.00242
+    }
+   ],
+   "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+   "status": "사용 안 함",
+   "status_note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다."
+  },
+  "vo.bc.cut.B.raw": {
+   "file": "vo/bc_B/cut_raw.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "vo",
+   "where": "원음",
+   "dur": 0.692,
+   "bytes": 6847,
+   "lufs_i": -18.0,
+   "lpk100": -14.8,
+   "peak_db": -6.0,
+   "normal_loop": false,
+   "effect": "원음",
+   "candidate": "B",
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "qwen/qwen3-tts",
+     "prediction": "https://replicate.com/p/f2gpmw5xcsrmw0d0xfnswd355m",
+     "job": "vo_bc_B",
+     "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+     "terms_checked": [
+      "https://huggingface.co/datasets/choosealicense/licenses/blob/main/markdown/apache-2.0.md — Replicate 모델 페이지의 라이선스 주소",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유"
+     ],
+     "usd": 0.00242
+    }
+   ],
+   "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+   "status": "사용 안 함",
+   "status_note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다."
+  },
+  "vo.sc.rule3.B": {
+   "file": "vo/bc_B/sc_rule3.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "vo",
+   "where": "call_platform 승강장 죽음 장면 — 규칙서 셋째 줄 낭독",
+   "dur": 7.49,
+   "bytes": 61970,
+   "lufs_i": -18.0,
+   "lpk100": -8.6,
+   "peak_db": -1.2,
+   "normal_loop": false,
+   "effect": "가까이(좁은 울림 조금) 구움",
+   "candidate": "B",
+   "text": "\"승객 한 분, 바로 승강장으로 나와 주십시오.\" 하는 방송이 나오면 지체 없이 승강장으로 나가십시오.",
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "qwen/qwen3-tts",
+     "prediction": "https://replicate.com/p/f2gpmw5xcsrmw0d0xfnswd355m",
+     "job": "vo_bc_B",
+     "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+     "terms_checked": [
+      "https://huggingface.co/datasets/choosealicense/licenses/blob/main/markdown/apache-2.0.md — Replicate 모델 페이지의 라이선스 주소",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유"
+     ],
+     "usd": 0.00242
+    }
+   ],
+   "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+   "status": "사용 안 함",
+   "status_note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다."
+  },
+  "vo.sc.stamp.B": {
+   "file": "vo/bc_B/sc_stamp.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "vo",
+   "where": "call_platform 승강장 죽음 · rule_stamp 죽음 — 「확인되었습니다.」 (rule_stamp 는 지금 코드가 스피커로 튼다 — 게임이 pa 를 얹거나 vo.sc.stamp.pa 를 쓴다)",
+   "dur": 1.551,
+   "bytes": 13123,
+   "lufs_i": -18.0,
+   "lpk100": -11.6,
+   "peak_db": -3.6,
+   "normal_loop": false,
+   "effect": "가까이 구움",
+   "candidate": "B",
+   "text": "확인되었습니다.",
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "qwen/qwen3-tts",
+     "prediction": "https://replicate.com/p/f2gpmw5xcsrmw0d0xfnswd355m",
+     "job": "vo_bc_B",
+     "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+     "terms_checked": [
+      "https://huggingface.co/datasets/choosealicense/licenses/blob/main/markdown/apache-2.0.md — Replicate 모델 페이지의 라이선스 주소",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유"
+     ],
+     "usd": 0.00242
+    }
+   ],
+   "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+   "status": "사용 안 함",
+   "status_note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다."
+  },
+  "vo.sc.stamp.pa.B": {
+   "file": "vo/bc_B/sc_stamp_pa.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "vo",
+   "where": "rule_stamp 죽음 장면(스피커)",
+   "dur": 2.529,
+   "bytes": 21294,
+   "lufs_i": -18.0,
+   "lpk100": -12.2,
+   "peak_db": -4.3,
+   "normal_loop": false,
+   "effect": "천장 스피커 구움",
+   "candidate": "B",
+   "text": "확인되었습니다.",
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "qwen/qwen3-tts",
+     "prediction": "https://replicate.com/p/f2gpmw5xcsrmw0d0xfnswd355m",
+     "job": "vo_bc_B",
+     "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+     "terms_checked": [
+      "https://huggingface.co/datasets/choosealicense/licenses/blob/main/markdown/apache-2.0.md — Replicate 모델 페이지의 라이선스 주소",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유"
+     ],
+     "usd": 0.00242
+    }
+   ],
+   "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+   "status": "사용 안 함",
+   "status_note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다."
+  },
+  "vo.sc.outside_tail.B": {
+   "file": "vo/bc_B/sc_outside_tail.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "vo",
+   "where": "voice_outside 죽음 장면 끝말 「기다려 주십시오.」(안으로 들어온 방송)",
+   "dur": 1.554,
+   "bytes": 12745,
+   "lufs_i": -18.0,
+   "lpk100": -12.7,
+   "peak_db": -2.5,
+   "normal_loop": false,
+   "effect": "평소 방송 녹음의 끝말을 자름 + 가까이 구움",
+   "candidate": "B",
+   "text": "기다려 주십시오.",
+   "cut_at": 2.572,
+   "check": "자른 자리 확인 필요(들어 보기)",
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "qwen/qwen3-tts",
+     "prediction": "https://replicate.com/p/f2gpmw5xcsrmw0d0xfnswd355m",
+     "job": "vo_bc_B",
+     "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+     "terms_checked": [
+      "https://huggingface.co/datasets/choosealicense/licenses/blob/main/markdown/apache-2.0.md — Replicate 모델 페이지의 라이선스 주소",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유"
+     ],
+     "usd": 0.00242
+    }
+   ],
+   "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+   "status": "사용 안 함",
+   "status_note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다."
+  },
+  "vo.sc.cut_tail.B": {
+   "file": "vo/bc_B/sc_cut_tail.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "vo",
+   "where": "cut_name 죽음 장면 — 끊긴 방송이 옆자리에서 이어짐 「―께서는 대합실에서 기다려 주십시오.」",
+   "dur": 3.371,
+   "bytes": 27686,
+   "lufs_i": -18.0,
+   "lpk100": -13.3,
+   "peak_db": -2.1,
+   "normal_loop": false,
+   "effect": "평소 방송 녹음의 끊긴 뒤쪽 + 가까이 구움",
+   "candidate": "B",
+   "text": "―께서는 대합실에서 기다려 주십시오.",
+   "cut_at": 0.75,
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "qwen/qwen3-tts",
+     "prediction": "https://replicate.com/p/f2gpmw5xcsrmw0d0xfnswd355m",
+     "job": "vo_bc_B",
+     "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+     "terms_checked": [
+      "https://huggingface.co/datasets/choosealicense/licenses/blob/main/markdown/apache-2.0.md — Replicate 모델 페이지의 라이선스 주소",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유"
+     ],
+     "usd": 0.00242
+    }
+   ],
+   "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+   "status": "사용 안 함",
+   "status_note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다."
+  },
+  "vo.adv.first_correct.B": {
+   "file": "vo/adv_B/first_correct.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "vo",
+   "where": "바퀴 사이 — 첫 정답 뒤 시계 전진",
+   "dur": 9.86,
+   "bytes": 81574,
+   "lufs_i": -18.0,
+   "lpk100": -11.6,
+   "peak_db": -1.3,
+   "normal_loop": null,
+   "effect": "셔터 너머(1.3 kHz 아래 · 300 Hz 부풂) + 라디오 잡음 · 앞 0.5초 잡음으로 시작 구움",
+   "candidate": "B",
+   "text": "그 종이 다 믿지 마. 3번은 가짜야. 승강장 문에 붙은 거 봐. 나머지는… 여기 남은 것들이랑 맞춰 봐.",
+   "speech_dur": 8.38,
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "qwen/qwen3-tts",
+     "prediction": "https://replicate.com/p/j3cwea0a0nrmy0d0xfptm8nc88",
+     "job": "vo_adv_B",
+     "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+     "terms_checked": [
+      "https://huggingface.co/datasets/choosealicense/licenses/blob/main/markdown/apache-2.0.md — Replicate 모델 페이지의 라이선스 주소",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유"
+     ],
+     "usd": 0.00278
+    }
+   ],
+   "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+   "status": "사용 안 함",
+   "status_note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다."
+  },
+  "vo.adv.first_correct.B.raw": {
+   "file": "vo/adv_B/first_correct_raw.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "vo",
+   "where": "원음",
+   "dur": 8.384,
+   "bytes": 72192,
+   "lufs_i": -18.0,
+   "lpk100": -9.4,
+   "peak_db": -1.1,
+   "normal_loop": null,
+   "effect": "원음",
+   "candidate": "B",
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "qwen/qwen3-tts",
+     "prediction": "https://replicate.com/p/j3cwea0a0nrmy0d0xfptm8nc88",
+     "job": "vo_adv_B",
+     "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+     "terms_checked": [
+      "https://huggingface.co/datasets/choosealicense/licenses/blob/main/markdown/apache-2.0.md — Replicate 모델 페이지의 라이선스 주소",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유"
+     ],
+     "usd": 0.00278
+    }
+   ],
+   "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+   "status": "사용 안 함",
+   "status_note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다."
+  },
+  "vo.adv.sheet2.B": {
+   "file": "vo/adv_B/sheet2.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "vo",
+   "where": "바퀴 사이 — 03:51 둘째 장",
+   "dur": 6.739,
+   "bytes": 55411,
+   "lufs_i": -18.0,
+   "lpk100": -11.3,
+   "peak_db": -2.4,
+   "normal_loop": null,
+   "effect": "셔터 너머(1.3 kHz 아래 · 300 Hz 부풂) + 라디오 잡음 · 앞 0.5초 잡음으로 시작 구움",
+   "candidate": "B",
+   "text": "둘째 장이야. 거기도 섞여 있어. …어느 줄인지는 모르겠다. 미안하다.",
+   "speech_dur": 5.26,
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "qwen/qwen3-tts",
+     "prediction": "https://replicate.com/p/j3cwea0a0nrmy0d0xfptm8nc88",
+     "job": "vo_adv_B",
+     "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+     "terms_checked": [
+      "https://huggingface.co/datasets/choosealicense/licenses/blob/main/markdown/apache-2.0.md — Replicate 모델 페이지의 라이선스 주소",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유"
+     ],
+     "usd": 0.00278
+    }
+   ],
+   "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+   "status": "사용 안 함",
+   "status_note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다."
+  },
+  "vo.adv.sheet2.B.raw": {
+   "file": "vo/adv_B/sheet2_raw.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "vo",
+   "where": "원음",
+   "dur": 5.263,
+   "bytes": 44865,
+   "lufs_i": -18.0,
+   "lpk100": -10.0,
+   "peak_db": -1.1,
+   "normal_loop": null,
+   "effect": "원음",
+   "candidate": "B",
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "qwen/qwen3-tts",
+     "prediction": "https://replicate.com/p/j3cwea0a0nrmy0d0xfptm8nc88",
+     "job": "vo_adv_B",
+     "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+     "terms_checked": [
+      "https://huggingface.co/datasets/choosealicense/licenses/blob/main/markdown/apache-2.0.md — Replicate 모델 페이지의 라이선스 주소",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유"
+     ],
+     "usd": 0.00278
+    }
+   ],
+   "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+   "status": "사용 안 함",
+   "status_note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다."
+  },
+  "vo.adv.first_death.B": {
+   "file": "vo/adv_B/first_death.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "vo",
+   "where": "바퀴 사이 — 첫 죽음 뒤 돌아왔을 때",
+   "dur": 6.95,
+   "bytes": 57080,
+   "lufs_i": -18.0,
+   "lpk100": -11.7,
+   "peak_db": -1.4,
+   "normal_loop": null,
+   "effect": "셔터 너머(1.3 kHz 아래 · 300 Hz 부풂) + 라디오 잡음 · 앞 0.5초 잡음으로 시작 구움",
+   "candidate": "B",
+   "text": "돌아왔구나. 나도 여기서 몇 번이나 그랬어. …난 아직 여기 있어.",
+   "speech_dur": 5.47,
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "qwen/qwen3-tts",
+     "prediction": "https://replicate.com/p/j3cwea0a0nrmy0d0xfptm8nc88",
+     "job": "vo_adv_B",
+     "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+     "terms_checked": [
+      "https://huggingface.co/datasets/choosealicense/licenses/blob/main/markdown/apache-2.0.md — Replicate 모델 페이지의 라이선스 주소",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유"
+     ],
+     "usd": 0.00278
+    }
+   ],
+   "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+   "status": "사용 안 함",
+   "status_note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다."
+  },
+  "vo.adv.first_death.B.raw": {
+   "file": "vo/adv_B/first_death_raw.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "vo",
+   "where": "원음",
+   "dur": 5.474,
+   "bytes": 46247,
+   "lufs_i": -18.0,
+   "lpk100": -11.1,
+   "peak_db": -1.3,
+   "normal_loop": null,
+   "effect": "원음",
+   "candidate": "B",
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "qwen/qwen3-tts",
+     "prediction": "https://replicate.com/p/j3cwea0a0nrmy0d0xfptm8nc88",
+     "job": "vo_adv_B",
+     "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+     "terms_checked": [
+      "https://huggingface.co/datasets/choosealicense/licenses/blob/main/markdown/apache-2.0.md — Replicate 모델 페이지의 라이선스 주소",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유"
+     ],
+     "usd": 0.00278
+    }
+   ],
+   "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+   "status": "사용 안 함",
+   "status_note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다."
+  },
+  "vo.bc.normal.C": {
+   "file": "vo/bc_C/normal.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "vo",
+   "where": "모든 바퀴 3초 방송(띵동 뒤) · 설명 [평소 소리]",
+   "dur": 6.49,
+   "bytes": 54024,
+   "lufs_i": -18.0,
+   "lpk100": -10.5,
+   "peak_db": -1.7,
+   "normal_loop": true,
+   "effect": "천장 스피커(좁은 음역 · 찌그러짐 · 대합실 울림 1.15초) 구움",
+   "candidate": "C",
+   "text": "첫 차 승객께서는 대합실에서 기다려 주십시오.",
+   "speech_dur": 5.04,
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "google/gemini-3.1-flash-tts",
+     "prediction": "https://replicate.com/p/eyk0r8qv71rmr0d0xfnsp5h8gr",
+     "job": "vo_bc_C",
+     "license": "Gemini TTS 출력물 — Replicate 경유 조건은 원문으로 확인하지 못함(범위 밖 발견으로 보고)",
+     "terms_checked": [
+      "https://ai.google.dev/gemini-api/terms — Google 이 생성물 소유권을 주장하지 않음(Gemini API 를 직접 쓸 때의 약관)",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유 · Google 모델에 대한 추가 약관 절 없음"
+     ],
+     "usd": 0.03834
+    }
+   ],
+   "license": "Gemini TTS 출력물 — Replicate 경유 조건은 원문으로 확인하지 못함(범위 밖 발견으로 보고)",
+   "terms_unverified": true,
+   "status": "사용 안 함",
+   "status_note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다."
+  },
+  "vo.bc.normal.C.raw": {
+   "file": "vo/bc_C/normal_raw.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "vo",
+   "where": "원음(효과 없음) — 게임이 효과를 얹을 때",
+   "dur": 5.038,
+   "bytes": 42808,
+   "lufs_i": -18.0,
+   "lpk100": -11.3,
+   "peak_db": -1.1,
+   "normal_loop": true,
+   "effect": "원음",
+   "candidate": "C",
+   "raw_of": "vo.bc.normal.C",
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "google/gemini-3.1-flash-tts",
+     "prediction": "https://replicate.com/p/eyk0r8qv71rmr0d0xfnsp5h8gr",
+     "job": "vo_bc_C",
+     "license": "Gemini TTS 출력물 — Replicate 경유 조건은 원문으로 확인하지 못함(범위 밖 발견으로 보고)",
+     "terms_checked": [
+      "https://ai.google.dev/gemini-api/terms — Google 이 생성물 소유권을 주장하지 않음(Gemini API 를 직접 쓸 때의 약관)",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유 · Google 모델에 대한 추가 약관 절 없음"
+     ],
+     "usd": 0.03834
+    }
+   ],
+   "license": "Gemini TTS 출력물 — Replicate 경유 조건은 원문으로 확인하지 못함(범위 밖 발견으로 보고)",
+   "terms_unverified": true,
+   "status": "사용 안 함",
+   "status_note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다."
+  },
+  "vo.bc.call.C": {
+   "file": "vo/bc_C/call.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "vo",
+   "where": "call_platform 바퀴 방송 · 설명 [이번 소리]",
+   "dur": 6.351,
+   "bytes": 52658,
+   "lufs_i": -18.0,
+   "lpk100": -9.6,
+   "peak_db": -1.3,
+   "normal_loop": false,
+   "effect": "천장 스피커(좁은 음역 · 찌그러짐 · 대합실 울림 1.15초) 구움",
+   "candidate": "C",
+   "text": "승객 한 분, 바로 승강장으로 나와 주십시오.",
+   "speech_dur": 4.9,
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "google/gemini-3.1-flash-tts",
+     "prediction": "https://replicate.com/p/eyk0r8qv71rmr0d0xfnsp5h8gr",
+     "job": "vo_bc_C",
+     "license": "Gemini TTS 출력물 — Replicate 경유 조건은 원문으로 확인하지 못함(범위 밖 발견으로 보고)",
+     "terms_checked": [
+      "https://ai.google.dev/gemini-api/terms — Google 이 생성물 소유권을 주장하지 않음(Gemini API 를 직접 쓸 때의 약관)",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유 · Google 모델에 대한 추가 약관 절 없음"
+     ],
+     "usd": 0.03834
+    }
+   ],
+   "license": "Gemini TTS 출력물 — Replicate 경유 조건은 원문으로 확인하지 못함(범위 밖 발견으로 보고)",
+   "terms_unverified": true,
+   "status": "사용 안 함",
+   "status_note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다."
+  },
+  "vo.bc.call.C.raw": {
+   "file": "vo/bc_C/call_raw.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "vo",
+   "where": "원음(효과 없음) — 게임이 효과를 얹을 때",
+   "dur": 4.899,
+   "bytes": 41580,
+   "lufs_i": -18.0,
+   "lpk100": -11.8,
+   "peak_db": -2.9,
+   "normal_loop": false,
+   "effect": "원음",
+   "candidate": "C",
+   "raw_of": "vo.bc.call.C",
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "google/gemini-3.1-flash-tts",
+     "prediction": "https://replicate.com/p/eyk0r8qv71rmr0d0xfnsp5h8gr",
+     "job": "vo_bc_C",
+     "license": "Gemini TTS 출력물 — Replicate 경유 조건은 원문으로 확인하지 못함(범위 밖 발견으로 보고)",
+     "terms_checked": [
+      "https://ai.google.dev/gemini-api/terms — Google 이 생성물 소유권을 주장하지 않음(Gemini API 를 직접 쓸 때의 약관)",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유 · Google 모델에 대한 추가 약관 절 없음"
+     ],
+     "usd": 0.03834
+    }
+   ],
+   "license": "Gemini TTS 출력물 — Replicate 경유 조건은 원문으로 확인하지 못함(범위 밖 발견으로 보고)",
+   "terms_unverified": true,
+   "status": "사용 안 함",
+   "status_note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다."
+  },
+  "vo.bc.outside.C": {
+   "file": "vo/bc_C/normal_outside.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "vo",
+   "where": "voice_outside 바퀴 방송(유리문 밖) · 설명 [이번 소리]",
+   "dur": 5.958,
+   "bytes": 49289,
+   "lufs_i": -18.0,
+   "lpk100": -11.2,
+   "peak_db": -3.1,
+   "normal_loop": false,
+   "effect": "유리문 밖(850 Hz 아래만 · 바깥 울림) 구움 — 원음은 normal_raw",
+   "candidate": "C",
+   "text": "첫 차 승객께서는 대합실에서 기다려 주십시오.",
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "google/gemini-3.1-flash-tts",
+     "prediction": "https://replicate.com/p/eyk0r8qv71rmr0d0xfnsp5h8gr",
+     "job": "vo_bc_C",
+     "license": "Gemini TTS 출력물 — Replicate 경유 조건은 원문으로 확인하지 못함(범위 밖 발견으로 보고)",
+     "terms_checked": [
+      "https://ai.google.dev/gemini-api/terms — Google 이 생성물 소유권을 주장하지 않음(Gemini API 를 직접 쓸 때의 약관)",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유 · Google 모델에 대한 추가 약관 절 없음"
+     ],
+     "usd": 0.03834
+    }
+   ],
+   "license": "Gemini TTS 출력물 — Replicate 경유 조건은 원문으로 확인하지 못함(범위 밖 발견으로 보고)",
+   "terms_unverified": true,
+   "status": "사용 안 함",
+   "status_note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다."
+  },
+  "vo.bc.cut.C": {
+   "file": "vo/bc_C/cut.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "vo",
+   "where": "cut_name 바퀴 방송 — 「첫 차 승객」에서 끊김 · 설명 [이번 소리]",
+   "dur": 2.544,
+   "bytes": 21534,
+   "lufs_i": -18.0,
+   "lpk100": -12.3,
+   "peak_db": -3.9,
+   "normal_loop": false,
+   "effect": "평소 방송 녹음을 「승객」 뒤에서 자름 + 천장 스피커 구움. 끊김 딸깍은 sfx.cut_click 을 게임이 같이 튼다",
+   "candidate": "C",
+   "text": "첫 차 승객",
+   "cut_at": 1.08,
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "google/gemini-3.1-flash-tts",
+     "prediction": "https://replicate.com/p/eyk0r8qv71rmr0d0xfnsp5h8gr",
+     "job": "vo_bc_C",
+     "license": "Gemini TTS 출력물 — Replicate 경유 조건은 원문으로 확인하지 못함(범위 밖 발견으로 보고)",
+     "terms_checked": [
+      "https://ai.google.dev/gemini-api/terms — Google 이 생성물 소유권을 주장하지 않음(Gemini API 를 직접 쓸 때의 약관)",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유 · Google 모델에 대한 추가 약관 절 없음"
+     ],
+     "usd": 0.03834
+    }
+   ],
+   "license": "Gemini TTS 출력물 — Replicate 경유 조건은 원문으로 확인하지 못함(범위 밖 발견으로 보고)",
+   "terms_unverified": true,
+   "status": "사용 안 함",
+   "status_note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다."
+  },
+  "vo.bc.cut.C.raw": {
+   "file": "vo/bc_C/cut_raw.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "vo",
+   "where": "원음",
+   "dur": 1.092,
+   "bytes": 10029,
+   "lufs_i": -18.0,
+   "lpk100": -13.0,
+   "peak_db": -4.6,
+   "normal_loop": false,
+   "effect": "원음",
+   "candidate": "C",
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "google/gemini-3.1-flash-tts",
+     "prediction": "https://replicate.com/p/eyk0r8qv71rmr0d0xfnsp5h8gr",
+     "job": "vo_bc_C",
+     "license": "Gemini TTS 출력물 — Replicate 경유 조건은 원문으로 확인하지 못함(범위 밖 발견으로 보고)",
+     "terms_checked": [
+      "https://ai.google.dev/gemini-api/terms — Google 이 생성물 소유권을 주장하지 않음(Gemini API 를 직접 쓸 때의 약관)",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유 · Google 모델에 대한 추가 약관 절 없음"
+     ],
+     "usd": 0.03834
+    }
+   ],
+   "license": "Gemini TTS 출력물 — Replicate 경유 조건은 원문으로 확인하지 못함(범위 밖 발견으로 보고)",
+   "terms_unverified": true,
+   "status": "사용 안 함",
+   "status_note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다."
+  },
+  "vo.sc.rule3.C": {
+   "file": "vo/bc_C/sc_rule3.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "vo",
+   "where": "call_platform 승강장 죽음 장면 — 규칙서 셋째 줄 낭독",
+   "dur": 11.876,
+   "bytes": 99180,
+   "lufs_i": -18.0,
+   "lpk100": -10.6,
+   "peak_db": -2.2,
+   "normal_loop": false,
+   "effect": "가까이(좁은 울림 조금) 구움",
+   "candidate": "C",
+   "text": "\"승객 한 분, 바로 승강장으로 나와 주십시오.\" 하는 방송이 나오면 지체 없이 승강장으로 나가십시오.",
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "google/gemini-3.1-flash-tts",
+     "prediction": "https://replicate.com/p/eyk0r8qv71rmr0d0xfnsp5h8gr",
+     "job": "vo_bc_C",
+     "license": "Gemini TTS 출력물 — Replicate 경유 조건은 원문으로 확인하지 못함(범위 밖 발견으로 보고)",
+     "terms_checked": [
+      "https://ai.google.dev/gemini-api/terms — Google 이 생성물 소유권을 주장하지 않음(Gemini API 를 직접 쓸 때의 약관)",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유 · Google 모델에 대한 추가 약관 절 없음"
+     ],
+     "usd": 0.03834
+    }
+   ],
+   "license": "Gemini TTS 출력물 — Replicate 경유 조건은 원문으로 확인하지 못함(범위 밖 발견으로 보고)",
+   "terms_unverified": true,
+   "status": "사용 안 함",
+   "status_note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다."
+  },
+  "vo.sc.stamp.C": {
+   "file": "vo/bc_C/sc_stamp.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "vo",
+   "where": "call_platform 승강장 죽음 · rule_stamp 죽음 — 「확인되었습니다.」 (rule_stamp 는 지금 코드가 스피커로 튼다 — 게임이 pa 를 얹거나 vo.sc.stamp.pa 를 쓴다)",
+   "dur": 1.563,
+   "bytes": 13333,
+   "lufs_i": -18.0,
+   "lpk100": -11.3,
+   "peak_db": -4.1,
+   "normal_loop": false,
+   "effect": "가까이 구움",
+   "candidate": "C",
+   "text": "확인되었습니다.",
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "google/gemini-3.1-flash-tts",
+     "prediction": "https://replicate.com/p/eyk0r8qv71rmr0d0xfnsp5h8gr",
+     "job": "vo_bc_C",
+     "license": "Gemini TTS 출력물 — Replicate 경유 조건은 원문으로 확인하지 못함(범위 밖 발견으로 보고)",
+     "terms_checked": [
+      "https://ai.google.dev/gemini-api/terms — Google 이 생성물 소유권을 주장하지 않음(Gemini API 를 직접 쓸 때의 약관)",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유 · Google 모델에 대한 추가 약관 절 없음"
+     ],
+     "usd": 0.03834
+    }
+   ],
+   "license": "Gemini TTS 출력물 — Replicate 경유 조건은 원문으로 확인하지 못함(범위 밖 발견으로 보고)",
+   "terms_unverified": true,
+   "status": "사용 안 함",
+   "status_note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다."
+  },
+  "vo.sc.stamp.pa.C": {
+   "file": "vo/bc_C/sc_stamp_pa.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "vo",
+   "where": "rule_stamp 죽음 장면(스피커)",
+   "dur": 2.541,
+   "bytes": 21655,
+   "lufs_i": -18.0,
+   "lpk100": -12.5,
+   "peak_db": -2.6,
+   "normal_loop": false,
+   "effect": "천장 스피커 구움",
+   "candidate": "C",
+   "text": "확인되었습니다.",
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "google/gemini-3.1-flash-tts",
+     "prediction": "https://replicate.com/p/eyk0r8qv71rmr0d0xfnsp5h8gr",
+     "job": "vo_bc_C",
+     "license": "Gemini TTS 출력물 — Replicate 경유 조건은 원문으로 확인하지 못함(범위 밖 발견으로 보고)",
+     "terms_checked": [
+      "https://ai.google.dev/gemini-api/terms — Google 이 생성물 소유권을 주장하지 않음(Gemini API 를 직접 쓸 때의 약관)",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유 · Google 모델에 대한 추가 약관 절 없음"
+     ],
+     "usd": 0.03834
+    }
+   ],
+   "license": "Gemini TTS 출력물 — Replicate 경유 조건은 원문으로 확인하지 못함(범위 밖 발견으로 보고)",
+   "terms_unverified": true,
+   "status": "사용 안 함",
+   "status_note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다."
+  },
+  "vo.sc.outside_tail.C": {
+   "file": "vo/bc_C/sc_outside_tail.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "vo",
+   "where": "voice_outside 죽음 장면 끝말 「기다려 주십시오.」(안으로 들어온 방송)",
+   "dur": 1.634,
+   "bytes": 13530,
+   "lufs_i": -18.0,
+   "lpk100": -11.0,
+   "peak_db": -1.3,
+   "normal_loop": false,
+   "effect": "평소 방송 녹음의 끝말을 자름 + 가까이 구움",
+   "candidate": "C",
+   "text": "기다려 주십시오.",
+   "cut_at": 3.893,
+   "check": "자른 자리 확인 필요(들어 보기)",
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "google/gemini-3.1-flash-tts",
+     "prediction": "https://replicate.com/p/eyk0r8qv71rmr0d0xfnsp5h8gr",
+     "job": "vo_bc_C",
+     "license": "Gemini TTS 출력물 — Replicate 경유 조건은 원문으로 확인하지 못함(범위 밖 발견으로 보고)",
+     "terms_checked": [
+      "https://ai.google.dev/gemini-api/terms — Google 이 생성물 소유권을 주장하지 않음(Gemini API 를 직접 쓸 때의 약관)",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유 · Google 모델에 대한 추가 약관 절 없음"
+     ],
+     "usd": 0.03834
+    }
+   ],
+   "license": "Gemini TTS 출력물 — Replicate 경유 조건은 원문으로 확인하지 못함(범위 밖 발견으로 보고)",
+   "terms_unverified": true,
+   "status": "사용 안 함",
+   "status_note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다."
+  },
+  "vo.sc.cut_tail.C": {
+   "file": "vo/bc_C/sc_cut_tail.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "vo",
+   "where": "cut_name 죽음 장면 — 끊긴 방송이 옆자리에서 이어짐 「―께서는 대합실에서 기다려 주십시오.」",
+   "dur": 4.312,
+   "bytes": 35735,
+   "lufs_i": -18.0,
+   "lpk100": -10.2,
+   "peak_db": -1.1,
+   "normal_loop": false,
+   "effect": "평소 방송 녹음의 끊긴 뒤쪽 + 가까이 구움",
+   "candidate": "C",
+   "text": "―께서는 대합실에서 기다려 주십시오.",
+   "cut_at": 1.21,
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "google/gemini-3.1-flash-tts",
+     "prediction": "https://replicate.com/p/eyk0r8qv71rmr0d0xfnsp5h8gr",
+     "job": "vo_bc_C",
+     "license": "Gemini TTS 출력물 — Replicate 경유 조건은 원문으로 확인하지 못함(범위 밖 발견으로 보고)",
+     "terms_checked": [
+      "https://ai.google.dev/gemini-api/terms — Google 이 생성물 소유권을 주장하지 않음(Gemini API 를 직접 쓸 때의 약관)",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유 · Google 모델에 대한 추가 약관 절 없음"
+     ],
+     "usd": 0.03834
+    }
+   ],
+   "license": "Gemini TTS 출력물 — Replicate 경유 조건은 원문으로 확인하지 못함(범위 밖 발견으로 보고)",
+   "terms_unverified": true,
+   "status": "사용 안 함",
+   "status_note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다."
+  },
+  "vo.adv.first_correct.C": {
+   "file": "vo/adv_C/first_correct.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "vo",
+   "where": "바퀴 사이 — 첫 정답 뒤 시계 전진",
+   "dur": 15.482,
+   "bytes": 129377,
+   "lufs_i": -18.1,
+   "lpk100": -7.4,
+   "peak_db": -1.0,
+   "normal_loop": null,
+   "effect": "셔터 너머(1.3 kHz 아래 · 300 Hz 부풂) + 라디오 잡음 · 앞 0.5초 잡음으로 시작 구움",
+   "candidate": "C",
+   "text": "그 종이 다 믿지 마. 3번은 가짜야. 승강장 문에 붙은 거 봐. 나머지는… 여기 남은 것들이랑 맞춰 봐.",
+   "speech_dur": 14.01,
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "google/gemini-3.1-flash-tts",
+     "prediction": "https://replicate.com/p/kjmt74v1edrmy0d0xfpraqtpjg",
+     "job": "vo_adv_C",
+     "license": "Gemini TTS 출력물 — Replicate 경유 조건은 원문으로 확인하지 못함(범위 밖 발견으로 보고)",
+     "terms_checked": [
+      "https://ai.google.dev/gemini-api/terms — Google 이 생성물 소유권을 주장하지 않음(Gemini API 를 직접 쓸 때의 약관)",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유 · Google 모델에 대한 추가 약관 절 없음"
+     ],
+     "usd": 0.04686
+    }
+   ],
+   "license": "Gemini TTS 출력물 — Replicate 경유 조건은 원문으로 확인하지 못함(범위 밖 발견으로 보고)",
+   "terms_unverified": true,
+   "status": "사용 안 함",
+   "status_note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다."
+  },
+  "vo.adv.first_correct.C.raw": {
+   "file": "vo/adv_C/first_correct_raw.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "vo",
+   "where": "원음",
+   "dur": 14.006,
+   "bytes": 117515,
+   "lufs_i": -18.0,
+   "lpk100": -8.2,
+   "peak_db": -1.0,
+   "normal_loop": null,
+   "effect": "원음",
+   "candidate": "C",
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "google/gemini-3.1-flash-tts",
+     "prediction": "https://replicate.com/p/kjmt74v1edrmy0d0xfpraqtpjg",
+     "job": "vo_adv_C",
+     "license": "Gemini TTS 출력물 — Replicate 경유 조건은 원문으로 확인하지 못함(범위 밖 발견으로 보고)",
+     "terms_checked": [
+      "https://ai.google.dev/gemini-api/terms — Google 이 생성물 소유권을 주장하지 않음(Gemini API 를 직접 쓸 때의 약관)",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유 · Google 모델에 대한 추가 약관 절 없음"
+     ],
+     "usd": 0.04686
+    }
+   ],
+   "license": "Gemini TTS 출력물 — Replicate 경유 조건은 원문으로 확인하지 못함(범위 밖 발견으로 보고)",
+   "terms_unverified": true,
+   "status": "사용 안 함",
+   "status_note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다."
+  },
+  "vo.adv.sheet2.C": {
+   "file": "vo/adv_C/sheet2.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "vo",
+   "where": "바퀴 사이 — 03:51 둘째 장",
+   "dur": 10.409,
+   "bytes": 87042,
+   "lufs_i": -18.1,
+   "lpk100": -6.6,
+   "peak_db": -1.0,
+   "normal_loop": null,
+   "effect": "셔터 너머(1.3 kHz 아래 · 300 Hz 부풂) + 라디오 잡음 · 앞 0.5초 잡음으로 시작 구움",
+   "candidate": "C",
+   "text": "둘째 장이야. 거기도 섞여 있어. …어느 줄인지는 모르겠다. 미안하다.",
+   "speech_dur": 8.93,
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "google/gemini-3.1-flash-tts",
+     "prediction": "https://replicate.com/p/kjmt74v1edrmy0d0xfpraqtpjg",
+     "job": "vo_adv_C",
+     "license": "Gemini TTS 출력물 — Replicate 경유 조건은 원문으로 확인하지 못함(범위 밖 발견으로 보고)",
+     "terms_checked": [
+      "https://ai.google.dev/gemini-api/terms — Google 이 생성물 소유권을 주장하지 않음(Gemini API 를 직접 쓸 때의 약관)",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유 · Google 모델에 대한 추가 약관 절 없음"
+     ],
+     "usd": 0.04686
+    }
+   ],
+   "license": "Gemini TTS 출력물 — Replicate 경유 조건은 원문으로 확인하지 못함(범위 밖 발견으로 보고)",
+   "terms_unverified": true,
+   "status": "사용 안 함",
+   "status_note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다."
+  },
+  "vo.adv.sheet2.C.raw": {
+   "file": "vo/adv_C/sheet2_raw.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "vo",
+   "where": "원음",
+   "dur": 8.933,
+   "bytes": 74938,
+   "lufs_i": -18.0,
+   "lpk100": -9.6,
+   "peak_db": -1.2,
+   "normal_loop": null,
+   "effect": "원음",
+   "candidate": "C",
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "google/gemini-3.1-flash-tts",
+     "prediction": "https://replicate.com/p/kjmt74v1edrmy0d0xfpraqtpjg",
+     "job": "vo_adv_C",
+     "license": "Gemini TTS 출력물 — Replicate 경유 조건은 원문으로 확인하지 못함(범위 밖 발견으로 보고)",
+     "terms_checked": [
+      "https://ai.google.dev/gemini-api/terms — Google 이 생성물 소유권을 주장하지 않음(Gemini API 를 직접 쓸 때의 약관)",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유 · Google 모델에 대한 추가 약관 절 없음"
+     ],
+     "usd": 0.04686
+    }
+   ],
+   "license": "Gemini TTS 출력물 — Replicate 경유 조건은 원문으로 확인하지 못함(범위 밖 발견으로 보고)",
+   "terms_unverified": true,
+   "status": "사용 안 함",
+   "status_note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다."
+  },
+  "vo.adv.first_death.C": {
+   "file": "vo/adv_C/first_death.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "vo",
+   "where": "바퀴 사이 — 첫 죽음 뒤 돌아왔을 때",
+   "dur": 11.397,
+   "bytes": 95884,
+   "lufs_i": -18.1,
+   "lpk100": -8.5,
+   "peak_db": -1.0,
+   "normal_loop": null,
+   "effect": "셔터 너머(1.3 kHz 아래 · 300 Hz 부풂) + 라디오 잡음 · 앞 0.5초 잡음으로 시작 구움",
+   "candidate": "C",
+   "text": "돌아왔구나. 나도 여기서 몇 번이나 그랬어. …난 아직 여기 있어.",
+   "speech_dur": 9.92,
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "google/gemini-3.1-flash-tts",
+     "prediction": "https://replicate.com/p/kjmt74v1edrmy0d0xfpraqtpjg",
+     "job": "vo_adv_C",
+     "license": "Gemini TTS 출력물 — Replicate 경유 조건은 원문으로 확인하지 못함(범위 밖 발견으로 보고)",
+     "terms_checked": [
+      "https://ai.google.dev/gemini-api/terms — Google 이 생성물 소유권을 주장하지 않음(Gemini API 를 직접 쓸 때의 약관)",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유 · Google 모델에 대한 추가 약관 절 없음"
+     ],
+     "usd": 0.04686
+    }
+   ],
+   "license": "Gemini TTS 출력물 — Replicate 경유 조건은 원문으로 확인하지 못함(범위 밖 발견으로 보고)",
+   "terms_unverified": true,
+   "status": "사용 안 함",
+   "status_note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다."
+  },
+  "vo.adv.first_death.C.raw": {
+   "file": "vo/adv_C/first_death_raw.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "vo",
+   "where": "원음",
+   "dur": 9.921,
+   "bytes": 84858,
+   "lufs_i": -18.0,
+   "lpk100": -8.7,
+   "peak_db": -1.0,
+   "normal_loop": null,
+   "effect": "원음",
+   "candidate": "C",
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "google/gemini-3.1-flash-tts",
+     "prediction": "https://replicate.com/p/kjmt74v1edrmy0d0xfpraqtpjg",
+     "job": "vo_adv_C",
+     "license": "Gemini TTS 출력물 — Replicate 경유 조건은 원문으로 확인하지 못함(범위 밖 발견으로 보고)",
+     "terms_checked": [
+      "https://ai.google.dev/gemini-api/terms — Google 이 생성물 소유권을 주장하지 않음(Gemini API 를 직접 쓸 때의 약관)",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유 · Google 모델에 대한 추가 약관 절 없음"
+     ],
+     "usd": 0.04686
+    }
+   ],
+   "license": "Gemini TTS 출력물 — Replicate 경유 조건은 원문으로 확인하지 못함(범위 밖 발견으로 보고)",
+   "terms_unverified": true,
+   "status": "사용 안 함",
+   "status_note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다."
+  },
+  "vo.whisper.A": {
+   "file": "vo/wh_A/whisper.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "whisper",
+   "where": "sitter 가 한 칸 다가올 때마다(의자 쪽)",
+   "dur": 3.628,
+   "bytes": 29040,
+   "lufs_i": -22.0,
+   "lpk100": -13.2,
+   "peak_db": -3.1,
+   "normal_loop": false,
+   "effect": "가까이 · 낮은 음 걷어 냄",
+   "candidate": "A",
+   "text": "옆에 와 앉을 때까지 기다려 주세요",
+   "speech_dur": 3.21,
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "google/gemini-3.1-flash-tts",
+     "prediction": "https://replicate.com/p/zqh4hd60vsrmy0d0xfptgpnrf8",
+     "job": "vo_wh_A",
+     "license": "Gemini TTS 출력물 — Replicate 경유 조건은 원문으로 확인하지 못함(범위 밖 발견으로 보고)",
+     "terms_checked": [
+      "https://ai.google.dev/gemini-api/terms — Google 이 생성물 소유권을 주장하지 않음(Gemini API 를 직접 쓸 때의 약관)",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유 · Google 모델에 대한 추가 약관 절 없음"
+     ],
+     "usd": 0.0048
+    }
+   ],
+   "license": "Gemini TTS 출력물 — Replicate 경유 조건은 원문으로 확인하지 못함(범위 밖 발견으로 보고)",
+   "terms_unverified": true,
+   "status": "사용 안 함",
+   "status_note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다."
+  },
+  "vo.whisper.A.raw": {
+   "file": "vo/wh_A/whisper_raw.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "whisper",
+   "where": "원음",
+   "dur": 3.215,
+   "bytes": 27643,
+   "lufs_i": -22.0,
+   "lpk100": -13.4,
+   "peak_db": -3.5,
+   "normal_loop": null,
+   "effect": "원음",
+   "candidate": "A",
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "google/gemini-3.1-flash-tts",
+     "prediction": "https://replicate.com/p/zqh4hd60vsrmy0d0xfptgpnrf8",
+     "job": "vo_wh_A",
+     "license": "Gemini TTS 출력물 — Replicate 경유 조건은 원문으로 확인하지 못함(범위 밖 발견으로 보고)",
+     "terms_checked": [
+      "https://ai.google.dev/gemini-api/terms — Google 이 생성물 소유권을 주장하지 않음(Gemini API 를 직접 쓸 때의 약관)",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유 · Google 모델에 대한 추가 약관 절 없음"
+     ],
+     "usd": 0.0048
+    }
+   ],
+   "license": "Gemini TTS 출력물 — Replicate 경유 조건은 원문으로 확인하지 못함(범위 밖 발견으로 보고)",
+   "terms_unverified": true,
+   "status": "사용 안 함",
+   "status_note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다."
+  },
+  "vo.whisper.B": {
+   "file": "vo/wh_B/whisper.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "whisper",
+   "where": "sitter 가 한 칸 다가올 때마다(의자 쪽)",
+   "dur": 4.049,
+   "bytes": 32508,
+   "lufs_i": -22.0,
+   "lpk100": -15.9,
+   "peak_db": -3.9,
+   "normal_loop": false,
+   "effect": "가까이 · 낮은 음 걷어 냄",
+   "candidate": "B",
+   "text": "옆에 와 앉을 때까지 기다려 주세요",
+   "speech_dur": 3.64,
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "qwen/qwen3-tts",
+     "prediction": "https://replicate.com/p/gs9c9rz985rmr0d0xfpr0sdbjr",
+     "job": "vo_wh_B",
+     "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+     "terms_checked": [
+      "https://huggingface.co/datasets/choosealicense/licenses/blob/main/markdown/apache-2.0.md — Replicate 모델 페이지의 라이선스 주소",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유"
+     ],
+     "usd": 0.00038
+    }
+   ],
+   "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+   "status": "사용 안 함",
+   "status_note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다."
+  },
+  "vo.whisper.B.raw": {
+   "file": "vo/wh_B/whisper_raw.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "whisper",
+   "where": "원음",
+   "dur": 3.636,
+   "bytes": 31187,
+   "lufs_i": -22.0,
+   "lpk100": -17.0,
+   "peak_db": -6.4,
+   "normal_loop": null,
+   "effect": "원음",
+   "candidate": "B",
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "qwen/qwen3-tts",
+     "prediction": "https://replicate.com/p/gs9c9rz985rmr0d0xfpr0sdbjr",
+     "job": "vo_wh_B",
+     "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+     "terms_checked": [
+      "https://huggingface.co/datasets/choosealicense/licenses/blob/main/markdown/apache-2.0.md — Replicate 모델 페이지의 라이선스 주소",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유"
+     ],
+     "usd": 0.00038
+    }
+   ],
+   "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+   "status": "사용 안 함",
+   "status_note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다."
+  },
+  "vo.whisper.C": {
+   "file": "vo/wh_C/whisper.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "whisper",
+   "where": "sitter 가 한 칸 다가올 때마다(의자 쪽)",
+   "dur": 3.887,
+   "bytes": 31681,
+   "lufs_i": -22.0,
+   "lpk100": -14.3,
+   "peak_db": -3.8,
+   "normal_loop": false,
+   "effect": "가까이 · 낮은 음 걷어 냄",
+   "candidate": "C",
+   "text": "옆에 와 앉을 때까지 기다려 주세요",
+   "speech_dur": 3.47,
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "google/gemini-3.1-flash-tts",
+     "prediction": "https://replicate.com/p/pv35beb0r1rmy0d0xfq8b61nz0",
+     "job": "vo_wh_C",
+     "license": "Gemini TTS 출력물 — Replicate 경유 조건은 원문으로 확인하지 못함(범위 밖 발견으로 보고)",
+     "terms_checked": [
+      "https://ai.google.dev/gemini-api/terms — Google 이 생성물 소유권을 주장하지 않음(Gemini API 를 직접 쓸 때의 약관)",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유 · Google 모델에 대한 추가 약관 절 없음"
+     ],
+     "usd": 0.00508
+    }
+   ],
+   "license": "Gemini TTS 출력물 — Replicate 경유 조건은 원문으로 확인하지 못함(범위 밖 발견으로 보고)",
+   "terms_unverified": true,
+   "status": "사용 안 함",
+   "status_note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다."
+  },
+  "vo.whisper.C.raw": {
+   "file": "vo/wh_C/whisper_raw.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "whisper",
+   "where": "원음",
+   "dur": 3.474,
+   "bytes": 29669,
+   "lufs_i": -22.0,
+   "lpk100": -14.4,
+   "peak_db": -4.0,
+   "normal_loop": null,
+   "effect": "원음",
+   "candidate": "C",
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "google/gemini-3.1-flash-tts",
+     "prediction": "https://replicate.com/p/pv35beb0r1rmy0d0xfq8b61nz0",
+     "job": "vo_wh_C",
+     "license": "Gemini TTS 출력물 — Replicate 경유 조건은 원문으로 확인하지 못함(범위 밖 발견으로 보고)",
+     "terms_checked": [
+      "https://ai.google.dev/gemini-api/terms — Google 이 생성물 소유권을 주장하지 않음(Gemini API 를 직접 쓸 때의 약관)",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유 · Google 모델에 대한 추가 약관 절 없음"
+     ],
+     "usd": 0.00508
+    }
+   ],
+   "license": "Gemini TTS 출력물 — Replicate 경유 조건은 원문으로 확인하지 못함(범위 밖 발견으로 보고)",
+   "terms_unverified": true,
+   "status": "사용 안 함",
+   "status_note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다."
+  },
+  "vo.whisper.D": {
+   "file": "vo/wh_D/whisper.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "whisper",
+   "where": "sitter 가 한 칸 다가올 때마다(의자 쪽)",
+   "dur": 2.797,
+   "bytes": 22582,
+   "lufs_i": -22.0,
+   "lpk100": -14.9,
+   "peak_db": -4.3,
+   "normal_loop": false,
+   "effect": "가까이 · 낮은 음 걷어 냄",
+   "candidate": "D",
+   "text": "옆에 와 앉을 때까지 기다려 주세요",
+   "speech_dur": 2.38,
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "qwen/qwen3-tts",
+     "prediction": "https://replicate.com/p/9s1jfcxsm9rmw0d0xh4r2aftn4",
+     "job": "vo_wh_D",
+     "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+     "terms_checked": [
+      "https://huggingface.co/datasets/choosealicense/licenses/blob/main/markdown/apache-2.0.md — Replicate 모델 페이지의 라이선스 주소",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유"
+     ],
+     "usd": 0.00038
+    }
+   ],
+   "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+   "status": "사용 안 함",
+   "status_note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다."
+  },
+  "vo.whisper.D.raw": {
+   "file": "vo/wh_D/whisper_raw.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "whisper",
+   "where": "원음",
+   "dur": 2.384,
+   "bytes": 20897,
+   "lufs_i": -22.0,
+   "lpk100": -16.0,
+   "peak_db": -7.0,
+   "normal_loop": null,
+   "effect": "원음",
+   "candidate": "D",
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "qwen/qwen3-tts",
+     "prediction": "https://replicate.com/p/9s1jfcxsm9rmw0d0xh4r2aftn4",
+     "job": "vo_wh_D",
+     "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+     "terms_checked": [
+      "https://huggingface.co/datasets/choosealicense/licenses/blob/main/markdown/apache-2.0.md — Replicate 모델 페이지의 라이선스 주소",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유"
+     ],
+     "usd": 0.00038
+    }
+   ],
+   "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+   "status": "사용 안 함",
+   "status_note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다."
+  },
+  "vo.whisper.E": {
+   "file": "vo/wh_E/whisper.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "whisper",
+   "where": "sitter 가 한 칸 다가올 때마다(의자 쪽)",
+   "dur": 2.861,
+   "bytes": 22850,
+   "lufs_i": -22.0,
+   "lpk100": -13.9,
+   "peak_db": -4.8,
+   "normal_loop": false,
+   "effect": "가까이 · 낮은 음 걷어 냄",
+   "candidate": "E",
+   "text": "옆에 와 앉을 때까지 기다려 주세요",
+   "speech_dur": 2.45,
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "qwen/qwen3-tts",
+     "prediction": "https://replicate.com/p/122s9gyaq5rmy0d0xh4s2a84w8",
+     "job": "vo_wh_E",
+     "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+     "terms_checked": [
+      "https://huggingface.co/datasets/choosealicense/licenses/blob/main/markdown/apache-2.0.md — Replicate 모델 페이지의 라이선스 주소",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유"
+     ],
+     "usd": 0.00038
+    }
+   ],
+   "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+   "status": "사용 안 함",
+   "status_note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다."
+  },
+  "vo.whisper.E.raw": {
+   "file": "vo/wh_E/whisper_raw.m4a",
+   "loop": false,
+   "volume": 1.0,
+   "class": "whisper",
+   "where": "원음",
+   "dur": 2.448,
+   "bytes": 21253,
+   "lufs_i": -22.0,
+   "lpk100": -14.2,
+   "peak_db": -5.4,
+   "normal_loop": null,
+   "effect": "원음",
+   "candidate": "E",
+   "sources": [
+    {
+     "kind": "생성",
+     "model": "qwen/qwen3-tts",
+     "prediction": "https://replicate.com/p/122s9gyaq5rmy0d0xh4s2a84w8",
+     "job": "vo_wh_E",
+     "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+     "terms_checked": [
+      "https://huggingface.co/datasets/choosealicense/licenses/blob/main/markdown/apache-2.0.md — Replicate 모델 페이지의 라이선스 주소",
+      "https://replicate.com/terms — 5.1: 출력물은 고객 소유"
+     ],
+     "usd": 0.00038
+    }
+   ],
+   "license": "Qwen3-TTS — Apache-2.0(상업 사용 가능)",
+   "status": "사용 안 함",
+   "status_note": "사용 안 함 — 목소리는 쓰지 않기로 했다. 게임은 기존 합성 목소리와 자막을 쓴다(사용자 결정 2026-09-29). 파일은 남겨 둔다."
+  }
+ }
+}

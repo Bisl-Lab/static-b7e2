@@ -425,7 +425,8 @@ var Core = (function(){
     BIG_AFTER: 7,             // 시한 = 방송 끝 + 7초
     SITTER_STEP: 4, SITTER_AFTER: 7,   // sitter: ④ 를 안 본 시간 4초마다 한 칸(버튼 전엔 넷째 자리까지) · 옆자리 도착 7초 뒤 시한(v3.1)
     ARRIVE: 3.0, ARRIVE_BTN: 1.2,
-    FACE_FROM: 3, FACE_BY: 6  // face_glass: 한 번도 안 나왔으면 바퀴 3~6 안에 반드시 한 번(v2.2)
+    FACE_FROM: 3, FACE_BY: 6, // face_glass: 한 번도 안 나왔으면 바퀴 3~6 안에 반드시 한 번(v2.2)
+    SWEEP_PERIOD: 5.04, SWEEP_ON: [0.95, 2.45]   // light_sweep: 창 불빛 = 큰 이상 영상(prod3 big_light_sweep, 반복) 한 주기 안 0.95~2.45초 — 영상 밝기로 잼(v4.1)
   };
   var BC = {
     normal: { text: "첫 차 승객께서는 대합실에서 기다려 주십시오." },
@@ -441,7 +442,7 @@ var Core = (function(){
     9: "시계가 거꾸로 돌면 바늘이 멎기 전에 나간다"
   };
   var FAKE = { 3: "부르는 방송이 한 말과 같은 줄", 6: "떨어진 전단이 한 말과 같은 줄", 8: "다가온 젖은 것이 한 말과 같은 줄" };   // v3 · 임시
-  var NORMAL = { id: null, missed: "없음 — 평소와 같았습니다", d: { door: { dur: 5, line: "문밖은 도로가 아니었다.", rule: 2 } } };
+  var NORMAL = { id: null, missed: "없음 — 평소와 같았습니다", d: { door: { dur: 6, line: "문밖은 도로가 아니었다.", rule: 2 } } };
 
   // 이상 표 — DESIGN_v2.md §1. tier: 신박/스침/큰. face = 확인하는 면(0~3), null = 소리. ear = 귀로 아는 이상(신박이어도 바퀴 3부터).
   // d = 죽음(원인 → 장면 길이·한 줄·어긴 규칙 rule 또는 따른 가짜 fake). sal = 시뮬 플레이어가 처음 만나 알아챌 확률(추정).
@@ -489,7 +490,7 @@ var Core = (function(){
     { id: "voice_outside", tier: "스침", face: null, sal: .5, missed: "유리문 밖에서 난 방송 목소리",
       d: { sit: { dur: 6, line: "방송이 안으로 들어와서 끝났다.", rule: 1 } } },
     { id: "cut_name", tier: "스침", face: null, sal: .7, missed: "이름 자리에서 끊긴 방송",
-      d: { sit: { dur: 6, line: "끊긴 방송이 옆자리에서 이어졌다.", rule: 1 } } },
+      d: { sit: { dur: 6.2, line: "끊긴 방송이 옆자리에서 이어졌다.", rule: 1 } } },
     { id: "knock3", tier: "스침", face: 2, sal: .75, missed: "도로 쪽 문의 노크 세 번",
       d: { sit: { dur: 6, line: "네 번째 노크는 등 뒤에서 났다.", rule: 1 } } },
     { id: "light_sweep", tier: "큰", face: 2, sal: .9, missed: "창을 쓸고 가는 헤드라이트",
@@ -500,7 +501,7 @@ var Core = (function(){
       d: { sit: { dur: 7, line: "바늘이 03:47에 멎었다. 내 자리엔 종이만 있었다.", rule: 9 } } },
     { id: "sitter", tier: "큰", face: 3, sal: .85, fakeRel: 8, missed: "옆자리로 옮겨 오는 젖은 눌림",
       d: { after: { dur: 8, line: "옆자리가 내려앉고, 귓가에 그 말이 한 번 더 들렸다.", fake: 8 },
-           sit: { dur: 6, line: "내 등받이가 뒤에서 눌렸다.", rule: 1 } } },
+           sit: { dur: 6.3, line: "내 등받이가 뒤에서 눌렸다.", rule: 1 } } },   // v4.1: 죽음 영상(정지 그림 → 영상 5.04초) 길이
     { id: "water_rise", tier: "큰", face: 0, sal: .85, missed: "유리문 바깥에서 차오르는 물",
       d: { sit: { dur: 8, line: "수면이 손잡이를 넘자 유리문이 안으로 열렸다.", rule: 1 } } },
     { id: "shutter_rising", tier: "큰", face: 1, sal: .85, missed: "저절로 올라가는 매점 셔터",
@@ -574,7 +575,7 @@ var Core = (function(){
       items.push({ ch: ch, t: t, d: d, syl: true });
       t += d;
     });
-    return { items: items, dur: round2(t), cut: !!cut };
+    return { items: items, dur: round2(t), cut: !!cut, text: text };   // text = 소리 파일을 고르는 열쇠(v4.1)
   }
 
   function newSession(o){
@@ -612,9 +613,9 @@ var Core = (function(){
   }
 
   function lightPasses(start, end){
-    // 헤드라이트가 창을 쓰는 시각들: 간격 6→6→4→4→3…, 한 번에 2초
-    var out = [], t = start + 1, gaps = [6, 6, 4, 4, 3];
-    for (var i = 0; t < end + 10; i++){ out.push(round2(t)); t += gaps[Math.min(i, gaps.length - 1)]; }
+    // 헤드라이트가 창을 쓰는 시각들(v4.1) — 큰 이상 영상이 신호 순간(start)부터 반복되므로 그 주기에 맞춘다. 불빛 = 각 시각부터 SWEEP_ON 길이
+    var out = [], t = start + T.SWEEP_ON[0];
+    for (; t < end + 10; t += T.SWEEP_PERIOD) out.push(round2(t));
     return out;
   }
 
@@ -736,7 +737,8 @@ var Core = (function(){
   function correctChoice(P){ return P.ending ? "platform" : (P.anomaly ? "door" : "sit"); }
   function lightOnAt(P, t){
     if (!P.passes) return false;
-    for (var i = 0; i < P.passes.length; i++){ var p = P.passes[i]; if (t >= p + 0.3 && t <= p + 1.7) return true; }
+    var L = T.SWEEP_ON[1] - T.SWEEP_ON[0];
+    for (var i = 0; i < P.passes.length; i++){ var p = P.passes[i]; if (t >= p && t <= p + L) return true; }
     return false;
   }
   function deathOf(a, cause){
@@ -814,7 +816,7 @@ var FAST = Q.fast === "1", STILL = Q.still === "1";
 if (STILL) document.documentElement.classList.add("still");
 
 // ── 로그 ── 기존 수집 주소(GAS). build proto-room01 · ver v3. 시험 모드에서는 보내지 않는다.
-var BUILD = "proto-room01", VER = "v4";
+var BUILD = "proto-room01", VER = "v4.1";
 var ENDPOINT = TEST ? "" : "https://script.google.com/macros/s/AKfycby4rrgNdXGb41bgr4IxwXNM8_PLNipORuUDpxlC2iamQu6fYENv7_3VvGLCE-i7wSzfZQ/exec";
 var LSK = { dev: "proto_room01_device", runs: "proto_room01_runs", queue: "proto_room01_queue", snd: "proto_room01_sound", cap: "proto_room01_captions", seen: "proto_room01_v2_seen_deaths" };
 function lsGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
@@ -878,10 +880,13 @@ function flushQ(){
 var seenDeaths = {};
 if (!TEST){ try{ seenDeaths = JSON.parse(lsGet(LSK.seen) || "{}") || {}; }catch(e){ seenDeaths = {}; } }
 function markSeenDeath(id){ seenDeaths[id] = 1; if (!TEST) lsSet(LSK.seen, JSON.stringify(seenDeaths)); }
+// 소리 파일 목록(v4.1) — tools/sound.js 가 쓴다(sound/sounds.json → audio/). id → { f 파일 · b 바이트 · d 길이 · ls/le 반복 구간 · sd 말 길이 · cut 끊는 자리 · hit 부딪는 자리 · c 크기 등급 }
+/*SOUNDS-BEGIN*/var SOUNDS = {"amb.hum":{"f":"audio/amb/hum.m4a","b":136478,"d":16.5,"ls":0.25,"le":16.25,"c":"loop"},"amb.air":{"f":"audio/amb/air.m4a","b":120052,"d":14.5,"ls":0.25,"le":14.25,"c":"loop"},"amb.radio":{"f":"audio/amb/radio.m4a","b":326437,"d":39.5,"ls":0.25,"le":39.25,"c":"loop"},"death.breath":{"f":"audio/death/breath.m4a","b":158622,"d":19.452,"c":"death"},"death.coldwater":{"f":"audio/death/coldwater.m4a","b":178988,"d":21.582,"c":"death"},"death.wet_near":{"f":"audio/death/wet_near.m4a","b":169468,"d":19.849,"c":"death"},"death.tail":{"f":"audio/death/tail.m4a","b":200821,"d":24.387,"c":"death"},"scare.shriek":{"f":"audio/scare/shriek.m4a","b":28088,"d":2.65,"c":"scare"},"scare.rush":{"f":"audio/scare/rush.m4a","b":25554,"d":2.4,"hit":1.1,"c":"scare"},"scare.low":{"f":"audio/scare/low.m4a","b":9580,"d":0.84,"hit":0.14,"c":"scare"},"loop.static":{"f":"audio/loop/static.m4a","b":54537,"d":6.5,"ls":0.25,"le":6.25,"c":"loop"},"loop.motor":{"f":"audio/loop/motor.m4a","b":70911,"d":8.5,"ls":0.25,"le":8.25,"c":"loop"},"loop.engine":{"f":"audio/loop/engine.m4a","b":121066,"d":14.5,"ls":0.25,"le":14.25,"c":"loop"},"loop.slosh":{"f":"audio/loop/slosh.m4a","b":66765,"d":8,"ls":0.25,"le":7.75,"c":"loop"},"loop.trickle":{"f":"audio/loop/trickle.m4a","b":74983,"d":9,"ls":0.25,"le":8.75,"c":"loop"},"listen.wind":{"f":"audio/listen/wind.m4a","b":87313,"d":10.5,"ls":0.25,"le":10.25,"c":"listen"},"listen.buzz":{"f":"audio/listen/buzz.m4a","b":70916,"d":8.5,"ls":0.25,"le":8.25,"c":"listen"},"listen.buzz_water":{"f":"audio/listen/buzz_water.m4a","b":70970,"d":8.5,"ls":0.25,"le":8.25,"c":"listen"},"listen.tickback":{"f":"audio/listen/tickback.m4a","b":26609,"d":3.1,"ls":0.25,"le":2.85,"c":"listen"},"listen.dead":{"f":"audio/listen/dead.m4a","b":67929,"d":8,"ls":0.25,"le":7.75,"c":"listen"},"sfx.chime":{"f":"audio/sfx/chime.m4a","b":24425,"d":3.452,"c":"evt"},"sfx.knock3":{"f":"audio/sfx/knock3.m4a","b":7611,"d":1.1,"c":"evt"},"sfx.knock1":{"f":"audio/sfx/knock1.m4a","b":2766,"d":0.21,"c":"dsfx"},"sfx.stamp_wet":{"f":"audio/sfx/stamp_wet.m4a","b":5735,"d":0.55,"c":"evt"},"sfx.stamp_hit":{"f":"audio/sfx/stamp_hit.m4a","b":6426,"d":0.65,"c":"dsfx"},"sfx.coin.1":{"f":"audio/sfx/coin_1.m4a","b":3723,"d":0.31,"c":"evt"},"sfx.coin.2":{"f":"audio/sfx/coin_2.m4a","b":3767,"d":0.31,"c":"evt"},"sfx.coin.3":{"f":"audio/sfx/coin_3.m4a","b":3718,"d":0.31,"c":"evt"},"sfx.coin.4":{"f":"audio/sfx/coin_4.m4a","b":3727,"d":0.31,"c":"evt"},"sfx.coin_spill":{"f":"audio/sfx/coin_spill.m4a","b":22128,"d":2.55,"c":"evt"},"sfx.drip.1":{"f":"audio/sfx/drip_1.m4a","b":4097,"d":0.35,"c":"evt"},"sfx.drip.2":{"f":"audio/sfx/drip_2.m4a","b":4024,"d":0.35,"c":"evt"},"sfx.drip.3":{"f":"audio/sfx/drip_3.m4a","b":3932,"d":0.35,"c":"evt"},"sfx.drip.4":{"f":"audio/sfx/drip_4.m4a","b":4034,"d":0.35,"c":"evt"},"sfx.pour":{"f":"audio/sfx/pour.m4a","b":37229,"d":4.2,"c":"dsfx"},"sfx.creak.1":{"f":"audio/sfx/creak_1.m4a","b":5765,"d":0.55,"c":"evt"},"sfx.creak.2":{"f":"audio/sfx/creak_2.m4a","b":5749,"d":0.56,"c":"evt"},"sfx.creak.3":{"f":"audio/sfx/creak_3.m4a","b":6505,"d":0.65,"c":"evt"},"sfx.hinge":{"f":"audio/sfx/hinge.m4a","b":13453,"d":1.5,"c":"dsfx"},"sfx.tick":{"f":"audio/sfx/tick.m4a","b":2600,"d":0.18,"c":"evt"},"sfx.tick_back":{"f":"audio/sfx/tick_back.m4a","b":3848,"d":0.36,"c":"evt"},"sfx.whoosh":{"f":"audio/sfx/whoosh.m4a","b":43555,"d":5.2,"c":"evt"},"sfx.blink":{"f":"audio/sfx/blink.m4a","b":1958,"d":0.1,"c":"evt"},"sfx.tuk":{"f":"audio/sfx/tuk.m4a","b":2271,"d":0.15,"c":"evt"},"sfx.clunk":{"f":"audio/sfx/clunk.m4a","b":2753,"d":0.205,"c":"evt"},"sfx.door":{"f":"audio/sfx/door.m4a","b":25293,"d":2.95,"c":"evt"},"sfx.paper":{"f":"audio/sfx/paper.m4a","b":4891,"d":0.62,"c":"ui"},"sfx.paper_slide":{"f":"audio/sfx/paper_slide.m4a","b":8452,"d":0.9,"c":"evt"},"sfx.tap":{"f":"audio/sfx/tap.m4a","b":1883,"d":0.14,"c":"ui"},"sfx.scratch":{"f":"audio/sfx/scratch.m4a","b":5173,"d":0.48,"c":"evt"},"sfx.cut_click":{"f":"audio/sfx/cut_click.m4a","b":2042,"d":0.12,"c":"evt"},"sfx.thud":{"f":"audio/sfx/thud.m4a","b":9676,"d":1.05,"c":"dsfx"},"sfx.thump":{"f":"audio/sfx/thump.m4a","b":4253,"d":0.38,"c":"dsfx"},"sfx.bang":{"f":"audio/sfx/bang.m4a","b":9188,"d":0.98,"c":"dsfx"},"sfx.glass":{"f":"audio/sfx/glass.m4a","b":18840,"d":2.2,"c":"dsfx"},"sfx.wind_gust":{"f":"audio/sfx/wind_gust.m4a","b":42015,"d":5,"c":"dsfx"},"sfx.camera":{"f":"audio/sfx/camera.m4a","b":6190,"d":0.6,"c":"dsfx"},"sfx.breath_glass":{"f":"audio/sfx/breath_glass.m4a","b":16732,"d":2.152,"c":"dsfx"}};
+var SVARI = {"sfx.coin":["sfx.coin.1","sfx.coin.2","sfx.coin.3","sfx.coin.4"],"sfx.drip":["sfx.drip.1","sfx.drip.2","sfx.drip.3","sfx.drip.4"],"sfx.creak":["sfx.creak.1","sfx.creak.2","sfx.creak.3"]};/*SOUNDS-END*/
 // ── 소리 ── 형광등 험·사망 울림은 기존 음원(assets/audio amb_room · sfx_death, CC0 자체 합성). 나머지는 WebAudio 합성.
 var Snd = (function(){
   var AC = window.AudioContext || window.webkitAudioContext;
-  var ctx = null, master = null, meter = null, verbIn = null, noiseBuf = null, buf = {}, humLoop = null;
+  var kmeter = null, kbuf = null, ctx = null, master = null, meter = null, verbIn = null, noiseBuf = null, buf = {}, humLoop = null;
   var humSrc = null, humGain = null, humWanted = false, humDetune = 0, loops = {};
   var on = lsGet(LSK.snd) !== "off";
   var faceOf = function(){ return 0; };
@@ -890,13 +895,15 @@ var Snd = (function(){
     try{ ctx = new AC(); }catch(e){ ctx = null; return; }
     master = ctx.createGain(); master.gain.value = on ? 0.9 : 0;
     meter = ctx.createAnalyser(); meter.fftSize = 2048; master.connect(meter); meter.connect(ctx.destination);
+    var ks = ctx.createBiquadFilter(); ks.type = "highshelf"; ks.frequency.value = 1500; ks.gain.value = 4; var kh = ctx.createBiquadFilter(); kh.type = "highpass"; kh.frequency.value = 38; kh.Q.value = 0.5;
+    kmeter = ctx.createAnalyser(); kmeter.fftSize = 16384; master.connect(ks); ks.connect(kh); kh.connect(kmeter);   // 크기 재기(검사 · tools/level.js) — 소리로 나가지 않는다
     var sr = ctx.sampleRate, len = Math.floor(sr * 1.5), ir = ctx.createBuffer(2, len, sr);
     for (var c = 0; c < 2; c++){ var d = ir.getChannelData(c); for (var i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 3.4); }
     var verb = ctx.createConvolver(); verb.buffer = ir;
     verbIn = ctx.createGain(); verbIn.gain.value = 1; verbIn.connect(verb); verb.connect(master);
     noiseBuf = ctx.createBuffer(1, sr * 2, sr);
     var nd = noiseBuf.getChannelData(0); for (var j = 0; j < nd.length; j++) nd[j] = Math.random() * 2 - 1;
-    load("hum", "audio/hum.mp3"); load("death", "audio/death.mp3");
+    preload(SND_ALWAYS);   // v4.1: 모든 판에 늘 받는 소리(바탕 · 평소 · 조작 · 죽음 층 · 매점 목소리) — 옛 hum.mp3 · death.mp3 는 파일을 못 받을 때만
   }
   function decode(ab){
     return new Promise(function(res, rej){
@@ -921,6 +928,43 @@ var Snd = (function(){
   function now(){ return ctx.currentTime; }
   function g(v){ var n = ctx.createGain(); n.gain.value = v; return n; }
   function filt(type, f, q){ var n = ctx.createBiquadFilter(); n.type = type; n.frequency.value = f; if (q != null) n.Q.value = q; return n; }
+  // ── 소리 파일(v4.1) — id → AudioBuffer. 받는 중 · 실패는 따로 적고, 실패하면 그 소리는 합성음으로 대신한다.
+  var sbuf = {}, swait = {}, sbad = {}, FLOG = {}, USED = { file: {}, synth: {}, wait: {} };   // 쓰임: 파일 · 합성(파일 없음/실패) · 받는 중이라 합성
+  function sndOf(id){ return typeof SOUNDS !== "undefined" ? SOUNDS[id] || null : null; }
+  function fetchBuf(id, cb){
+    if (!ctx || sbuf[id] || swait[id] || sbad[id]){ if (cb) cb(); return; }
+    var S0 = sndOf(id); if (!S0){ sbad[id] = 1; if (cb) cb(); return; }
+    swait[id] = 1; FLOG[S0.f] = S0.b;
+    fetch(S0.f).then(function(r){ if (!r.ok) throw new Error("HTTP " + r.status); return r.arrayBuffer(); }).then(decode).then(function(b){ sbuf[id] = b; delete swait[id]; if (id === "amb.hum" && humWanted && !humSrc) humOn(); loopArrived(id); if (cb) cb(); })
+      .catch(function(e){ sbad[id] = 1; delete swait[id]; console.warn("[room01] 소리 파일 실패 " + S0.f + " — 합성음으로 대신 · " + ((e && e.message) || e));
+        if (id === "amb.hum") load("hum", "audio/hum.mp3"); if (id === "death.tail") load("death", "audio/death.mp3"); if (cb) cb(); });
+  }
+  function preload(ids){ (ids || []).forEach(function(id){ if (SVARI_OF(id)) SVARI_OF(id).forEach(function(x){ fetchBuf(x); }); else fetchBuf(id); }); }
+  // 받는 순서: 첫 바퀴에 바로 나는 것(init — 바탕 · 띵동 · 조작) → 첫 바퀴가 시작되면 나머지를 둘씩 차례로(그림 미리 받기와 다투지 않게)
+  var SND_ALWAYS = ["amb.hum", "amb.air", "amb.radio", "sfx.chime", "sfx.tap", "sfx.paper", "sfx.door", "sfx.clunk", "sfx.tuk"];
+  var restQ = null;
+  function preloadRest(){ if (!ctx || restQ || typeof SOUNDS === "undefined") return; restQ = Object.keys(SOUNDS).filter(function(id){ return !sbuf[id] && !swait[id] && !sbad[id]; }); pump(); pump(); }
+  function pump(){ var id = restQ && restQ.shift(); if (id) fetchBuf(id, pump); }
+  function SVARI_OF(id){ return typeof SVARI !== "undefined" && SVARI[id] ? SVARI[id] : null; }
+  var vrot = {};
+  function pick(id){ var V = SVARI_OF(id); if (!V) return id; var ok = V.filter(function(x){ return sbuf[x]; }); if (!ok.length){ V.forEach(function(x){ fetchBuf(x); }); return V[0]; } vrot[id] = ((vrot[id] || 0) + 1) % ok.length; return ok[vrot[id]]; }   // 여러 판 돌려 쓰기
+  function mark(kind, fn){ USED[kind][fn] = (USED[kind][fn] || 0) + 1; }
+  // 한 번 트는 파일 — o: face · muffle(저역 통과 Hz) · gain · delay(초) · offset(초) · dur(초 — 여기서 흐리게 끊음) · dest · detune. 없으면 null(부른 쪽이 합성음으로)
+  function play(id, o, fn){
+    o = o || {}; var rid = pick(id), b = sbuf[rid]; if (!b){ fetchBuf(rid); if (fn) mark(sbad[rid] || !sndOf(rid) ? "synth" : "wait", fn); return null; }
+    if (fn) mark("file", fn);
+    var sN = ctx.createBufferSource(); sN.buffer = b; if (o.detune && sN.detune) sN.detune.value = o.detune;
+    var gn = g(o.gain == null ? 1 : o.gain), dest = o.dest || place(o.face == null ? null : o.face, o.muffle);
+    sN.connect(gn); gn.connect(dest);
+    var t = now() + 0.005 + Math.max(0, o.delay || 0), off = Math.max(0, o.offset || 0);
+    sN.start(t, off);
+    if (o.dur != null && o.dur < b.duration - off){ var te = t + o.dur; gn.gain.setValueAtTime(gn.gain.value, te); gn.gain.linearRampToValueAtTime(0.0001, te + 0.3); try{ sN.stop(te + 0.35); }catch(e){} }
+    var base = gn.gain.value;
+    return { file: true, id: rid, src: sN, t0: t, dur: b.duration, boost: function(v){ try{ gn.gain.setTargetAtTime(base * v, now(), 0.12); }catch(e){} },
+      stop: function(fade){ var t2 = now(); try{ gn.gain.cancelScheduledValues(t2); gn.gain.setValueAtTime(gn.gain.value, t2); gn.gain.linearRampToValueAtTime(0.0001, t2 + (fade == null ? 0.05 : fade)); sN.stop(t2 + (fade == null ? 0.06 : fade + 0.02)); }catch(e){} } };
+  }
+  // 반복 파일(loop_start ~ loop_end) — BufferSource 하나
+  function loopSrc(id, t){ var S0 = sndOf(id), b = sbuf[id]; if (!b || !S0) return null; var sN = ctx.createBufferSource(); sN.buffer = b; sN.loop = true; if (S0.ls != null){ sN.loopStart = S0.ls; sN.loopEnd = S0.le; } sN.start(t, S0.ls || 0); return sN; }
   // 소리 자리: 지금 보고 있는 면 기준. 오른쪽 면 = 오른쪽, 등 뒤 = 먹먹하게. 이어지는 소리는 면을 돌리면 repan() 으로 다시 맞춘다.
   function relOf(face){ return face == null ? 0 : ((face - faceOf() + 4) % 4); }
   function place(face, muffle){
@@ -952,12 +996,19 @@ var Snd = (function(){
   }
   function humOn(){
     humWanted = true;
-    if (!live() || !buf.hum || humSrc) return;
+    if (!live() || humSrc) return;
+    if (sbuf["amb.hum"]){   // v4.1 파일(크기는 파일에 구움 — 이득 1)
+      humSrc = loopSrc("amb.hum", now()); if (humSrc.detune) humSrc.detune.value = humDetune;
+      humGain = g(0); humSrc.connect(humGain); humGain.connect(master);
+      humGain.gain.setValueAtTime(0, now()); humGain.gain.linearRampToValueAtTime(1, now() + 0.25); mark("file", "humOn");
+      return;
+    }
+    if (!buf.hum){ fetchBuf("amb.hum"); return; }
     humSrc = ctx.createBufferSource(); humSrc.buffer = buf.hum; humSrc.loop = true;
     humSrc.loopStart = humLoop[0]; humSrc.loopEnd = humLoop[1];
     if (humSrc.detune) humSrc.detune.value = humDetune;
     humGain = g(0); humSrc.connect(humGain); humGain.connect(master);
-    humGain.gain.setValueAtTime(0, now()); humGain.gain.linearRampToValueAtTime(0.42, now() + 0.25);
+    humGain.gain.setValueAtTime(0, now()); humGain.gain.linearRampToValueAtTime(0.42, now() + 0.25); mark("synth", "humOn");
     humSrc.start(0, humLoop[0]);
   }
   function humOff(fast){
@@ -986,11 +1037,14 @@ var Snd = (function(){
   }
   function chime(){
     if (!live()) return;
+    if (play("sfx.chime", {}, "chime")) return;
     var c = pa(0.45), t = now() + 0.02;
     [[659.25, 0], [523.25, 0.58]].forEach(function(n){
       [[1, 0.5], [2, 0.12], [3, 0.05]].forEach(function(h){ tone(c.input, "sine", n[0] * h[0], t + n[1], h[1], 1.25); });
     });
   }
+  // 합성 목소리 크기(v4.1) — 소리 파일 등급의 기준(목소리 integrated −18 LUFS · 속삭임 −22)에 맞춘 값. tools/level.js 로 잰다.
+  var VO_LV = { pa: 0.902, dry: 2.313, outside: 1.71, adv: 2.455, wh: 2.456 };
   // 방송 목소리 — 성대(톱니파) + 모음 포먼트 셋 + 자음 잡음. mode: pa(천장 스피커) / outside(유리문 밖) / dry(스피커 없이 가까이)
   var VOW = { a: [850, 1300, 2800], e: [520, 1950, 2800], eo: [640, 1120, 2650], o: [480, 860, 2650], u: [370, 880, 2550], eu: [430, 1500, 2550], i: [320, 2450, 3150] };
   var JUNG = ["a", "e", "a", "e", "eo", "e", "eo", "e", "o", "a", "e", "e", "o", "u", "eo", "e", "i", "u", "eu", "i", "i"];
@@ -1006,12 +1060,12 @@ var Snd = (function(){
     var nb = filt("bandpass", 4200, 1.2), ng = g(0); ns.connect(nb); nb.connect(ng);
     var out, wetG = null, outG;
     if (mode === "outside"){
-      var lp = filt("lowpass", 620), pk = filt("peaking", 380, 1); pk.gain.value = 5; outG = g(0.8);
+      var lp = filt("lowpass", 620), pk = filt("peaking", 380, 1); pk.gain.value = 5; outG = g(VO_LV.outside);
       lp.connect(pk); pk.connect(outG); outG.connect(place(0, 900)); out = lp;
     } else if (mode === "dry"){
-      var hp2 = filt("highpass", opt.hp || 160); outG = g(opt.level != null ? opt.level : 0.9); hp2.connect(outG); outG.connect(place(opt.face == null ? null : opt.face)); out = hp2;
+      var hp2 = filt("highpass", opt.hp || 160); outG = g(opt.level != null ? opt.level : VO_LV.dry); hp2.connect(outG); outG.connect(place(opt.face == null ? null : opt.face)); out = hp2;
     } else if (mode === "into"){ outG = g(1); outG.connect(opt.dest); out = outG;   // 매점 목소리: 부른 쪽이 준 길로(먹먹하게 거른 뒤 크기를 올린다)
-    } else { var c = pa(0.55, opt.muffle || 0); out = c.input; wetG = c.wet; outG = c.out; }
+    } else { var c = pa(VO_LV.pa, opt.muffle || 0); out = c.input; wetG = c.wet; outG = c.out; }
     amp.connect(out); ng.connect(out);
     var syl = sched.items.filter(function(x){ return x.syl; }), n = syl.length;
     syl.forEach(function(it, k){
@@ -1045,40 +1099,50 @@ var Snd = (function(){
   // ── 한 번 나는 소리들 ──
   function knock(face, n){
     if (!live()) return;
+    if (play((n || 3) === 1 ? "sfx.knock1" : "sfx.knock3", { face: face == null ? 2 : face }, "knock")) return;
     var dest = place(face == null ? 2 : face), t = now() + 0.02;
     [0, 0.34, 0.66].slice(0, n || 3).forEach(function(dt){ noise(dest, t + dt, 0.08, 0.9, "bandpass", 230, 1.4, 0.002); tone(dest, "sine", 115, t + dt, 0.75, 0.13, 68); });
   }
-  function door(){ if (!live()) return; var t = now() + 0.02; tone(master, "square", 1800, t, 0.05, 0.02); noise(master, t + 0.1, 1.0, 0.22, "bandpass", 650, 0.7, 0.3); tone(master, "sine", 82, t + 1.25, 0.6, 0.18, 50); noise(master, t + 1.25, 0.06, 0.25, "lowpass", 400); }
-  function clunk(){ if (!live()) return; var t = now() + 0.01; tone(master, "sine", 1400, t, 0.12, 0.02); tone(master, "sine", 320, t, 0.3, 0.09); }
-  function tuk(){ if (!live()) return; var t = now() + 0.01; tone(master, "sine", 150, t, 0.35, 0.05, 90); noise(master, t, 0.03, 0.05, "lowpass", 300); }
-  function paper(){ if (!live()) return; noise(master, now() + 0.01, 0.14, 0.18, "highpass", 1900, null, 0.03); }
-  function paperSlide(){ if (!live()) return; noise(place(2), now() + 0.02, 0.7, 0.2, "highpass", 1500, null, 0.25); }
-  function tap(){ if (!live()) return; tone(master, "sine", 900, now() + 0.005, 0.04, 0.03); }
-  function blink(face){ if (!live()) return; tone(place(face), "square", 120, now() + 0.005, 0.035, 0.03); }
-  function coin(){ if (!live()) return; var d = place(2), t = now() + 0.01; for (var i = 0; i < 2; i++) tone(d, "sine", 2600 + Math.random() * 1800, t + i * 0.05, 0.12, 0.09); }
-  function scratch(){ if (!live()) return; var t = now() + 0.01; for (var i = 0; i < 5; i++) noise(master, t + i * 0.07, 0.05, 0.06, "highpass", 3200, null, 0.01); }
-  function stampWet(){ if (!live()) return; var t = now() + 0.01; noise(master, t, 0.12, 0.3, "bandpass", 900, 2, 0.004); noise(master, t + 0.15, 0.35, 0.12, "highpass", 2500, null, 0.05); }
-  function stampHit(){ if (!live()) return; var t = now() + 0.01; tone(master, "sine", 95, t, 0.55, 0.12, 60); noise(master, t, 0.08, 0.35, "lowpass", 700); }
-  function creak(face){ if (!live()) return; var d = place(face == null ? null : face), t = now() + 0.01, o = ctx.createOscillator(), e = g(0), bp = filt("bandpass", 900, 5);
+  function door(){ if (!live()) return; if (play("sfx.door", {}, "door")) return; var t = now() + 0.02; tone(master, "square", 1800, t, 0.05, 0.02); noise(master, t + 0.1, 1.0, 0.22, "bandpass", 650, 0.7, 0.3); tone(master, "sine", 82, t + 1.25, 0.6, 0.18, 50); noise(master, t + 1.25, 0.06, 0.25, "lowpass", 400); }
+  function clunk(){ if (!live()) return; if (play("sfx.clunk", {}, "clunk")) return; var t = now() + 0.01; tone(master, "sine", 1400, t, 0.12, 0.02); tone(master, "sine", 320, t, 0.3, 0.09); }
+  function tuk(){ if (!live()) return; if (play("sfx.tuk", {}, "tuk")) return; var t = now() + 0.01; tone(master, "sine", 150, t, 0.35, 0.05, 90); noise(master, t, 0.03, 0.05, "lowpass", 300); }
+  function paper(){ if (!live()) return; if (play("sfx.paper", {}, "paper")) return; noise(master, now() + 0.01, 0.14, 0.18, "highpass", 1900, null, 0.03); }
+  function paperSlide(){ if (!live()) return; if (play("sfx.paper_slide", { face: 2 }, "paperSlide")) return; noise(place(2), now() + 0.02, 0.7, 0.2, "highpass", 1500, null, 0.25); }
+  function tap(){ if (!live()) return; if (play("sfx.tap", {}, "tap")) return; tone(master, "sine", 900, now() + 0.005, 0.04, 0.03); }
+  function blink(face){ if (!live()) return; if (play("sfx.blink", { face: face }, "blink")) return; tone(place(face), "square", 120, now() + 0.005, 0.035, 0.03); }
+  function coin(){ if (!live()) return; if (play("sfx.coin", { face: 2 }, "coin")) return; var d = place(2), t = now() + 0.01; for (var i = 0; i < 2; i++) tone(d, "sine", 2600 + Math.random() * 1800, t + i * 0.05, 0.12, 0.09); }
+  function scratch(){ if (!live()) return; if (play("sfx.scratch", {}, "scratch")) return; var t = now() + 0.01; for (var i = 0; i < 5; i++) noise(master, t + i * 0.07, 0.05, 0.06, "highpass", 3200, null, 0.01); }
+  function stampWet(){ if (!live()) return; if (play("sfx.stamp_wet", {}, "stampWet")) return; var t = now() + 0.01; noise(master, t, 0.12, 0.3, "bandpass", 900, 2, 0.004); noise(master, t + 0.15, 0.35, 0.12, "highpass", 2500, null, 0.05); }
+  function stampHit(){ if (!live()) return; if (play("sfx.stamp_hit", {}, "stampHit")) return; var t = now() + 0.01; tone(master, "sine", 95, t, 0.55, 0.12, 60); noise(master, t, 0.08, 0.35, "lowpass", 700); }
+  function creak(face){ if (!live()) return; if (play("sfx.creak", { face: face == null ? null : face }, "creak")) return; var d = place(face == null ? null : face), t = now() + 0.01, o = ctx.createOscillator(), e = g(0), bp = filt("bandpass", 900, 5);
     o.type = "sawtooth"; o.frequency.setValueAtTime(190, t); o.frequency.linearRampToValueAtTime(140, t + 0.45);
     e.gain.setValueAtTime(0, t); e.gain.linearRampToValueAtTime(0.25, t + 0.05); e.gain.linearRampToValueAtTime(0, t + 0.5);
     o.connect(bp); bp.connect(e); e.connect(d); o.start(t); o.stop(t + 0.55); }
-  function drip(face){ if (!live()) return; tone(place(face == null ? null : face), "sine", 1400, now() + 0.01, 0.18, 0.08, 480); }
-  function pour(dur){ if (!live()) return; noise(master, now() + 0.01, dur || 2.5, 0.35, "bandpass", 700, 0.6, 0.6); }
-  function glass(){ if (!live()) return; var t = now() + 0.01; noise(master, t, 0.35, 0.6, "highpass", 2800); [3100, 4300, 5200, 6100].forEach(function(f, i){ tone(master, "sine", f, t + i * 0.02, 0.12, 0.5); }); }
-  function thud(){ if (!live()) return; var t = now() + 0.01; tone(master, "sine", 70, t, 0.8, 0.25, 40); noise(master, t, 0.12, 0.3, "lowpass", 350); }
-  function bang(){ if (!live()) return; var t = now() + 0.01; noise(master, t, 0.3, 0.8, "lowpass", 1400, null, 0.002); tone(master, "square", 60, t, 0.4, 0.2, 40); }
-  function wind(dur){ if (!live()) return; noise(master, now() + 0.01, dur || 2, 0.25, "bandpass", 500, 0.5, 0.5); }
-  function hinge(){ if (!live()) return; var t = now() + 0.01, o = ctx.createOscillator(), e = g(0), bp = filt("bandpass", 1200, 6);
+  function drip(face){ if (!live()) return; if (play("sfx.drip", { face: face == null ? null : face }, "drip")) return; tone(place(face == null ? null : face), "sine", 1400, now() + 0.01, 0.18, 0.08, 480); }
+  function pour(dur){ if (!live()) return; if (play("sfx.pour", { dur: dur || 2.5 }, "pour")) return; noise(master, now() + 0.01, dur || 2.5, 0.35, "bandpass", 700, 0.6, 0.6); }
+  function glass(){ if (!live()) return; if (play("sfx.glass", {}, "glass")) return; var t = now() + 0.01; noise(master, t, 0.35, 0.6, "highpass", 2800); [3100, 4300, 5200, 6100].forEach(function(f, i){ tone(master, "sine", f, t + i * 0.02, 0.12, 0.5); }); }
+  function thud(){ if (!live()) return; if (play("sfx.thud", {}, "thud")) return; var t = now() + 0.01; tone(master, "sine", 70, t, 0.8, 0.25, 40); noise(master, t, 0.12, 0.3, "lowpass", 350); }
+  function bang(){ if (!live()) return; if (play("sfx.bang", {}, "bang")) return; var t = now() + 0.01; noise(master, t, 0.3, 0.8, "lowpass", 1400, null, 0.002); tone(master, "square", 60, t, 0.4, 0.2, 40); }
+  function wind(dur){ if (!live()) return; if (play("sfx.wind_gust", { dur: dur || 2 }, "wind")) return; noise(master, now() + 0.01, dur || 2, 0.25, "bandpass", 500, 0.5, 0.5); }
+  function hinge(){ if (!live()) return; if (play("sfx.hinge", {}, "hinge")) return; var t = now() + 0.01, o = ctx.createOscillator(), e = g(0), bp = filt("bandpass", 1200, 6);
     o.type = "sawtooth"; o.frequency.setValueAtTime(620, t); o.frequency.linearRampToValueAtTime(380, t + 0.8);
     e.gain.setValueAtTime(0, t); e.gain.linearRampToValueAtTime(0.18, t + 0.1); e.gain.linearRampToValueAtTime(0, t + 0.85);
     o.connect(bp); bp.connect(e); e.connect(master); o.start(t); o.stop(t + 0.9); }
-  function camera(){ if (!live()) return; var t = now() + 0.01; noise(master, t, 0.02, 0.5, "highpass", 2000); noise(master, t + 0.09, 0.03, 0.4, "bandpass", 1200, 2); }
-  function whoosh(){ if (!live()) return; noise(master, now() + 0.01, 0.6, 0.3, "bandpass", 1100, 0.8, 0.25); }
-  function cutClick(){ if (!live()) return; noise(master, now() + 0.005, 0.012, 0.12, "highpass", 1500); }
-  function deathSting(){ if (!live() || !buf.death) return; var s = ctx.createBufferSource(), gg = g(0.35); s.buffer = buf.death; s.connect(gg); gg.connect(master); s.start(0); }
-  function thump(){ if (!live()) return; noise(master, now() + 0.01, 0.1, 0.4, "lowpass", 500); }
-  function tick(){ if (!live()) return; tone(place(2), "square", 2100, now() + 0.003, 0.03, 0.012); }
+  function camera(){ if (!live()) return; if (play("sfx.camera", {}, "camera")) return; var t = now() + 0.01; noise(master, t, 0.02, 0.5, "highpass", 2000); noise(master, t + 0.09, 0.03, 0.4, "bandpass", 1200, 2); }
+  function whoosh(){ if (!live()) return; if (play("sfx.whoosh", {}, "whoosh")) return; noise(master, now() + 0.01, 0.6, 0.3, "bandpass", 1100, 0.8, 0.25); }
+  function cutClick(){ if (!live()) return; if (play("sfx.cut_click", {}, "cutClick")) return; noise(master, now() + 0.005, 0.012, 0.12, "highpass", 1500); }
+  var dLayers = [], dTail = null;
+  var COLD = { wet_steps: 1, hum_water: 1, water_rise: 1, rule_wet: 1, flyer_room: 1, handprints_out: 1, shoes_pair: 1, normal: 1 };   // 물이 닿는 죽음(README §5-8 권함 그대로 — 이상 단위)
+  var NEAR = { sitter: 1, shoes_pair: 1, cut_name: 1, face_glass: 1, knock3: 1 };                                                     // 옆에 오는 죽음
+  function deathStart(scene){ if (!live()) return; deathEnd(0.05); var a = String(scene).split(".")[0], ids = ["death.breath"]; if (COLD[a]) ids.push("death.coldwater"); if (NEAR[a]) ids.push("death.wet_near");
+    ids.forEach(function(id){ var h = play(id, {}, "deathLayer"); if (h) dLayers.push(h); }); }
+  function deathEnd(fade){ dLayers.forEach(function(h){ h.stop(fade == null ? 0.6 : fade); }); dLayers = []; if (dTail){ dTail.stop(fade == null ? 0.8 : fade); dTail = null; } }
+  function deathSting(){ if (!live()) return; dLayers.forEach(function(h){ h.boost(0.35); });   // 층은 흐리게 줄인다
+    dTail = play("death.tail", {}, "deathSting"); if (dTail) return;
+    if (!buf.death) return; var s = ctx.createBufferSource(), gg = g(0.35); s.buffer = buf.death; s.connect(gg); gg.connect(master); s.start(0); }
+  function coinSpill(){ if (!live()) return; play("sfx.coin_spill", { face: 2 }, "coinSpill"); }   // v4.1 새 자리 — coins_return 시작(파일만)
+  function thump(){ if (!live()) return; if (play("sfx.thump", {}, "thump")) return; noise(master, now() + 0.01, 0.1, 0.4, "lowpass", 500); }
+  function tick(){ if (!live()) return; if (play("sfx.tick", { face: 2 }, "tick")) return; tone(place(2), "square", 2100, now() + 0.003, 0.03, 0.012); }
   // ── 귀 대기 — 길게 누르는 동안 점점 커지는 소리. set(k) k = 0→1(누른 시간) · stop() ──
   function listen(kind, opt){
     var nop = { set: function(){}, stop: function(){} };
@@ -1088,7 +1152,9 @@ var Snd = (function(){
     out.connect(place(null));
     function src(n){ nodes.push(n); n.start(t); return n; }
     function nsrc(){ var n = src(ctx.createBufferSource()); n.buffer = noiseBuf; n.loop = true; return n; }
-    if (kind === "wind"){    // 문틈 바람
+    var lid = "listen." + (kind === "buzz" && opt.water ? "buzz_water" : kind);
+    if (sbuf[lid]){ var ls = loopSrc(lid, t); nodes.push(ls); ls.connect(out); target = 1; mark("file", "listen"); }   // v4.1 파일
+    else if (kind === "wind"){    // 문틈 바람
       var nw = nsrc(), bw = filt("bandpass", 420, 0.6), aw = g(0.6), lw = src(ctx.createOscillator()), gw = g(0.45);
       lw.frequency.value = 0.23; lw.connect(gw); gw.connect(aw.gain); nw.connect(bw); bw.connect(aw); aw.connect(out); target = 0.55;
     } else if (kind === "buzz"){    // 형광등 웅웅(+관 속 물)
@@ -1102,6 +1168,7 @@ var Snd = (function(){
     } else {                        // dead: 선이 끊긴 스피커 · 빈 공기
       var nd = nsrc(), fd = filt("lowpass", 170); nd.connect(fd); fd.connect(out); target = 0.35;
     }
+    if (!sbuf[lid]){ fetchBuf(lid); mark(sbad[lid] || !sndOf(lid) ? "synth" : "wait", "listen"); }
     var h = {
       set: function(k){ if (alive) out.gain.setTargetAtTime(target * (0.06 + 0.94 * k), now(), 0.1); },
       stop: function(){ if (!alive) return; alive = false; tm.forEach(clearTimeout); var t2 = now(); out.gain.cancelScheduledValues(t2); out.gain.setTargetAtTime(0, t2, 0.07);
@@ -1112,33 +1179,39 @@ var Snd = (function(){
   // 매점 목소리 — 셔터 너머처럼 먹먹하게(낮은 음 · 저역 통과). 바퀴 사이에만 부른다(v3).
   function advisor(text){
     if (!live()) return null;
-    var out = g(1.0), lp = filt("lowpass", 760), pk = filt("peaking", 300, 1); pk.gain.value = 6;
+    var out = g(VO_LV.adv), lp = filt("lowpass", 760), pk = filt("peaking", 300, 1); pk.gain.value = 6;
     lp.connect(pk); pk.connect(out); out.connect(place(null));
     var h = voice(Core.speech(text), "into", false, { dest: lp, pitch: 0.7 });
     return { stop: function(){ if (h) h.stop(); try{ out.gain.setTargetAtTime(0, now(), 0.06); }catch(e){} } };
   }
   // 속삭임 — sitter 가 한 칸 다가올 때(의자 쪽에서, 작고 얇게)
-  function whisper(text){ if (!live()) return null; return voice(Core.speech(text), "dry", false, { face: 3, level: 0.32, hp: 900, pitch: 0.9 }); }
+  function whisper(text){ if (!live()) return null; return voice(Core.speech(text), "dry", false, { face: 3, level: VO_LV.wh, hp: 900, pitch: 0.9 }); }
   // 거꾸로 째깍 하나(clock_back 신호): 서서히 커졌다 뚝 끊김
-  function tickBack(){ if (!live()) return; var t0 = now() + 0.01, s2 = ctx.createBufferSource(), f2 = filt("highpass", 1600), e2 = g(0);
+  function tickBack(){ if (!live()) return; if (play("sfx.tick_back", { face: 2 }, "tickBack")) return; var t0 = now() + 0.01, s2 = ctx.createBufferSource(), f2 = filt("highpass", 1600), e2 = g(0);
     s2.buffer = noiseBuf; e2.gain.setValueAtTime(0.0001, t0); e2.gain.exponentialRampToValueAtTime(0.3, t0 + 0.32); e2.gain.linearRampToValueAtTime(0, t0 + 0.33);
     s2.connect(f2); f2.connect(e2); e2.connect(place(2)); s2.start(t0); s2.stop(t0 + 0.4); }
-  function breath(){ if (!live()) return; var t = now() + 0.01; noise(master, t, 0.9, 0.22, "bandpass", 900, 0.8, 0.35); noise(master, t + 0.95, 0.7, 0.14, "bandpass", 600, 0.8, 0.2); }
+  function breath(){ if (!live()) return; if (play("sfx.breath_glass", {}, "breath")) return; var t = now() + 0.01; noise(master, t, 0.9, 0.22, "bandpass", 900, 0.8, 0.35); noise(master, t + 0.95, 0.7, 0.14, "bandpass", 600, 0.8, 0.2); }
   // ── 깜짝 놀람 소리 ── lowHit: face_glass 형체를 처음 보는 순간(낮고 짧게 — 큰 비명 없음, v4) · shriek: 큰 이상 시한 끝(v2.1 그대로) · rush: 죽음 끝 형체. 이 셋은 그 세 곳에서만 쓴다.
-  function lowHit(){ if (!live()) return; var t = now() + 0.005;
+  function lowHit(){ if (!live()) return; if (play("scare.low", {}, "lowHit")) return; var t = now() + 0.005;
     tone(master, "sine", 62, t, 0.85, 0.42, 38); tone(master, "sine", 124, t, 0.3, 0.26, 82); tone(master, "triangle", 196, t, 0.16, 0.22, 140); noise(master, t, 0.18, 0.34, "bandpass", 220, 1.1, 0.004); }   // 휴대폰 스피커용 150~300Hz 성분(v4 검토 반영)
-  function shriek(){ if (!live()) return; var t = now() + 0.005;
+  function shriek(){ if (!live()) return; if (play("scare.shriek", {}, "shriek")) return; var t = now() + 0.005;
     [0, 11, -7, 19].forEach(function(d){ var o = ctx.createOscillator(), e = g(0), bp = filt("bandpass", 2600, 1.5);
       o.type = "sawtooth"; o.frequency.setValueAtTime(1400 + d * 25, t); o.frequency.exponentialRampToValueAtTime(3100 + d * 40, t + 0.22);
       e.gain.setValueAtTime(0, t); e.gain.linearRampToValueAtTime(0.14, t + 0.008); e.gain.exponentialRampToValueAtTime(0.0001, t + 0.42);
       o.connect(bp); bp.connect(e); e.connect(master); o.start(t); o.stop(t + 0.46); });
     noise(master, t, 0.25, 0.45, "highpass", 2800, null, 0.002); tone(master, "sine", 58, t, 0.7, 0.4, 34); }
-  function rush(){ if (!live()) return; var t = now() + 0.005, sb = ctx.createBufferSource(), f = filt("bandpass", 260, 0.9), e = g(0);
+  var rushH = null;
+  function rushStop(){ if (rushH){ rushH.stop(0.05); rushH = null; } }   // 넘긴 장면 — 아직 안 부딪힌 달려듦 소리를 멎는다
+  function rush(hitIn){ if (!live()) return; var hi = hitIn == null ? 0.3 : hitIn, R0 = sndOf("scare.rush");   // hitIn = 부른 때부터 부딪힐 때까지(초). 파일은 부딪는 자리(hit 1.1초)를 그 순간에 맞춰 당겨 튼다(README §5-9)
+    if (R0 && sbuf["scare.rush"]){ rushH = play("scare.rush", { offset: Math.max(0, R0.hit - hi), delay: Math.max(0, hi - R0.hit) }, "rush"); return; }
+    fetchBuf("scare.rush"); mark(sbad["scare.rush"] ? "synth" : "wait", "rush"); var t = now() + 0.005 + Math.max(0, hi - 0.3), sb = ctx.createBufferSource(), f = filt("bandpass", 260, 0.9), e = g(0);
     sb.buffer = noiseBuf; sb.loop = true; f.frequency.setValueAtTime(260, t); f.frequency.exponentialRampToValueAtTime(3800, t + 0.3);
     e.gain.setValueAtTime(0.0001, t); e.gain.exponentialRampToValueAtTime(0.75, t + 0.3); e.gain.linearRampToValueAtTime(0, t + 0.34);
     sb.connect(f); f.connect(e); e.connect(master); sb.start(t, Math.random()); sb.stop(t + 0.38);
     noise(master, t + 0.3, 0.3, 0.55, "lowpass", 900, null, 0.002); tone(master, "sine", 48, t + 0.3, 0.8, 0.5, 30); tone(master, "sawtooth", 2300, t + 0.3, 0.07, 0.3, 3400); }
   // ── 이어지는 소리(이름으로 켜고 끈다) ──
+  var LOOPF = { radio: "amb.radio", static: "loop.static", motor: "loop.motor", slosh: "loop.slosh", trickle: "loop.trickle", engine: "loop.engine", air: "amb.air" };
+  var LBASE = { radio: 0.035, static: 0.12, motor: 0.17, slosh: 0.25, trickle: 0.15, engine: 0.5, air: 1 };   // 크기 값은 파일 기준(1.0 = 파일 크기 — sounds.json volume). 파일을 못 받아 합성으로 대신할 때만 이 합성 크기를 곱한다
   function loopOn(name, opt){
     if (!live() || loops[name]) return;
     opt = opt || {};
@@ -1146,6 +1219,16 @@ var Snd = (function(){
     var dest = place(opt.face == null ? null : opt.face, opt.muffle);
     L.gain.connect(dest); L.dest = dest;
     function src(node){ L.nodes.push(node); node.start(t); return node; }
+    var fid = LOOPF[name];
+    if (fid && sbuf[fid]){   // v4.1 파일
+      L.nodes.push(loopSrc(fid, t)); L.nodes[0].connect(L.gain); L.k = 1;
+      L.target = Math.min(3, opt.level != null ? opt.level : 1); mark("file", "loop:" + name);
+      L.gain.gain.setValueAtTime(0, t); L.gain.gain.linearRampToValueAtTime(L.target, t + (opt.rise || 0.8));
+      loops[name] = L; return;
+    }
+    if (fid){ fetchBuf(fid); mark(sbad[fid] ? "synth" : "wait", "loop:" + name); L.wantFile = fid; L.opt = opt; L.lvl = opt.level; }   // 파일이 오면 바꿔 튼다(loopArrived)
+    if (name === "air"){ L.target = 0; loops[name] = L; return; }   // 공기는 파일만(합성 자리 없음) — 오면 튼다
+    var sk = LBASE[name] || 1, o0 = opt; L.k = sk; opt = {}; for (var ok in o0) opt[ok] = o0[ok]; opt.level = (o0.level != null ? o0.level : 1) * sk;   // 합성 크기로
     if (name === "radio"){        // 매점 라디오: 잡음 섞인 먼 말소리
       var ns = src(ctx.createBufferSource()); ns.buffer = noiseBuf; ns.loop = true;
       var bp = filt("bandpass", 1300, 1.6), am = g(0.5), lfo = src(ctx.createOscillator()); lfo.frequency.value = 5.3;
@@ -1174,7 +1257,10 @@ var Snd = (function(){
     L.gain.gain.setValueAtTime(0, t); L.gain.gain.linearRampToValueAtTime(L.target, t + (opt.rise || 0.8));
     loops[name] = L;
   }
-  function loopLevel(name, v, ramp){ var L = loops[name]; if (!L) return; var p = L.gain.gain, t = now(); p.cancelScheduledValues(t); p.setValueAtTime(p.value, t); p.setTargetAtTime(v, t, ramp || 0.1); }   // 걸려 있던 올림(rise)을 지우고 새 크기로 — 정적(1초)이 라디오가 켜지는 1초와 겹쳐도 끊긴다(v3.1)
+  // 합성으로 돌던 반복 소리에 파일이 도착하면 같은 크기로 바꿔 튼다(첫 바퀴 — 파일을 받는 동안 합성 · v4.1)
+  function loopArrived(id){ Object.keys(loops).forEach(function(name){ var L = loops[name]; if (!L || L.wantFile !== id || !live()) return;
+    var o = {}; for (var k in L.opt) o[k] = L.opt[k]; if (L.lvl != null) o.level = L.lvl; o.rise = 0.4; loopOff(name, 0.4); loopOn(name, o); }); }
+  function loopLevel(name, v, ramp){ var L = loops[name]; if (!L) return; L.lvl = v; var p = L.gain.gain, t = now(); p.cancelScheduledValues(t); p.setValueAtTime(p.value, t); p.setTargetAtTime(Math.min(3, v * (L.k || 1)), t, ramp || 0.1); }   // 걸려 있던 올림(rise)을 지우고 새 크기로 — 정적(1초)이 라디오가 켜지는 1초와 겹쳐도 끊긴다(v3.1)
   function loopOff(name, fade){
     var L = loops[name]; if (!L) return; delete loops[name];
     var t = now(), d = fade == null ? 0.4 : fade;
@@ -1200,16 +1286,19 @@ var Snd = (function(){
     for (var i = a; i <= b; i++) e += Math.pow(10, fbuf[i] / 10);
     return 10 * Math.log10(e / (b - a + 1) + 1e-12);
   }
+  function kLevel(){ if (!kmeter) return -120; if (!kbuf) kbuf = new Float32Array(kmeter.fftSize); kmeter.getFloatTimeDomainData(kbuf); var e = 0; for (var i = 0; i < kbuf.length; i++) e += kbuf[i] * kbuf[i]; return -0.691 + 10 * Math.log10(e / kbuf.length + 1e-12); }   // 0.37초 창 K 가중 크기(LUFS 근사)
+  function refPlay(url, gain){ return fetch(url).then(function(r){ return r.arrayBuffer(); }).then(decode).then(function(b){ var sN = ctx.createBufferSource(), gg = g(gain == null ? 1 : gain); sN.buffer = b; sN.connect(gg); gg.connect(place(null)); sN.start(now() + 0.02); return b.duration; }); }   // 검사: 기준 파일을 파일 크기 그대로
   function resume(){ if (ctx && ctx.state !== "running" && ctx.state !== "closed") ctx.resume().catch(function(){}); }   // iOS 는 "interrupted" 도 있다
   function suspend(){ if (ctx && ctx.state === "running") ctx.suspend().catch(function(){}); }
   return { init: init, humOn: humOn, humOff: humOff, humPitch: humPitch, humStretch: humStretch, chime: chime, voice: voice,
     knock: knock, door: door, clunk: clunk, tuk: tuk, paper: paper, paperSlide: paperSlide, tap: tap, blink: blink, coin: coin, scratch: scratch,
     stampWet: stampWet, stampHit: stampHit, creak: creak, drip: drip, pour: pour, glass: glass, thud: thud, bang: bang, wind: wind, hinge: hinge,
-    camera: camera, whoosh: whoosh, cutClick: cutClick, deathSting: deathSting, thump: thump, tick: tick, listen: listen, shriek: shriek, lowHit: lowHit, rush: rush, breath: breath, advisor: advisor, whisper: whisper, tickBack: tickBack,
+    camera: camera, whoosh: whoosh, cutClick: cutClick, deathSting: deathSting, thump: thump, tick: tick, listen: listen, shriek: shriek, lowHit: lowHit, rush: rush, rushStop: rushStop, coinSpill: coinSpill, deathStart: deathStart, deathEnd: deathEnd, preload: preload, preloadRest: preloadRest,
+    has: function(id){ return !!sbuf[id]; }, sndOf: sndOf, resetUsed: function(){ USED = { file: {}, synth: {}, wait: {} }; }, kLevel: kLevel, refPlay: refPlay, VO_LV: VO_LV, peak: function(){ if (!meter) return 0; var b = new Float32Array(meter.fftSize); meter.getFloatTimeDomainData(b); var m = 0; for (var i = 0; i < b.length; i++){ var x = Math.abs(b[i]); if (x > m) m = x; } return m; }, files: function(){ return { loaded: Object.keys(sbuf), failed: Object.keys(sbad), waiting: Object.keys(swait), bytes: Object.assign({}, FLOG), used: JSON.parse(JSON.stringify(USED)) }; }, breath: breath, advisor: advisor, whisper: whisper, tickBack: tickBack,
     loopOn: loopOn, loopLevel: loopLevel, loopOff: loopOff, allLoopsOff: allLoopsOff, hasLoop: function(n){ return !!loops[n]; },
     setOn: setOn, isOn: function(){ return on; }, resume: resume, suspend: suspend, level: level, hiLevel: hiLevel, repan: repan, quiet: function(v){ quiet = !!v; },
     setFace: function(fn){ faceOf = fn; },
-    state: function(){ return { ctx: ctx ? ctx.state : "none", hum: !!buf.hum, death: !!buf.death, humPlaying: !!humSrc, loops: Object.keys(loops) }; } };
+    state: function(){ var lg = {}; Object.keys(loops).forEach(function(k){ lg[k] = +loops[k].gain.gain.value.toFixed(4); }); return { ctx: ctx ? ctx.state : "none", hum: !!(buf.hum || sbuf["amb.hum"]), death: !!(buf.death || sbuf["death.tail"]), humPlaying: !!humSrc, loops: Object.keys(loops), lg: lg }; } };
 })();
 // ── 그림 ── 그레이박스. viewBox 360×600 · 천장 0–84 · 벽 84–470 · 바닥 470–600.
 // 면마다: 본체 → 어두워짐(dim) → 고대비 층(이상 흔적 — 밝기 단계와 무관) → 깜빡임 그늘 → 비네트 → 누르는 자리.
@@ -1453,13 +1542,15 @@ function slotBox(id, x, y, w, h, label){
 // ── 실사 층(v3.3) ── 그림 목록(data/room01_assets.json → node tools/assets.js → 아래 블록)에 면 그림이 있으면 그 면을 사진으로 그린다. 없는 id 는 그레이박스.
 // 층: ① 바탕(면 WebP) ② 이상(있으면 면 전체를 바꿔 끼움) ③ 게임이 덧그리는 층 — 시계 바늘 · 형광등 깜빡임 · 라디오 · 스피커 불빛, 그림이 아직 없는 이상은 그레이박스를 사진 위 같은 물건 자리에 옮겨 그림 ④ 어둠 · 가장자리 그늘(입자는 #atmo).
 // 좌표: 사진 1080×1920 px → 면 좌표 x/3, y/3 − 20 (viewBox 0 −20 360 640, 화면을 꽉 채우게 slice). 누르는 자리도 사진 위 좌표(ZONES_P).
-/*ASSETS-BEGIN*/var ASSETS = {"face0":{"f":"img/f0_base.webp","b":221142},"face1":{"f":"img/f1_base.webp","b":118844},"face2":{"f":"img/f2_base.webp","b":136844},"face3":{"f":"img/f3_base.webp","b":185906},"face0.wet_steps":{"f":"img/f0_wet_steps.webp","b":220976},"face0.lights_noengine":{"f":"img/f0_lights_noengine.webp","b":222490},"face0.platform_day":{"f":"img/f0_platform_day.webp","b":221234},"face0.handprints_out":{"f":"img/f0_handprints_out.webp","b":224240},"face0.hum_water":{"f":"img/f0_hum_water.webp","b":220612},"face0.voice_outside":{"f":"img/f0_voice_outside_fog.webp","b":221656},"face0.water_rise":{"f":"img/f0_water_rise.webp","b":219202},"face1.shutter_up":{"f":"img/f1_shutter_up.webp","b":110252},"face1.shutter_rising":{"f":"img/f1_shutter_rising_75.webp","b":117758},"face2.door_open":{"f":"img/f2_door_open.webp","b":134642},"face2.lamp_hang":{"f":"img/f2_lamp_hang.webp","b":138396},"face2.coins_return":{"f":"img/f2_coins_return.webp","b":137510},"face2.light_sweep":{"f":"img/f2_light_sweep.webp","b":129084},"face3.wet_steps":{"f":"img/f3_wet_steps.webp","b":185988},"face3.chairs_turned":{"f":"img/f3_chairs_turned.webp","b":183834},"face3.flyer_fallen":{"f":"img/f3_flyer_fallen.webp","b":185204},"face3.flyer_room":{"f":"img/f3_flyer_room.webp","b":187884},"face3.shoes_pair":{"f":"img/f3_shoes_pair.webp","b":185914},"face3.sitter.6":{"f":"img/f3_sitter_6.webp","b":185946},"face3.sitter.5":{"f":"img/f3_sitter_5.webp","b":188004},"face3.sitter.4":{"f":"img/f3_sitter_4.webp","b":186816},"face3.sitter.3":{"f":"img/f3_sitter_3.webp","b":188556},"face3.sitter.backrest":{"f":"img/f3_sitter_backrest.webp","b":185624},"loop.face0.hum_water":{"f":"img/loop_f0_hum_water.mp4","b":544851},"loop.face2.door_open":{"f":"img/loop_f2_door_open.mp4","b":569191},"loop.face2.lamp_hang":{"f":"img/loop_f2_lamp_hang.mp4","b":520533},"loop.face2.coins_return":{"f":"img/loop_f2_coins_return.mp4","b":335804},"loop.face3.flyer_room":{"f":"img/loop_f3_flyer_room.mp4","b":382960},"loop.face3.shoes_pair":{"f":"img/loop_f3_shoes_pair.mp4","b":387952},"bigsig.light_sweep":{"f":"img/bigsig_light_sweep.webp","b":12694},"bigsig.clock_back":{"f":"img/bigsig_clock_back.webp","b":6886},"bigsig.sitter":{"f":"img/bigsig_sitter.webp","b":18032},"bigsig.water_rise":{"f":"img/bigsig_water_rise.webp","b":30504},"bigsig.shutter_rising":{"f":"img/bigsig_shutter_rising.webp","b":9160},"paper.base":{"f":"img/paper_base.webp","b":19490},"paper.rule_write":{"f":"img/paper_rule_write.webp","b":47380},"paper.rule_wet":{"f":"img/paper_rule_wet.webp","b":28230},"paper.rule_stamp":{"f":"img/paper_rule_stamp.webp","b":33270},"face0.approach.far":{"f":"img/f0_approach_far.webp","b":221762},"face0.approach.mid":{"f":"img/f0_approach_mid.webp","b":222396},"face0.approach.near":{"f":"img/f0_approach_near.webp","b":223100},"video.face0.press":{"f":"img/vid_f0_press.mp4","b":722533},"figure.rush":{"f":"img/f0_approach_near.webp","b":223100},"figure.deadline":{"f":"img/f0_approach_near.webp","b":223100},"zoom.tubeA":{"f":"img/zoom/zoom_tubeA.webp","b":33182},"zoom.glass":{"f":"img/zoom/zoom_glass.webp","b":57654},"zoom.shutter":{"f":"img/zoom/zoom_shutter.webp","b":53312},"zoom.counter":{"f":"img/zoom/zoom_counter.webp","b":51942},"zoom.clock":{"f":"img/zoom/zoom_clock.webp","b":33686},"zoom.vend":{"f":"img/zoom/zoom_vend.webp","b":52328},"zoom.coin":{"f":"img/zoom/zoom_coin.webp","b":15976},"zoom.door":{"f":"img/zoom/zoom_door.webp","b":29804},"zoom.speaker":{"f":"img/zoom/zoom_speaker.webp","b":54850},"zoom.notice":{"f":"img/zoom/zoom_notice.webp","b":65826},"zoom.flyerFaded":{"f":"img/zoom/zoom_flyerFaded.webp","b":42254},"zoom.flyerOld":{"f":"img/zoom/zoom_flyerOld.webp","b":29816},"zoom.lost":{"f":"img/zoom/zoom_lost.webp","b":25054},"zoom.chair":{"f":"img/zoom/zoom_chair.webp","b":27688},"zoom.tubeA.hum_water":{"f":"img/zoom/zoom_tubeA__f0_hum_water.webp","b":33294},"zoom.glass.handprints_out":{"f":"img/zoom/zoom_glass__f0_handprints_out.webp","b":64766},"zoom.glass.platform_day":{"f":"img/zoom/zoom_glass__f0_platform_day.webp","b":57112},"zoom.glass.lights_noengine":{"f":"img/zoom/zoom_glass__f0_lights_noengine.webp","b":62334},"zoom.glass.water_rise":{"f":"img/zoom/zoom_glass__f0_water_rise.webp","b":48646},"zoom.shutter.shutter_up":{"f":"img/zoom/zoom_shutter__anom_shutter_up.webp","b":18056},"zoom.shutter.shutter_rising":{"f":"img/zoom/zoom_shutter__f1_shutter_rising_75.webp","b":46526},"zoom.coin.coins_return":{"f":"img/zoom/zoom_coin__f2_coins_return.webp","b":17400},"zoom.door.door_open":{"f":"img/zoom/zoom_door__f2_door_open.webp","b":30802},"zoom.door.light_sweep":{"f":"img/zoom/zoom_door__f2_light_sweep.webp","b":26930},"zoom.flyerFaded.flyer_room":{"f":"img/zoom/zoom_flyerFaded__f3_flyer_room.webp","b":52756},"zoom.fallen":{"f":"img/zoom/zoom_fallen__f3_flyer_fallen.webp","b":128366},"zoom.chair.shoes_pair":{"f":"img/zoom/zoom_chair__f3_shoes_pair.webp","b":29696},"zoom.chair.chairs_turned":{"f":"img/zoom/zoom_chair__f3_chairs_turned.webp","b":25668},"zoom.chair.sitter":{"f":"img/zoom/zoom_chair__f3_sitter_3.webp","b":31610},"zoom.tubeA@up":{"f":"img/p2/zoom_tubeA_up.webp","b":84388},"zoom.tubeA@up.hum_water":{"f":"img/p2/zoom_tubeA_up__hum_water.webp","b":86024},"zoom.tubeA@label":{"f":"img/p2/zoom_tubeA_label.webp","b":221062},"zoom.glass@out":{"f":"img/p2/zoom_glass_out.webp","b":42756},"zoom.glass@out.handprints_out":{"f":"img/p2/zoom_glass_out__handprints_out.webp","b":92576},"zoom.counter@sign":{"f":"img/p2/zoom_counter_sign.webp","b":107832},"zoom.counter@receipt":{"f":"img/p2/zoom_counter_receipt.webp","b":260122},"zoom.counter@plate":{"f":"img/p2/zoom_counter_plate.webp","b":171366},"zoom.clock@axis":{"f":"img/p2/zoom_clock_axis.webp","b":152948},"zoom.vend@can":{"f":"img/p2/zoom_vend_can.webp","b":120792},"zoom.coin@lid":{"f":"img/p2/zoom_coin_lid.webp","b":170082},"zoom.coin@hand":{"f":"img/p2/zoom_coin_inside.webp","b":171194},"zoom.door@window":{"f":"img/p2/zoom_door_window.webp","b":120056},"zoom.door@gap":{"f":"img/p2/zoom_door_gap.webp","b":172638},"zoom.speaker@grille":{"f":"img/p2/zoom_speaker_grille.webp","b":212318},"zoom.notice@table":{"f":"img/p2/zoom_notice_table.webp","b":191704},"zoom.flyerFaded@back":{"f":"img/p2/zoom_flyerFaded_back.webp","b":172788},"zoom.flyerFaded@photo":{"f":"img/p2/zoom_flyerFaded_photo.webp","b":190154},"zoom.flyerFaded@photo.flyer_room":{"f":"img/p2/zoom_flyerFaded_photo__flyer_room.webp","b":255990},"zoom.fallen@front":{"f":"img/p2/zoom_fallen_front.webp","b":317810},"zoom.flyerOld@front":{"f":"img/p2/zoom_flyerOld_front.webp","b":234404},"zoom.flyerOld@back":{"f":"img/p2/zoom_flyerOld_back.webp","b":200632},"zoom.lost@back":{"f":"img/p2/zoom_lost_back.webp","b":170500},"zoom.chair@under":{"f":"img/p2/zoom_chair_under.webp","b":262482},"zoom.chair@next":{"f":"img/p2/zoom_chair_next.webp","b":172360},"zoom.chair@next.sitter":{"f":"img/p2/zoom_chair_next__sitter.webp","b":147756},"zoom.chair@next.shoes_pair":{"f":"img/p2/zoom_chair_next__shoes_pair.webp","b":142368},"zoom.chair@back":{"f":"img/p2/zoom_chair_back.webp","b":123944},"zoom.clue.factA":{"f":"img/p2/zoom_clueA_plate.webp","b":61914},"zoom.clue.factB":{"f":"img/p2/zoom_clueB_rules.webp","b":274944},"zoom.clue.factC":{"f":"img/p2/zoom_clueC_ledger.webp","b":145124},"zoom.clue.factD":{"f":"img/p2/zoom_clueD_notice.webp","b":58650},"zoom.clue.factE":{"f":"img/p2/zoom_clueE_panel.webp","b":113056},"zoom.clue.notebook":{"f":"img/p2/zoom_notebook_open.webp","b":270826},"mask.zoom.glass":{"f":"img/p2/mask_zoom_glass.png","b":8215},"piece.f0_clueA_plate":{"f":"img/p2/piece_f0_clueA_plate.webp","b":3884},"piece.f1_clueC_ledger":{"f":"img/p2/piece_f1_clueC_ledger.webp","b":10766},"piece.f1_clueD_notice":{"f":"img/p2/piece_f1_clueD_notice.webp","b":5332},"piece.f3_notebook":{"f":"img/p2/piece_f3_notebook.webp","b":5456},"tick.clock":{"f":"img/p2/between_clock_wide.webp","b":29990},"tick.clock.tight":{"f":"img/p2/between_clock_tight.webp","b":40624},"tick.shutter":{"f":"img/p2/between_shutter_radio.webp","b":71988},"tick.doorgap":{"f":"img/p2/between_door_gap.webp","b":72276}};
+/*ASSETS-BEGIN*/var ASSETS = {"face0":{"f":"img/f0_base.webp","b":221142},"face1":{"f":"img/f1_base.webp","b":118844},"face2":{"f":"img/f2_base.webp","b":136844},"face3":{"f":"img/f3_base.webp","b":185906},"face0.wet_steps":{"f":"img/f0_wet_steps.webp","b":220976},"face0.lights_noengine":{"f":"img/f0_lights_noengine.webp","b":222490},"face0.platform_day":{"f":"img/f0_platform_day.webp","b":221234},"face0.handprints_out":{"f":"img/p3/f0_handprints_out.webp","b":230270},"face0.hum_water":{"f":"img/f0_hum_water.webp","b":220612},"face0.voice_outside":{"f":"img/f0_voice_outside_fog.webp","b":221656},"face0.water_rise":{"f":"img/f0_water_rise.webp","b":219202},"face1.shutter_up":{"f":"img/f1_shutter_up.webp","b":110252},"face1.shutter_rising":{"f":"img/f1_shutter_rising_75.webp","b":117758},"face2.door_open":{"f":"img/f2_door_open.webp","b":134642},"face2.lamp_hang":{"f":"img/f2_lamp_hang.webp","b":138396},"face2.coins_return":{"f":"img/f2_coins_return.webp","b":137510},"face2.light_sweep":{"f":"img/f2_light_sweep.webp","b":129084},"face3.wet_steps":{"f":"img/f3_wet_steps.webp","b":185988},"face3.chairs_turned":{"f":"img/f3_chairs_turned.webp","b":183834},"face3.flyer_fallen":{"f":"img/f3_flyer_fallen.webp","b":185204},"face3.flyer_room":{"f":"img/f3_flyer_room.webp","b":187884},"face3.shoes_pair":{"f":"img/f3_shoes_pair.webp","b":185914},"face3.sitter.6":{"f":"img/p3/f3_sitter_6.webp","b":186370},"face3.sitter.5":{"f":"img/p3/f3_sitter_5.webp","b":189226},"face3.sitter.4":{"f":"img/p3/f3_sitter_4.webp","b":188888},"face3.sitter.3":{"f":"img/p3/f3_sitter_3.webp","b":189340},"face3.sitter.backrest":{"f":"img/f3_sitter_backrest.webp","b":185624},"loop.face0.hum_water":{"f":"img/loop_f0_hum_water.mp4","b":544851},"loop.face2.door_open":{"f":"img/loop_f2_door_open.mp4","b":569191},"loop.face2.lamp_hang":{"f":"img/loop_f2_lamp_hang.mp4","b":520533},"loop.face2.coins_return":{"f":"img/loop_f2_coins_return.mp4","b":335804},"loop.face3.flyer_room":{"f":"img/loop_f3_flyer_room.mp4","b":382960},"loop.face3.shoes_pair":{"f":"img/loop_f3_shoes_pair.mp4","b":387952},"bigsig.light_sweep":{"f":"img/bigsig_light_sweep.webp","b":12694},"bigsig.clock_back":{"f":"img/bigsig_clock_back.webp","b":6886},"bigsig.sitter":{"f":"img/bigsig_sitter.webp","b":18032},"bigsig.water_rise":{"f":"img/p3/bigsig_water_rise.webp","b":39234},"bigsig.shutter_rising":{"f":"img/bigsig_shutter_rising.webp","b":9160},"paper.base":{"f":"img/paper_base.webp","b":19490},"paper.rule_write":{"f":"img/paper_rule_write.webp","b":47380},"paper.rule_wet":{"f":"img/paper_rule_wet.webp","b":28230},"paper.rule_stamp":{"f":"img/paper_rule_stamp.webp","b":33270},"face0.approach.far":{"f":"img/f0_approach_far.webp","b":221762},"face0.approach.mid":{"f":"img/f0_approach_mid.webp","b":222396},"face0.approach.near":{"f":"img/f0_approach_near.webp","b":223100},"video.face0.press":{"f":"img/vid_f0_press.mp4","b":722533},"figure.rush":{"f":"img/f0_approach_near.webp","b":223100},"figure.deadline":{"f":"img/f0_approach_near.webp","b":223100},"zoom.tubeA":{"f":"img/zoom/zoom_tubeA.webp","b":33182},"zoom.glass":{"f":"img/zoom/zoom_glass.webp","b":57654},"zoom.shutter":{"f":"img/zoom/zoom_shutter.webp","b":53312},"zoom.counter":{"f":"img/zoom/zoom_counter.webp","b":51942},"zoom.clock":{"f":"img/zoom/zoom_clock.webp","b":33686},"zoom.vend":{"f":"img/zoom/zoom_vend.webp","b":52328},"zoom.coin":{"f":"img/zoom/zoom_coin.webp","b":15976},"zoom.door":{"f":"img/zoom/zoom_door.webp","b":29804},"zoom.speaker":{"f":"img/zoom/zoom_speaker.webp","b":54850},"zoom.notice":{"f":"img/zoom/zoom_notice.webp","b":65826},"zoom.flyerFaded":{"f":"img/zoom/zoom_flyerFaded.webp","b":42254},"zoom.flyerOld":{"f":"img/zoom/zoom_flyerOld.webp","b":29816},"zoom.lost":{"f":"img/zoom/zoom_lost.webp","b":25054},"zoom.chair":{"f":"img/zoom/zoom_chair.webp","b":27688},"zoom.tubeA.hum_water":{"f":"img/zoom/zoom_tubeA__f0_hum_water.webp","b":33294},"zoom.glass.handprints_out":{"f":"img/p3/zoom/zoom_glass__f0_handprints_out.webp","b":124892},"zoom.glass.platform_day":{"f":"img/zoom/zoom_glass__f0_platform_day.webp","b":57112},"zoom.glass.lights_noengine":{"f":"img/zoom/zoom_glass__f0_lights_noengine.webp","b":62334},"zoom.glass.water_rise":{"f":"img/zoom/zoom_glass__f0_water_rise.webp","b":48646},"zoom.shutter.shutter_up":{"f":"img/zoom/zoom_shutter__anom_shutter_up.webp","b":18056},"zoom.shutter.shutter_rising":{"f":"img/zoom/zoom_shutter__f1_shutter_rising_75.webp","b":46526},"zoom.coin.coins_return":{"f":"img/zoom/zoom_coin__f2_coins_return.webp","b":17400},"zoom.door.door_open":{"f":"img/zoom/zoom_door__f2_door_open.webp","b":30802},"zoom.door.light_sweep":{"f":"img/zoom/zoom_door__f2_light_sweep.webp","b":26930},"zoom.flyerFaded.flyer_room":{"f":"img/zoom/zoom_flyerFaded__f3_flyer_room.webp","b":52756},"zoom.fallen":{"f":"img/zoom/zoom_fallen__f3_flyer_fallen.webp","b":128366},"zoom.chair.shoes_pair":{"f":"img/zoom/zoom_chair__f3_shoes_pair.webp","b":29696},"zoom.chair.chairs_turned":{"f":"img/zoom/zoom_chair__f3_chairs_turned.webp","b":25668},"zoom.chair.sitter":{"f":"img/p3/zoom/zoom_chair__f3_sitter_3.webp","b":59576},"zoom.tubeA@up":{"f":"img/p2/zoom_tubeA_up.webp","b":84388},"zoom.tubeA@up.hum_water":{"f":"img/p2/zoom_tubeA_up__hum_water.webp","b":86024},"zoom.tubeA@label":{"f":"img/p2/zoom_tubeA_label.webp","b":221062},"zoom.glass@out":{"f":"img/p2/zoom_glass_out.webp","b":42756},"zoom.glass@out.handprints_out":{"f":"img/p2/zoom_glass_out__handprints_out.webp","b":92576},"zoom.counter@sign":{"f":"img/p2/zoom_counter_sign.webp","b":107832},"zoom.counter@receipt":{"f":"img/p2/zoom_counter_receipt.webp","b":260122},"zoom.counter@plate":{"f":"img/p2/zoom_counter_plate.webp","b":171366},"zoom.clock@axis":{"f":"img/p2/zoom_clock_axis.webp","b":152948},"zoom.vend@can":{"f":"img/p2/zoom_vend_can.webp","b":120792},"zoom.coin@lid":{"f":"img/p2/zoom_coin_lid.webp","b":170082},"zoom.coin@hand":{"f":"img/p2/zoom_coin_inside.webp","b":171194},"zoom.door@window":{"f":"img/p2/zoom_door_window.webp","b":120056},"zoom.door@gap":{"f":"img/p2/zoom_door_gap.webp","b":172638},"zoom.speaker@grille":{"f":"img/p2/zoom_speaker_grille.webp","b":212318},"zoom.notice@table":{"f":"img/p2/zoom_notice_table.webp","b":191704},"zoom.flyerFaded@back":{"f":"img/p2/zoom_flyerFaded_back.webp","b":172788},"zoom.flyerFaded@photo":{"f":"img/p2/zoom_flyerFaded_photo.webp","b":190154},"zoom.flyerFaded@photo.flyer_room":{"f":"img/p2/zoom_flyerFaded_photo__flyer_room.webp","b":247256},"zoom.fallen@front":{"f":"img/p2/zoom_fallen_front.webp","b":317810},"zoom.flyerOld@front":{"f":"img/p2/zoom_flyerOld_front.webp","b":234404},"zoom.flyerOld@back":{"f":"img/p2/zoom_flyerOld_back.webp","b":200632},"zoom.lost@back":{"f":"img/p2/zoom_lost_back.webp","b":170500},"zoom.chair@under":{"f":"img/p2/zoom_chair_under.webp","b":262482},"zoom.chair@next":{"f":"img/p2/zoom_chair_next.webp","b":172360},"zoom.chair@next.sitter":{"f":"img/p2/zoom_chair_next__sitter.webp","b":173370},"zoom.chair@next.shoes_pair":{"f":"img/p2/zoom_chair_next__shoes_pair.webp","b":177676},"zoom.chair@back":{"f":"img/p2/zoom_chair_back.webp","b":123944},"zoom.clue.factA":{"f":"img/p2/zoom_clueA_plate.webp","b":61914},"zoom.clue.factB":{"f":"img/p2/zoom_clueB_rules.webp","b":274944},"zoom.clue.factC":{"f":"img/p2/zoom_clueC_ledger.webp","b":145124},"zoom.clue.factD":{"f":"img/p2/zoom_clueD_notice.webp","b":58650},"zoom.clue.factE":{"f":"img/p2/zoom_clueE_panel.webp","b":113056},"zoom.clue.notebook":{"f":"img/p2/zoom_notebook_open.webp","b":270826},"mask.zoom.glass":{"f":"img/p2/mask_zoom_glass.png","b":8215},"piece.f0_clueA_plate":{"f":"img/p2/piece_f0_clueA_plate.webp","b":3884},"piece.f1_clueC_ledger":{"f":"img/p2/piece_f1_clueC_ledger.webp","b":10766},"piece.f1_clueD_notice":{"f":"img/p2/piece_f1_clueD_notice.webp","b":5332},"piece.f3_notebook":{"f":"img/p2/piece_f3_notebook.webp","b":5456},"tick.clock":{"f":"img/p2/between_clock_wide.webp","b":29990},"tick.clock.tight":{"f":"img/p2/between_clock_tight.webp","b":40624},"tick.shutter":{"f":"img/p2/between_shutter_radio.webp","b":71988},"tick.doorgap":{"f":"img/p2/between_door_gap.webp","b":72276},"death.wet_steps.sit":{"f":"img/p3/death_wet_steps_sit.webp","b":221488},"death.door_open.sit":{"f":"img/p3/death_door_open_sit.webp","b":232714},"death.shutter_up.sit":{"f":"img/p3/death_shutter_up_sit.webp","b":105920},"death.shutter_up.stare":{"f":"img/p3/death_shutter_up_stare.webp","b":188436},"death.call_platform.sit":{"f":"img/p3/death_call_platform_sit.webp","b":217926},"death.lights_noengine.platform":{"f":"img/p3/death_lights_noengine_platform.webp","b":251334},"death.lights_noengine.sit":{"f":"img/p3/death_lights_noengine_sit.webp","b":229090},"death.lamp_hang.sit":{"f":"img/p3/death_lamp_hang_sit.webp","b":81898},"death.coins_return.sit":{"f":"img/p3/death_coins_return_sit.webp","b":336604},"death.chairs_turned.sit":{"f":"img/p3/death_chairs_turned_sit.webp","b":131556},"death.platform_day.sit":{"f":"img/p3/death_platform_day_sit.webp","b":253146},"death.flyer_fallen.sit":{"f":"img/p3/death_flyer_fallen_sit.webp","b":221654},"death.flyer_fallen.repin":{"f":"img/p3/death_flyer_fallen_repin.webp","b":151494},"deathvid.flyer_fallen.repin":{"f":"img/p3/death_flyer_fallen_repin.mp4","b":876590},"death.rule_write.sit":{"f":"img/p3/death_rule_write_sit.webp","b":131320},"deathvid.rule_write.sit":{"f":"img/p3/death_rule_write_sit.mp4","b":1134958},"death.rule_wet.sit":{"f":"img/p3/death_rule_wet_sit.webp","b":195464},"death.rule_stamp.sit":{"f":"img/p3/death_rule_stamp_sit.webp","b":187154},"death.face_glass.sit":{"f":"img/p3/death_face_glass_sit.webp","b":257514},"death.flyer_room.sit":{"f":"img/p3/death_flyer_room_sit.webp","b":278528},"death.handprints_out.sit":{"f":"img/p3/death_handprints_out_sit.webp","b":217984},"death.shoes_pair.sit":{"f":"img/p3/death_shoes_pair_sit.webp","b":267066},"death.hum_water.sit":{"f":"img/p3/death_hum_water_sit.webp","b":173926},"death.voice_outside.sit":{"f":"img/p3/death_voice_outside_sit.webp","b":162480},"death.cut_name.sit":{"f":"img/p3/death_cut_name_sit.webp","b":176324},"deathvid.cut_name.sit":{"f":"img/p3/death_cut_name_sit.mp4","b":823409},"death.knock3.sit":{"f":"img/p3/death_knock3_sit.webp","b":105446},"death.light_sweep.lightdoor":{"f":"img/p3/death_light_sweep_lightdoor.webp","b":234288},"death.light_sweep.window":{"f":"img/p3/death_light_sweep_window.webp","b":212014},"death.light_sweep.sit":{"f":"img/p3/death_light_sweep_sit.webp","b":195182},"death.clock_back.sit":{"f":"img/p3/death_clock_back_sit.webp","b":301192},"deathvid.clock_back.sit":{"f":"img/p3/death_clock_back_sit.mp4","b":2062446},"death.sitter.after":{"f":"img/p3/death_sitter_after.webp","b":209138},"deathvid.sitter.after":{"f":"img/p3/death_sitter_after.mp4","b":1036906},"death.sitter.sit":{"f":"img/p3/death_sitter_sit.webp","b":137200},"deathvid.sitter.sit":{"f":"img/p3/death_sitter_sit.mp4","b":789660},"death.water_rise.sit":{"f":"img/p3/death_water_rise_sit.webp","b":198838},"deathvid.water_rise.sit":{"f":"img/p3/death_water_rise_sit.mp4","b":2634918},"death.shutter_rising.sit":{"f":"img/p3/death_shutter_rising_sit.webp","b":104442},"death.shutter_rising.stare":{"f":"img/p3/death_shutter_rising_stare.webp","b":171634},"death.normal.door":{"f":"img/p3/death_normal_door.webp","b":175838},"deathvid.normal.door":{"f":"img/p3/death_normal_door.mp4","b":1927960},"death.call_platform.platform":{"f":"img/p3/death_call_platform_platform.webp","b":215456},"deathvid.call_platform.platform":{"f":"img/p3/death_call_platform_platform.mp4","b":1067085},"rush.1":{"f":"img/p3/rush_1.webp","b":223566},"rush.2":{"f":"img/p3/rush_2.webp","b":123398},"rush.3":{"f":"img/p3/rush_3.webp","b":112978},"rush.4":{"f":"img/p3/rush_4.webp","b":114548},"face0.approach.far0":{"f":"img/p3/f0_approach_far0.webp","b":221646},"big.shutter_rising":{"f":"img/p3/big_shutter_rising.mp4","b":541765},"big.water_rise":{"f":"img/p3/big_water_rise.mp4","b":505329},"big.light_sweep":{"f":"img/p3/big_light_sweep.mp4","b":596066}};
 var ZOOMR = {"zoom.tubeA":[86.4,-20,187.2,152.03],"zoom.glass":[64.83,145.63,230.3,187.2],"zoom.shutter":[107.97,219.07,144.07,117.03],"zoom.counter":[100.77,270.77,158.43,128.77],"zoom.clock":[145.47,135,72.03,58.6],"zoom.vend":[35.93,224.7,122.5,99.37],"zoom.coin":[86.4,329.83,68.43,55.47],"zoom.door":[215.93,192.2,108.13,87.67],"zoom.speaker":[283.27,67.33,57.67,46.73],"zoom.notice":[88.13,105.3,180,146.27],"zoom.flyerFaded":[131.1,127.2,90.63,73.6],"zoom.flyerOld":[86.4,173.9,50.47,40.93],"zoom.lost":[225,167.5,50.47,40.93],"zoom.chair":[61.27,284.37,93.6,76.1],"zoom.fallen":[54.07,384.07,107.97,87.8]};
-var SEQ = {"face0.approach":["far","mid","near"]};
+var SEQ = {"face0.approach":["far0","far","mid","near"]};
 var CLUES = {"factA":{"face":0,"r":[277.33,174.53,28.13,39.83],"zoom":"zoom.clue.factA","page":null,"text":[0.3906,0.1827,0.6953,0.7308],"ink":"dark","title":null,"header":null,"pages":null},"factB":{"face":3,"r":[196.57,193.73,22.5,29.37],"zoom":"zoom.clue.factB","page":null,"text":[0.2734,0.2404,0.7109,0.8269],"ink":"dark","title":[0.3086,0.1615,0.6758,0.2212],"header":null,"pages":null},"factC":{"face":1,"r":[53.9,245.63,50.47,88.27],"zoom":"zoom.clue.factC","page":null,"text":[0.1875,0.5096,0.7266,0.9808],"ink":"dark","title":null,"header":[0.1875,0.4731,0.7266,0.5077],"pages":null},"factD":{"face":1,"r":[256.27,211.27,44.53,64.83],"zoom":"zoom.clue.factD","page":null,"text":[0.3281,0.2404,0.6719,0.8942],"ink":"dark","title":null,"header":null,"pages":null},"factE":{"face":2,"r":[37.97,325.63,38.9,27.5],"zoom":"zoom.clue.factE","page":null,"text":[0.3125,0.226,0.75,0.5817],"ink":"dark","title":null,"header":null,"pages":null},"notebook":{"face":3,"r":[21.87,373.73,43.73,26.57],"zoom":"zoom.clue.notebook","page":null,"text":null,"ink":"pen","title":null,"header":null,"pages":[[[0.2133,0.3462],[0.4375,0.2692],[0.5367,0.7375],[0.3023,0.7952]],[[0.4375,0.2692],[0.6773,0.1923],[0.7813,0.6279],[0.5367,0.7375]]]}};
 var VIEWS = {"zoom.glass@out":{"glass":[0.1953,0,1,1]},"zoom.glass@out.handprints_out":{"glass":[0.1953,0,1,1]},"zoom.counter@receipt":{"quad":[[0.4633,0.0962],[0.8023,0.2115],[0.5313,0.8971],[0.1719,0.7183]],"angle":15.5},"zoom.clock@axis":{"clock":{"c":[0.4945,0.4933],"rn":0.2266}},"zoom.vend@can":{"text":[0.4609,0.5981,0.5352,0.6519],"angle":-13},"zoom.fallen@front":{"text":[0.3125,0.5865,0.7031,0.8365],"bar":[0.3383,0.5096,0.6727,0.5606]},"zoom.flyerOld@front":{"text":[0.2969,0.5,0.7031,0.8269],"title":[0.3164,0.1654,0.6953,0.2154],"photo":[0.4141,0.2404,0.5859,0.4712]},"zoom.flyerOld@back":{"text":[0.2969,0.1923,0.7031,0.8077]},"zoom.lost@back":{"text":[0.2813,0.3654,0.6875,0.7115]},"zoom.chair@under":{"text":[0.3516,0.3798,0.6523,0.625]},"zoom.chair@back":{"text":[0.3672,0.3654,0.5273,0.6298]}};
 var PIECES = [{"id":"piece.f0_clueA_plate","face":0,"clue":"clueA","r":[275,170,35,45]},{"id":"piece.f1_clueC_ledger","face":1,"clue":"clueC","r":[50,245,55,90]},{"id":"piece.f1_clueD_notice","face":1,"clue":"clueD","r":[255,210,50,70]},{"id":"piece.f3_notebook","face":3,"clue":"notebook","r":[20,370,50,35]}];
-var TICKS = {"clock":{"c":[160,130],"rn":43.75},"shutter":{"radio":[257.825,203.275,14.55]},"doorgap":{"y":129,"x0":103.75,"x1":320}};/*ASSETS-END*/
+var TICKS = {"clock":{"c":[160,130],"rn":43.75},"shutter":{"radio":[257.825,203.275,14.55]},"doorgap":{"y":129,"x0":103.75,"x1":320}};
+var DEATHV = {"flyer_fallen.repin":{"mode":"still","until":null},"rule_write.sit":{"mode":"loop","until":2.2},"cut_name.sit":{"mode":"reverse","until":null},"clock_back.sit":{"mode":"loop","until":null},"sitter.after":{"mode":"still","until":null},"sitter.sit":{"mode":"still","until":null},"water_rise.sit":{"mode":"loop","until":4},"normal.door":{"mode":"loop","until":null},"call_platform.platform":{"mode":"still","until":null}};
+var BIGV = {"shutter_rising":{"face":1,"mode":"once","full_at":1.3},"water_rise":{"face":0,"mode":"once","after":"face0.water_rise","full_at":3.6},"light_sweep":{"face":2,"mode":"loop","period":5.04,"on":[0.95,2.45]}};/*ASSETS-END*/
 var GB_ONLY = /[?&]gb=1/.test(location.search);   // 시험용: 그레이박스로만 그린다
 var ASSET_LOG = {};   // 받은 그림(파일 → 바이트, 목록 값) — 한 판 용량을 잰다
 function AS(id){ var a = ASSETS[id]; return a && !GB_ONLY ? a.f : null; }
@@ -1476,14 +1567,17 @@ function prefetch(id){
 }
 function prefetchFaces(){ for (var n = 0; n < 4; n++) prefetch("face" + n); }
 function loopAssets(Q){
-  var out = []; if (!Q || Q.ending || !Q.anomaly) return out;
-  var a = Q.anomaly, A = Core.byId(a), add = function(id){ if (ASSETS[id] && out.indexOf(id) < 0) out.push(id); };
+  var out = [], add = function(id){ if (ASSETS[id] && out.indexOf(id) < 0) out.push(id); }; if (!Q || Q.ending) return out;
+  if (!Q.anomaly){ add("death.normal.door"); return out; }   // v4.1: 평소 바퀴에서 나가면
+  var a = Q.anomaly, A = Core.byId(a);
+  if (A) Object.keys(A.d).forEach(function(k){ add("death." + a + "." + k); });   // v4.1: 그 바퀴에 날 수 있는 죽음의 정지 그림
+  [1, 2, 3, 4].forEach(function(i){ add("rush." + i); });                        // 달려듦 연속 4장(이상 바퀴 죽음 끝)
   for (var n = 0; n < 4; n++){ add("face" + n + "." + a); add("loop.face" + n + "." + a); }
   if (a === "sitter") ["6", "5", "4", "3", "backrest"].forEach(function(k){ add("face3.sitter." + k); });
-  if (a === "face_glass"){ figSeq().forEach(function(k){ add("face0.approach." + k); }); add("video.face0.press"); }   // 다가옴 단계 + 유리에 붙는 영상(죽음 장면 0.4초에 튼다 — v4 검토 반영)
+  if (a === "face_glass") figSeq().forEach(function(k){ add("face0.approach." + k); });   // 다가옴 단계(유리에 붙는 영상은 죽을 때 받는다 — v4.1 사용자 지시)
   if (a === "shutter_rising") add("face1.shutter_up");
   if (/^rule_/.test(a)) add("paper." + a);
-  if (A && A.big) add("bigsig." + a);
+  if (A && A.big){ add("bigsig." + a); add("big." + a); }   // v4.1: 큰 이상 순간 영상(버퍼만 — 신호 전엔 보이지 않는다)
   return out;
 }
 function prefetchLoop(Q){ loopAssets(Q).forEach(prefetch); }
@@ -1650,7 +1744,9 @@ function renderFace(n, st){
   var ob = sv.querySelector(".bigsig"), bop = ob ? ob.getAttribute("opacity") : null;   // 다시 그려도 켜진 신호 빛은 그대로
   sv.innerHTML = faceSVG(n, st || faceSt());
   var nb = sv.querySelector(".bigsig"); if (nb && bop && +bop > 0) nb.setAttribute("opacity", bop);
+  if (vidOn[n] || vidAfter[n]){ var pb = sv.querySelector(".pbase"), im0 = pb && pb.querySelector(".pimg"); if (pb && vidOn[n]) pb.classList.add("vid"); if (im0 && vidAfter[n]) im0.setAttribute("href", useAsset(vidAfter[n])); }   // v4.1: 영상이 도는 중이면 사진 층을 걷은 채 · 끝나고 바꿔 낀 그림(after)은 그대로
 }
+var vidOn = [], vidAfter = [];
 // 영상 — 정지 그림 → 영상은 0.2초 섞는다(사진 층을 걷어 뒤의 영상을 드러냄). 끝나면 마지막 프레임을 두거나(after 없음) 다음 정지 그림으로 이어 간다.
 function faceVid(n){ return faces[n] ? faces[n].querySelector(".fvid") : null; }
 function playFaceVideo(n, id, opt){
@@ -1659,12 +1755,12 @@ function playFaceVideo(n, id, opt){
   placeVid(n);
   v.loop = !!opt.loop; v.muted = true; v.playsInline = true;
   try{ v.currentTime = 0; }catch(e){}
-  v.onplaying = function(){ v.classList.add("on"); var b = svgs[n].querySelector(".pbase"); if (b) b.classList.add("vid"); VIDLOG.push({ id: id, face: n, t: +gt.toFixed(2) }); };
-  v.onended = function(){ if (!opt.after) return; var b = svgs[n].querySelector(".pbase"), im = b && b.querySelector(".pimg"); if (im) im.setAttribute("href", useAsset(opt.after)); if (b) b.classList.remove("vid"); later(220, function(){ v.classList.remove("on"); }); };
+  v.onplaying = function(){ v.classList.add("on"); vidOn[n] = true; var b = svgs[n].querySelector(".pbase"); if (b) b.classList.add("vid"); VIDLOG.push({ id: id, face: n, t: +gt.toFixed(2) }); if (opt.onplay) opt.onplay(); };
+  v.onended = function(){ if (!opt.after) return; vidOn[n] = false; vidAfter[n] = opt.after; var b = svgs[n].querySelector(".pbase"), im = b && b.querySelector(".pimg"); if (im) im.setAttribute("href", useAsset(opt.after)); if (b) b.classList.remove("vid"); later(220, function(){ v.classList.remove("on"); }); };
   var p = v.play(); if (p && p.catch) p.catch(function(){});
   return true;
 }
-function stopFaceVideos(){ faces.forEach(function(f, n){ var v = f.querySelector(".fvid"); if (!v) return; v.onplaying = v.onended = null; try{ v.pause(); }catch(e){} v.classList.remove("on"); var b = svgs[n] && svgs[n].querySelector(".pbase"); if (b) b.classList.remove("vid"); }); }
+function stopFaceVideos(){ vidOn = []; vidAfter = []; faces.forEach(function(f, n){ var v = f.querySelector(".fvid"); if (!v) return; v.onplaying = v.onended = null; try{ v.pause(); }catch(e){} v.classList.remove("on"); var b = svgs[n] && svgs[n].querySelector(".pbase"); if (b) b.classList.remove("vid"); }); }
 function startLoopVideos(){ if (!P || !P.anomaly || P.anomaly === "coins_return") return; for (var n = 0; n < 4; n++){ var id = "loop.face" + n + "." + P.anomaly; if (AS(id)) playFaceVideo(n, id, { loop: true }); } }
 var VIDLOG = [];
 // 확대 — 원본에서 잘라 둔 조각(zoom.<사물>)이 있으면 그것, 없으면 면 그림(과 덧그린 층 — 살아 있는 채로)을 키운다.
@@ -2227,8 +2323,8 @@ D("door_open.sit", function(c){ c.face(2, "door_open");
 });
 D("shutter_up.sit", function(c){ c.face(1, "shutter_up");
   var e = glowFx(c, 200, 286, 330, 430, 20, 180, 0.3, 5.2, .7, "gRadio");
-  c.at(0.1, function(){ Snd.loopOn("static", { level: .03, rise: .3 }); });
-  c.tw(0.3, 5.2, function(k){ Snd.loopLevel("static", .03 + .3 * k, .05); });
+  c.at(0.1, function(){ Snd.loopOn("static", { level: .25, rise: .3 }); });
+  c.tw(0.3, 5.2, function(k){ Snd.loopLevel("static", .25 + 2.5 * k, .05); });
   c.at(5.2, function(){ Snd.loopOff("static", 0.01); Snd.cutClick(); e.setAttribute("opacity", 0); });
   c.cover(5.2, 5.25, 0, 1);
 });
@@ -2262,8 +2358,8 @@ D("lights_noengine.platform", function(c){ c.bg(platformArt());
 D("lights_noengine.sit", function(c){ c.face(0, "lights_noengine");
   Array.prototype.forEach.call(c.bgL.querySelectorAll(".hl"), function(h){ h.classList.add("on"); h.style.transition = "none"; });
   glowFx(c, 180, 356, 180, 330, 60, 170, 0.2, 2.8, .6);
-  c.at(0.1, function(){ Snd.loopOn("motor", { level: .12, rise: .2 }); });
-  c.at(3.0, function(){ Snd.loopOff("motor", 0.02); Snd.loopOn("static", { level: .35, rise: .02 }); var t = c.bgL.querySelector("#tA"); if (t) t.classList.add("off"); });
+  c.at(0.1, function(){ Snd.loopOn("motor", { level: .7, rise: .2 }); });
+  c.at(3.0, function(){ Snd.loopOff("motor", 0.02); Snd.loopOn("static", { level: 2.9, rise: .02 }); var t = c.bgL.querySelector("#tA"); if (t) t.classList.add("off"); });
   c.at(3.4, function(){ Snd.loopOff("static", 0.05); });
   c.cover(3.0, 4.2, 0, .78);
 });
@@ -2329,21 +2425,52 @@ D("rule_stamp.sit", function(c){ c.look();
   c.at(4.6, function(){ Snd.voice(Core.speech(Core.TEXT.scene.stampVoice), "pa"); });
 });
 function glassDeathReady(){ return !!(figId(99) && AS("video.face0.press")); }
-function deathVideo(src, bgL){
-  var v = $("dVid"); if (!v || !deathRun || deathRun.skipped) return;
-  if (v.getAttribute("src") !== src) v.src = src;
-  v.muted = true; v.playsInline = true; v.loop = false; try{ v.currentTime = 0; }catch(e){}
-  v.onplaying = function(){ v.classList.add("on"); bgL.style.transition = "opacity .2s linear"; bgL.style.opacity = 0; VIDLOG.push({ id: "video.face0.press", face: "death", t: deathRun ? +deathRun.el.toFixed(2) : null });
-    v.onplaying = null; var R0 = deathRun; [2000, 4000].forEach(function(ms){ later(ms, function(){ if (deathRun === R0 && R0 && R0.stage === "scene") Snd.thump(); }); }); };   // 0.2초 섞기 · 영상 2초(손바닥) · 4초(머리)에 쿵, 끝나면 마지막 프레임
-  var p = v.play(); if (p && p.catch) p.catch(function(){});
+// v4.1 죽음 영상 — 죽을 때 받기 시작한다(die). 제 시각(DV_AT)에 틀 만큼 받아졌으면 틀고, DV_WAIT 안에 못 받으면 이번엔 정지 그림으로 간다.
+//   mode(DEATHV · picks.json video_notes): loop = 첫 장면이 그 바퀴 그림 → 끝(until)에서 정지 그림으로 0.2초 · still = 정지 그림 → 영상(첫 장면 = 정지 그림) → 마지막 프레임 유지 · reverse = cut_name(loop 와 같이 흐름) · glass = face_glass 유리에 붙는 영상(prod2) → 정지 그림
+var DV_AT = 0.5, DV_WAIT = 0.35, DV_STILL = 0.25;
+function deathVidOf(scene){
+  if (scene === "face_glass.sit" && glassDeathReady()) return { id: "video.face0.press", mode: "glass", at: 0.4 };
+  var M = typeof DEATHV !== "undefined" ? DEATHV[scene] : null; if (!M || !AS("deathvid." + scene)) return null;
+  return { id: "deathvid." + scene, mode: M.mode, until: M.until || null, at: DV_AT };
+}
+function deathStillOf(scene){ return AS("death." + scene) ? "death." + scene : null; }
+// 정지 그림 · 영상 · 확대 흔들림을 한 장면에 건다. bgEl = 보이는 사진 층(영상이 돌 때 걷는다) · lp = 그 바퀴 그림 층 · ds = 죽음 정지 그림(없으면 null)
+function deathFlow(c, dur, bgEl, lp, ds, V){
+  var st = { zFrom: V ? null : 0, stillAt: null, v: 0 };
+  function still(t0){ if (!ds || st.stillAt != null) return; st.stillAt = t0; c.tw(t0, t0 + 0.2, function(k){ ds.setAttribute("opacity", k.toFixed(3)); if (lp) lp.setAttribute("opacity", (1 - k).toFixed(3)); }); }
+  if (!V){ still(DV_STILL); return st; }
+  if (V.mode === "still") still(DV_STILL);
+  var v = $("dVid"), vAt = V.at;
+  c.tw(vAt, dur, function(k){
+    var R0 = deathRun; if (!R0 || R0.stage !== "scene" || R0.skipped) return;
+    var t = vAt + k * (dur - vAt);
+    if (st.v === 0){
+      if (v.readyState >= 3 || (v.readyState >= 2 && t - vAt > 0.12)){
+        st.v = 1; st.tv = t; v.muted = true; v.playsInline = true; v.loop = false; try{ v.currentTime = 0; }catch(e){}
+        v.onplaying = function(){ v.onplaying = null; var R1 = deathRun; if (!R1 || R1 !== R0 || R1.stage !== "scene"){ try{ v.pause(); }catch(e){} return; }
+          st.v = 2; v.classList.add("on"); bgEl.style.transition = "opacity .2s linear"; bgEl.style.opacity = 0; VIDLOG.push({ id: V.id, face: "death", t: +R1.el.toFixed(2) });
+          if (V.mode !== "still") still(R1.el);   // 영상 밑에서 정지 그림으로 바꿔 둔다(끝나면 걷어 올린다)
+          if (V.mode === "glass") [2000, 4000].forEach(function(ms){ later(ms, function(){ if (deathRun === R1 && R1.stage === "scene") Snd.thump(); }); }); };   // 영상 2초(손바닥) · 4초(머리)에 쿵
+        var p = v.play(); if (p && p.catch) p.catch(function(){});
+      } else if (t - vAt > DV_WAIT){ st.v = 4; VIDLOG.push({ id: V.id, face: "death", miss: true, t: +t.toFixed(2) }); still(t); st.zFrom = t; }   // 못 받았다 — 정지 그림
+      return;
+    }
+    if (st.v === 1 && t - st.tv > 0.8){ st.v = 4; v.onplaying = null; try{ v.pause(); }catch(e){} VIDLOG.push({ id: V.id, face: "death", miss: true, t: +t.toFixed(2) }); still(t); st.zFrom = t; return; }   // 틀었는데 멎어 있다
+    if (st.v === 2 && V.mode !== "still" && (v.ended || (V.until && v.currentTime >= V.until) || (v.duration && v.currentTime >= v.duration - 0.06))){   // 끝(또는 작은 문제 구간 앞) → 정지 그림으로 0.2초
+      st.v = 3; try{ v.pause(); }catch(e){} bgEl.style.opacity = 1; later(250, function(){ if (deathRun === R0) v.classList.remove("on"); }); st.zFrom = t;
+      if (!ds && lp) lp.setAttribute("opacity", 1);
+    }
+  });
+  return st;
 }
 function resetDeathVideo(){ var v = $("dVid"); if (!v) return; v.onplaying = null; try{ v.pause(); }catch(e){} v.classList.remove("on"); }
 function photoGlassScene(c){
-  if (!glassDeathReady()) return false;   // v4: 바퀴 안에서 이미 다가왔다 — 가까이(마지막 단계) → 유리에 붙는 영상(0.4초~) → 끝에 달려듦
-  c.bg(pImg(useAsset(figId(99)), "dimg") + '<rect x="0" y="-20" width="360" height="640" fill="url(#gVig)"/>');
+  if (!glassDeathReady()) return false;   // v4: 바퀴 안에서 이미 다가왔다 — 가까이(마지막 단계) → 유리에 붙는 영상(0.4초~) → 정지 그림(v4.1) → 끝에 달려듦
+  var sid = deathStillOf("face_glass.sit");
+  c.bg('<g class="dloop">' + pImg(useAsset(figId(99)), "dimg") + '</g>' + (sid ? pImg(useAsset(sid), "dstill", ' opacity="0"') : '') + '<rect x="0" y="-20" width="360" height="640" fill="url(#gVig)"/>');
   var b = c.bgL;
   c.at(0.1, function(){ Snd.breath(); });
-  c.at(0.4, function(){ deathVideo(useAsset("video.face0.press"), b); });
+  deathFlow(c, c.dur, b, b.querySelector(".dloop"), b.querySelector(".dstill"), deathVidOf("face_glass.sit"));
   return true;
 }
 D("face_glass.sit", function(c){ if (photoGlassScene(c)) return; c.face(0, "face_glass");   // 바깥 입김이 숨 쉬듯 짙어졌다 옅어지고, 얼굴이 바깥에 흐리게 다시 뜬 뒤 안쪽에서 가까이
@@ -2412,21 +2539,21 @@ D("knock3.sit", function(c){ c.face(3, null);
 });
 D("light_sweep.lightdoor", function(c){ c.face(2, null);
   var g = c.el('<rect x="246" y="214" width="56" height="66" fill="url(#gHead)"/>').firstChild;
-  c.at(0.1, function(){ Snd.loopOn("engine", { level: .3, rise: .2 }); });
-  c.tw(0.3, 2.6, function(k){ g.setAttribute("x", 246 - 246 * k); g.setAttribute("y", 214 - 214 * k); g.setAttribute("width", 56 + 304 * k); g.setAttribute("height", 66 + 534 * k); Snd.loopLevel("engine", .3 + .6 * k, .05); });
+  c.at(0.1, function(){ Snd.loopOn("engine", { level: .6, rise: .2 }); });
+  c.tw(0.3, 2.6, function(k){ g.setAttribute("x", 246 - 246 * k); g.setAttribute("y", 214 - 214 * k); g.setAttribute("width", 56 + 304 * k); g.setAttribute("height", 66 + 534 * k); Snd.loopLevel("engine", .6 + 1.2 * k, .05); });
   c.cover(2.6, 3.4, 0, 1, "#FFF6E2");
   c.at(4.6, function(){ Snd.loopOff("engine", .3); });
 });
 D("light_sweep.window", function(c){ c.face(2, "door_open");
   var up = c.el('<rect x="0" y="600" width="360" height="0" fill="url(#gHead)" opacity=".85"/>').firstChild;
-  c.at(0.2, function(){ Snd.loopOn("engine", { level: .7, rise: .1 }); });
+  c.at(0.2, function(){ Snd.loopOn("engine", { level: 1.4, rise: .1 }); });
   c.tw(0.3, 3.8, function(k){ up.setAttribute("y", 600 - 600 * k); up.setAttribute("height", 600 * k); });
   c.at(5.4, function(){ Snd.loopOff("engine", .4); });
   c.cover(4.2, 5.2, 0, .9, "#FFF6E2");
 });
 D("light_sweep.sit", function(c){ c.face(2, null);
   var sw = c.bgL.querySelector(".sweep"); if (sw){ sw.setAttribute("x", 246); sw.setAttribute("width", 56); sw.setAttribute("opacity", .9); }
-  c.at(0.2, function(){ Snd.loopOn("engine", { level: .35, rise: .4 }); });
+  c.at(0.2, function(){ Snd.loopOn("engine", { level: .7, rise: .4 }); });
   c.at(2.5, function(){ c.face(2, "door_open"); Snd.hinge(); });
   glowFx(c, 274, 300, 274, 420, 20, 140, 2.6, 6.0, .6);
   c.at(6.6, function(){ Snd.loopOff("engine", .3); });
@@ -2448,11 +2575,11 @@ D("sitter.after", function(c){ c.look();
   c.tw(2.0, 3.4, function(k){ wet.setAttribute("rx", 10 + 120 * k); wet.setAttribute("ry", 10 + 110 * k); });
   c.el('<g transform="rotate(-3 180 533)">' + sansT(124, 506, "8. 앉아 계신 줄에 먼저 온 승객이…", 9.5, "#333") + '</g>');
   c.text(3.2, 6.2, 180, 540, Core.TEXT.fakeClue[8].text, 19, "#3f6664", -3, "middle");   // v3: 속삭임과 같은 말
-  c.at(3.2, function(){ Snd.loopOn("trickle", { level: .12 }); }); c.at(6.6, function(){ Snd.loopOff("trickle", .6); Snd.creak(); });
+  c.at(3.2, function(){ Snd.loopOn("trickle", { level: .8 }); }); c.at(6.6, function(){ Snd.loopOff("trickle", .6); Snd.creak(); });
 });
 D("sitter.sit", function(c){ c.face(3, "sitter");
   var chairs = c.bgL.querySelector(".chairs");
-  c.at(0.2, function(){ Snd.loopOn("trickle", { level: .14, face: 3 }); Snd.creak(3); });
+  c.at(0.2, function(){ Snd.loopOn("trickle", { level: .93, face: 3 }); Snd.creak(3); });
   c.tw(0.5, 4.0, function(k){ chairs.innerHTML = chairsSVG({ pressed: 2, bend: k }); });
   c.at(2.4, function(){ Snd.creak(3); }); c.at(4.0, function(){ Snd.creak(3); });
   c.at(5.6, function(){ Snd.loopOff("trickle", .3); });
@@ -2460,22 +2587,22 @@ D("sitter.sit", function(c){ c.face(3, "sitter");
 D("water_rise.sit", function(c){ c.face(0, "water_rise");
   var wr = c.bgL.querySelector(".wr"), k0 = c.k0 == null ? 1 : c.k0;
   if (wr) wr.setAttribute("transform", "translate(0 " + (-170 * k0).toFixed(1) + ")");
-  c.at(0.1, function(){ Snd.loopOn("slosh", { level: .35 }); });
+  c.at(0.1, function(){ Snd.loopOn("slosh", { level: 1.4 }); });
   c.tw(0.0, 1.0, function(k){ if (wr) wr.setAttribute("transform", "translate(0 " + (-170 * (k0 + (1 - k0) * k)).toFixed(1) + ")"); });
   c.tw(1.0, 2.0, function(k){ if (wr) wr.setAttribute("transform", "translate(0 " + (-(170 + 60 * k)).toFixed(1) + ")"); });
   c.at(2.0, function(){ Snd.thud(); }); c.shake(2.0, 2.5, 5);
   var flood = c.el('<rect x="0" y="600" width="360" height="0" fill="url(#gWater)"/>').firstChild;
-  c.tw(2.4, 5.2, function(k){ flood.setAttribute("y", 600 - 600 * k); flood.setAttribute("height", 600 * k); Snd.loopLevel("slosh", .35 + .3 * k, .1); });
+  c.tw(2.4, 5.2, function(k){ flood.setAttribute("y", 600 - 600 * k); flood.setAttribute("height", 600 * k); Snd.loopLevel("slosh", 1.4 + 1.2 * k, .1); });
   c.at(7.2, function(){ Snd.loopOff("slosh", .5); });
 });
 D("shutter_rising.sit", function(c){ c.face(1, "shutter_up");
-  c.at(0.3, function(){ Snd.cutClick(); Snd.loopOn("static", { level: .1, face: 1 }); });
+  c.at(0.3, function(){ Snd.cutClick(); Snd.loopOn("static", { level: .83, face: 1 }); });
   glowFx(c, 262, 340, 200, 240, 18, 150, 0.6, 5.2, .75, "gRadio");
   c.at(6.4, function(){ Snd.loopOff("static", .3); });
 });
 D("shutter_rising.stare", function(c){ c.face(1, "shutter_up");
   var sl = c.el('<rect x="0" y="0" width="360" height="0" fill="url(#pSlat)"/>').firstChild;
-  c.at(0.3, function(){ Snd.loopOn("motor", { level: .25, rise: .1 }); });
+  c.at(0.3, function(){ Snd.loopOn("motor", { level: 1.5, rise: .1 }); });
   c.tw(0.5, 3.0, function(k){ sl.setAttribute("height", 600 * k); });
   c.at(4.4, function(){ Snd.loopOff("motor", .3); });
 });
@@ -2484,7 +2611,7 @@ D("normal.door", function(c){
     '<rect x="60" y="420" width="240" height="120" fill="#050909"/><rect x="0" y="540" width="360" height="60" fill="#172020"/>');
   for (var i = 0; i < 3; i++){ (function(i){ var l = c.el('<path d="M70,' + (430 + i * 30) + ' q30,-4 60,0 t60,0 t60,0 t40,0" stroke="#3f6462" stroke-width="2" fill="none"/>').firstChild;
     c.tw(0, 5, function(k){ l.setAttribute("transform", "translate(" + (Math.sin(k * 12 + i) * 8).toFixed(1) + " 0)"); }); })(i); }
-  c.at(0.2, function(){ Snd.loopOn("slosh", { level: .22 }); }); c.at(4.4, function(){ Snd.loopOff("slosh", .4); });
+  c.at(0.2, function(){ Snd.loopOn("slosh", { level: .88 }); }); c.at(4.4, function(){ Snd.loopOff("slosh", .4); });
 });
 // ── 죽음 뒤 설명 — 그 바퀴의 해당 면 정지 화면에 놓친 이상을 동그라미로 짚는다(v2.1) ──
 // c = [cx, cy, rx, ry](면 좌표 360×600) · zoom = [사물, 보기] 가까이 본 모습을 옆에 · zc = 그 안의 동그라미 · snd = [평소/이번 소리 듣기]
@@ -2658,7 +2785,7 @@ function turn(dir){
 }
 function shake(){ var a = $("app"); a.classList.remove("shake"); void a.offsetWidth; a.classList.add("shake"); later(360, function(){ a.classList.remove("shake"); }); }
 // face_glass(v4) — 바퀴 시작엔 ① 에 아무것도 없다. 바퀴 3초 이후 다른 면을 보고 ① 로 돌아오면 유리 밖에 형체가 서 있다(처음 보는 순간 낮고 짧은 소리 + 짧은 진동).
-// 형체는 바퀴 내내 남고, ① 을 떠났다 돌아올 때마다 한 단계씩 가까워진다(먼 곳 → 중간 → 가까이 — 그림 목록 SEQ 순서, 마지막 단계에서 멈춤).
+// 형체는 바퀴 내내 남고, ① 을 떠났다 돌아올 때마다 한 단계씩 가까워진다(아주 먼 곳 → 먼 곳 → 중간 → 가까이 — 그림 목록 SEQ 순서, 마지막 단계에서 멈춤. v4.1 prod3 far0).
 function figLeave(){ if (P && P.anomaly === "face_glass") figAway = true; }
 function figArrive(){
   if (!P || P.anomaly !== "face_glass" || !RUN[phase] || !figAway) return;
@@ -2776,8 +2903,8 @@ function doAct(actId, via){
   renderInspect();
   setInCap(r.text || "", r.sys || null);
   if (inspectLoop && inspectLoop !== r.loop){ Snd.loopOff(inspectLoop, .3); inspectLoop = null; }
-  if (r.loop && !inspectLoop){ Snd.loopOn(r.loop, { level: .16 }); inspectLoop = r.loop; }
-  if (r.duck && !(arr.silence && !arr.humBack)){ Snd.loopLevel("radio", .005, .05); later(900, function(){ if (!(arr.silence && !arr.humBack)) Snd.loopLevel("radio", radioLevel(), .3); }); }
+  if (r.loop && !inspectLoop){ Snd.loopOn(r.loop, { level: 1.07 }); inspectLoop = r.loop; }
+  if (r.duck && !(arr.silence && !arr.humBack)){ Snd.loopLevel("radio", .14, .05); later(900, function(){ if (!(arr.silence && !arr.humBack)) Snd.loopLevel("radio", radioLevel(), .3); }); }
   if (via !== "hold" && a.g !== "hold") Snd.paper();
 }
 function closeInspect(silent){
@@ -3077,7 +3204,7 @@ function status(t){ $("status").textContent = t || ""; }
 function setLED(on){ spkOn = !!on; var e = svgs[3].querySelector(".spk"); if (e) e.classList.toggle("on", spkOn); if (inspectId === "speaker") renderInspect(); }
 function setFog(on){ var e = svgs[0].querySelector(".fog"); if (e) e.classList.toggle("on", !!on); }
 function setHeadlights(on){ headlightsOn = !!on; [].forEach.call(svgs[0].querySelectorAll(".hl"), function(e){ e.classList.toggle("on", !!on); }); [].forEach.call(svgs[0].querySelectorAll(".gate-hl"), function(e){ e.setAttribute("opacity", on ? 1 : 0); }); if (inspectId === "glass") renderInspect(); }
-function radioLevel(){ return 0.035; }
+function radioLevel(){ return 1; }   // v4.1: 파일 크기 그대로(합성 0.035 는 Snd 안 LBASE)
 function paperButton(){
   var b = $("bPaper"), a = P ? P.anomaly : null;
   b.classList.toggle("pb-ink", a === "rule_write");
@@ -3103,6 +3230,7 @@ function beginLoop(){
   capPersist = {}; capTemp = [];
   Snd.allLoopsOff(0.05); stopBroadcast();
   Snd.humPitch(-25 * P.streak); Snd.humOn(); setPersist("hum", "[형광등 웅웅]");
+  Snd.loopOn("air", { level: 1, rise: .6 }); Snd.preloadRest();   // v4.1: 대합실 공기(정적 1초에도 남아 디지털 무음이 되지 않게 — sound README §5-7) · 나머지 소리 파일은 첫 바퀴부터 둘씩
   if (P.anomaly !== "shutter_up"){ Snd.loopOn("radio", { face: 1, level: radioLevel(), rise: 1 }); setPersist("radio", "[라디오 — 매점 쪽]"); }   // v3: 라디오 — 평소 바퀴 내내
   if (P.anomaly === "hum_water") setPersist("drip", "[물방울 — 승강장 쪽 천장]");
   $("whisper").classList.remove("show"); $("sigcap").classList.remove("show");
@@ -3115,7 +3243,7 @@ function beginLoop(){
 function fire(ev){
   if (ev.type === "knock"){ Snd.knock(2, 3); sndCap("[노크 세 번 — 도로 쪽 문]", 3000); }
   else if (ev.type === "headlights"){ setHeadlights(true); sndCap("[유리문 밖이 밝아짐 — 엔진 소리 없음]", 3500); }
-  else if (ev.type === "coins"){ coinsOn = true; [].forEach.call(svgs[2].querySelectorAll(".coins"), function(cs){ cs.classList.add("on"); }); [].forEach.call(svgs[2].querySelectorAll(".gate-coins"), function(e){ e.setAttribute("opacity", 1); }); if (AS("loop.face2.coins_return")) playFaceVideo(2, "loop.face2.coins_return", { loop: true }); if (inspectId === "coin") renderInspect(); setPersist("coins", "[짤랑 — 자판기 반환구]"); }
+  else if (ev.type === "coins"){ coinsOn = true; Snd.coinSpill(); [].forEach.call(svgs[2].querySelectorAll(".coins"), function(cs){ cs.classList.add("on"); }); [].forEach.call(svgs[2].querySelectorAll(".gate-coins"), function(e){ e.setAttribute("opacity", 1); }); if (AS("loop.face2.coins_return")) playFaceVideo(2, "loop.face2.coins_return", { loop: true }); if (inspectId === "coin") renderInspect(); setPersist("coins", "[짤랑 — 자판기 반환구]"); }
   else if (ev.type === "stamp"){ stampOn = true; Snd.stampWet(); paperButton(); if (paperOpen) renderPaper(); sndCap("[도장 찍는 소리]", 2500); }
   else if (ev.type === "broadcast") startBroadcast();
 }
@@ -3157,7 +3285,7 @@ function toDecide(){
   if (P.anomaly === "sitter" && !arr.arrived && sitterIdx === 3) arr.nl = Math.min(arr.nl || 0, P.sitterStep - 3);   // 판단 버튼이 열린 뒤 적어도 3초
 }
 function arriveStep(){
-  if (!arr.hl && gt >= CT.ARRIVE){ arr.hl = true; setHeadlights(true); Snd.loopOn("engine", { face: 0, muffle: 700, level: .55, rise: 2.5 }); setPersist("eng", "[엔진 소리 — 유리문 밖]"); }
+  if (!arr.hl && gt >= CT.ARRIVE){ arr.hl = true; setHeadlights(true); Snd.loopOn("engine", { face: 0, muffle: 700, level: 1.1, rise: 2.5 }); setPersist("eng", "[엔진 소리 — 유리문 밖]"); }
   if (!arr.btn && gt >= CT.ARRIVE + CT.ARRIVE_BTN){ arr.btn = true; arriveReady = true; showPlat(true); }
 }
 // 큰 이상 — 방 안의 것(수면·셔터·바늘·눌림·불빛)으로 시한이 보인다. 시스템 시한 표시는 없다.
@@ -3174,17 +3302,33 @@ function clockAngle(t){
   if (u < T - TL) return A0 - (R - 360) * (u / (T - TL));
   var v = (u - (T - TL)) / TL; return A0 - (R - 360) - 360 * (1 - (1 - v) * (1 - v));
 }
+var BV_WAIT = 1.5;
+function startBigVideo(a){
+  var B = typeof BIGV !== "undefined" ? BIGV[a] : null, id = "big." + a;
+  if (!B || !AS(id) || !photoOn(B.face)) return;
+  var bv = { a: a, face: B.face, B: B, t: gt, t0: null };
+  if (!playFaceVideo(B.face, id, { loop: B.mode === "loop", after: B.after || null, onplay: function(){ if (arr.bv === bv && bv.t0 == null) bv.t0 = gt; } })) return;
+  arr.bv = bv;
+}
+function bigVideoStep(){
+  var bv = arr.bv; if (!bv) return;
+  if (bv.t0 == null){ if (gt - bv.t > BV_WAIT){ var v0 = faceVid(bv.face); if (v0){ v0.onplaying = v0.onended = null; try{ v0.pause(); }catch(e){} v0.classList.remove("on"); } vidOn[bv.face] = false; var b0 = svgs[bv.face].querySelector(".pbase"); if (b0) b0.classList.remove("vid"); VIDLOG.push({ id: "big." + bv.a, face: bv.face, miss: true, t: +gt.toFixed(2) }); arr.bv = null; } return; }   // 못 받았다 — 사진으로
+  if (bv.a === "light_sweep" && !arr.sweepStop){   // 불빛 판정(P.passes)과 영상 불빛이 어긋나지 않게 — 0.2초 넘게 밀리면 맞춘다
+    var v = faceVid(bv.face), per = bv.B.period || CT.SWEEP_PERIOD, want = ((gt - P.bigStart) % per + per) % per;
+    if (v && !v.paused && want > 0.15 && want < per - 0.15 && Math.abs(v.currentTime - want) > 0.2){ try{ v.currentTime = want; }catch(e){} }
+  }
+}
 function bigVisuals(inspectOnly){
   if (!P || !P.big) return;
   var a = P.anomaly, t = gt, isvg = inspectId ? $("inSvg") : null;
   if (a === "water_rise"){
-    var k = clamp((t - P.bigStart) / (P.deadline - P.bigStart));
+    var k = arr.bv ? (arr.bv.t0 == null ? 0 : clamp((t - arr.bv.t0) / (arr.bv.B.full_at || 3.6))) : clamp((t - P.bigStart) / (P.deadline - P.bigStart));   // v4.1: 영상이면 수면 = 영상(3.6초에 손잡이) — 시한은 물소리 · 방송 먹먹함으로
     if (!inspectOnly){ [svgs[0].querySelector(".wr"), svgs[0].querySelector(".wrhc")].forEach(function(w){ if (w) w.setAttribute("transform", "translate(0 " + (-170 * k).toFixed(1) + ")"); });
       var wc = svgs[0].querySelector(".pwrc"); if (wc){ var wh = 111 * k; wc.setAttribute("y", (333 - wh).toFixed(1)); wc.setAttribute("height", wh.toFixed(1)); } }   // 사진: 유리 칸 바닥(333)에서 수면(222)까지 드러낸다
     if (isvg && inspectId === "glass"){ var iw = isvg.querySelector(".iwr"); if (iw) iw.setAttribute("transform", "translate(0 " + (-148 * k).toFixed(1) + ")"); }
   }
   if (a === "shutter_rising"){
-    var ks = clamp((t - P.bigStart) / (P.bEnd - P.bigStart)), h = 128 - 114 * ks;
+    var ks = arr.bv ? (arr.bv.t0 == null ? 0 : clamp((t - arr.bv.t0) / (arr.bv.B.full_at || 1.3))) : clamp((t - P.bigStart) / (P.bEnd - P.bigStart)), h = 128 - 114 * ks;   // v4.1: 영상이면 셔터 = 영상(1.3초에 끝까지)
     if (!inspectOnly){ setShutterH(svgs[1], h);
       var pr = svgs[1].querySelector(".prise"), pf = svgs[1].querySelector(".pfull");   // 사진: ¾ 판이 있으면 0→¾, 끝까지 판으로 / 없으면 평소 ↔ 끝까지를 오른 만큼 섞음
       if (pr){ pr.setAttribute("opacity", Math.min(1, ks / 0.75).toFixed(3)); if (pf) pf.setAttribute("opacity", clamp((ks - 0.75) / 0.25).toFixed(3)); }
@@ -3202,7 +3346,7 @@ function bigVisuals(inspectOnly){
   }
   if (a === "light_sweep"){
     var on = -1;
-    if (!arr.sweepStop) (P.passes || []).forEach(function(p){ if (t >= p && t <= p + 2) on = (t - p) / 2; });
+    var SL = CT.SWEEP_ON[1] - CT.SWEEP_ON[0]; if (!arr.sweepStop) (P.passes || []).forEach(function(p){ if (t >= p && t <= p + SL) on = (t - p) / SL; });   // v4.1 불빛 길이 = 영상
     if (!inspectOnly){
       var sw = svgs[2].querySelector(".sweep"), sf = svgs[2].querySelector(".sweepf");
       if (sw){ sw.setAttribute("opacity", on >= 0 ? .92 : 0); if (on >= 0) sw.setAttribute("x", (212 + 90 * on).toFixed(1)); }
@@ -3244,14 +3388,14 @@ function bigStep(dt){
   if (!P || !P.big) return;
   var a = P.anomaly, t = gt;
   if (!arr.silence && t >= P.bigStart - CT.BIG_SILENCE){   // 정적 1초: 형광등 소리와 라디오가 끊긴다
-    arr.silence = true; Snd.humOff(true); Snd.loopLevel("radio", 0.0001, 0.04); setPersist("hum", null); setPersist("radio", null);
+    arr.silence = true; Snd.humOff(true); Snd.loopLevel("radio", 0.003, 0.04); setPersist("hum", null); setPersist("radio", null);
   }
   if (!arr.bigOn && t >= P.bigStart){
-    arr.bigOn = true; bigSignal(a);
+    arr.bigOn = true; bigSignal(a); startBigVideo(a);   // v4.1: 큰 이상 순간 영상 — 신호와 함께(먼저 보이지 않는다)
     if (a === "sitter"){ sitterIdx = 5; arr.sitDirty = true; }
-    if (a === "water_rise"){ Snd.loopOn("slosh", { face: 0, level: .05 }); setPersist("big", "[출렁이는 물소리 — 유리문 밖]"); }
-    if (a === "shutter_rising"){ Snd.loopOn("motor", { face: 1, level: .16 }); setPersist("big", "[모터 소리 — 매점 셔터]"); }
-    if (a === "light_sweep"){ Snd.loopOn("engine", { face: 2, level: .06 }); setPersist("big", "[엔진 소리 — 도로 쪽]"); }
+    if (a === "water_rise"){ Snd.loopOn("slosh", { face: 0, level: .2 }); setPersist("big", "[출렁이는 물소리 — 유리문 밖]"); }
+    if (a === "shutter_rising"){ Snd.loopOn("motor", { face: 1, level: .94 }); setPersist("big", "[모터 소리 — 매점 셔터]"); }
+    if (a === "light_sweep"){ Snd.loopOn("engine", { face: 2, level: .12 }); setPersist("big", "[엔진 소리 — 도로 쪽]"); }
     if (a === "clock_back") setPersist("big", "[째깍 — 거꾸로]");
     if (a === "sitter") setPersist("big", "[삐걱 · 물 끌리는 소리 — 의자]");
   }
@@ -3263,7 +3407,7 @@ function bigStep(dt){
     if (lookFace() !== 3){ arr.nl = (arr.nl || 0) + (dt || 0);
       if (arr.nl >= P.sitterStep){ if (sitterIdx > 3 || phase === "decide"){ arr.nl = 0; sitterMove(); } else arr.nl = P.sitterStep; } }   // 버튼 전엔 옆자리 바로 앞에서 기다린다
   }
-  if (a === "water_rise") Snd.loopLevel("slosh", .05 + .3 * clamp((t - P.bigStart) / (P.deadline - P.bigStart)), .2);
+  if (a === "water_rise") Snd.loopLevel("slosh", .2 + 1.2 * clamp((t - P.bigStart) / (P.deadline - P.bigStart)), .2);
   if (a === "shutter_rising"){
     if (shutterFull && !arr.motorOff){ arr.motorOff = true; Snd.loopOff("motor", .3); }
     if (shutterFull && !arr.radioCut){ arr.radioCut = true; Snd.loopOff("radio", .12); setPersist("radio", null); sndCap("[라디오가 끊김]", 2500);   // 셔터가 끝까지 오르면 라디오가 끊긴다(규칙 4)
@@ -3271,15 +3415,15 @@ function bigStep(dt){
   }
   if (a === "light_sweep" && !arr.sweepStop){
     var n = (P.passes || []).filter(function(p){ return p <= t; }).length;
-    var inPass = (P.passes || []).some(function(p){ return t >= p && t <= p + 2; });
-    Snd.loopLevel("engine", Math.min(.6, .06 + .05 * n) * (inPass ? 1.6 : 0.6), .25);
+    var inPass = (P.passes || []).some(function(p){ return t >= p && t <= p + CT.SWEEP_ON[1] - CT.SWEEP_ON[0]; });
+    Snd.loopLevel("engine", Math.min(1.2, .12 + .1 * n) * (inPass ? 1.6 : 0.6), .25);
   }
   if (a === "clock_back" && t >= P.bigStart && t < P.deadline){
     var ang = clockAngle(t), step = Math.floor(ang / 6);
     if (lastTickAng === null) lastTickAng = step;
     if (step !== lastTickAng){ if (!arr.lastTickT || performance.now() - arr.lastTickT > 40){ Snd.tick(); arr.lastTickT = performance.now(); } lastTickAng = step; }
   }
-  bigVisuals(false);
+  bigVideoStep(); bigVisuals(false);
   if (P.deadline != null && t >= P.deadline && (phase === "wait" || phase === "broadcast" || phase === "decide")) resolve("timeout");
 }
 function stareStep(dt){
@@ -3292,7 +3436,7 @@ function stareStep(dt){
   stareT += dt;
   var w = clamp((stareT - CT.STARE_WARN) / (CT.STARE - CT.STARE_WARN));
   if (warn1) warn1.setAttribute("opacity", (0.8 * w).toFixed(2)); if (warnI) warnI.setAttribute("opacity", (0.8 * w).toFixed(2));
-  if (w > 0){ if (!Snd.hasLoop("static")) Snd.loopOn("static", { face: 1, level: .02, rise: .1 }); Snd.loopLevel("static", .02 + .25 * w, .05); }
+  if (w > 0){ if (!Snd.hasLoop("static")) Snd.loopOn("static", { face: 1, level: .17, rise: .1 }); Snd.loopLevel("static", .17 + 2.1 * w, .05); }
   if (stareT >= CT.STARE) resolve("stare");
 }
 function ruleAnomStep(nowMs){
@@ -3343,9 +3487,9 @@ function die(d){
   phase = "death";
   closeInspect(true); closePaper(true); closeNotes(true); stopBroadcast(); stopFaceVideos(); resetDeathVideo();
   var photoGlass = d.scene === "face_glass.sit" && glassDeathReady();
-  if (photoGlass){ var dv = $("dVid"); dv.src = useAsset("video.face0.press"); try{ dv.load(); }catch(e){} }   // 바퀴가 시작될 때 미리 받아 두었다(loopAssets) — 0.4초에 튼다
+  var DVs = deathVidOf(d.scene), dv = $("dVid"); if (DVs && dv){ dv.src = useAsset(DVs.id); try{ dv.load(); }catch(e){} }   // v4.1: 죽음 영상은 죽을 때 받기 시작 — 받는 동안 정지 그림(deathFlow)
   if (d.scene !== "hum_water.sit") Snd.humOff(true);   // hum_water 는 험이 물속처럼 늘어지다 끊긴다(장면이 끈다)
-  Snd.allLoopsOff(0.05);
+  Snd.allLoopsOff(0.05); Snd.deathStart(d.scene);   // v4.1: 숨 · 찬물/젖은 가까움 층(설명 화면에서 흐리게 줄인다)
   var first = !seenDeaths[d.scene];
   logEv("death", { cause: d.cause, scene: d.scene, fake: d.fake, rule: d.rule, first: first, missed: d.sys[0] });
   upload("death");
@@ -3361,7 +3505,7 @@ function die(d){
   $("death").classList.add("show"); fadeTo(0, 10);
   var dsv = $("dSvg"); dsv.setAttribute("viewBox", "0 0 360 600");
   var dph = !photoGlass && d.scene !== "face_glass.sit" ? deathPhoto(d) : null;
-  var sc = dph ? sceneCtxPhoto(dsv, dph, d.dur) : sceneCtx(dsv);
+  var sc = dph ? sceneCtxPhoto(dsv, dph, d.dur) : sceneCtx(dsv); sc.dur = d.dur;
   if (photoGlass){ dsv.setAttribute("viewBox", PVB); var cv = dsv.querySelector(".cover"); cv.setAttribute("y", -20); cv.setAttribute("height", 640); }   // 영상과 같은 틀
   sc.k0 = P && P.big && P.deadline != null ? clamp((gt - P.bigStart) / (P.deadline - P.bigStart)) : 1; sc.gt0 = gt;   // 시한 전에 앉으면 남은 움직임을 줄여 튼다
   try{ (DS[d.scene] || DS["normal.door"])(sc); }catch(e){ console.error(e); }
@@ -3378,7 +3522,7 @@ var MARK_P = {   // 사진 위 동그라미(면 좌표 [x, y, rx, ry]) — prod1
   hum_water: [[183, 44, 82, 12], [118, 369, 26, 10]], voice_outside: [[150, 182, 22, 18]], cut_name: [[313, 90, 24, 24]], knock3: [[270, 290, 45, 100]],
   light_sweep: [[270, 235, 22, 25]], clock_back: [[182, 164, 26, 26]], sitter: [[158, 300, 34, 72]], water_rise: [[178, 290, 78, 50]], shutter_rising: [[180, 270, 66, 70]]
 };
-var FIG_MARK = { far: [210, 277, 16, 50], mid: [207, 260, 22, 72], near: [218, 248, 32, 84] };   // face_glass 형체 자리(다가옴 단계 그림에서 잰 면 좌표, v4)
+var FIG_MARK = { far0: [213, 250, 10, 22], far: [210, 277, 16, 50], mid: [207, 260, 22, 72], near: [218, 248, 32, 84] };   // face_glass 형체 자리(다가옴 단계 그림에서 잰 면 좌표, v4)
 function marksP(a){ if (a !== "face_glass") return MARK_P[a]; var k = figSeq()[Math.max(0, Math.min(figStage, figSeq().length - 1))] || "near"; return [FIG_MARK[k] || FIG_MARK.near]; }   // 형체는 본 단계 자리(못 봤으면 먼 곳)
 var ZC_P = { flyer_room: [162, 90, 54, 65], handprints_out: [150, 90, 112, 70], shoes_pair: [292, 246, 30, 16], hum_water: [165, 100, 145, 22] };   // 설명의 확대 조각(320×260) 위 동그라미
 var PAPER_FOCUS = { rule_write: [324, 326], rule_wet: [198, 417], rule_stamp: [263, 147] };   // 종이 사진(다 보이게 놓은 틀) 위 이상 자리
@@ -3394,7 +3538,7 @@ function deathPhoto(d){
   if (!id || !AS(id)) return null;
   var M = a && marksP(a), fc = M && id.indexOf("face") === 0 && (a !== "call_platform" || cause !== "platform") ? M[0] : (id === "face0" ? [180, 240] : [180, 280]);
   if (PAPER_FOCUS[a]) fc = PAPER_FOCUS[a];
-  return { img: id, focus: [fc[0], fc[1]], paper: id.indexOf("paper.") === 0, face: /^face(\d)/.test(id) ? +id.charAt(4) : null, anom: a };
+  return { img: id, focus: [fc[0], fc[1]], paper: id.indexOf("paper.") === 0, face: /^face(\d)/.test(id) ? +id.charAt(4) : null, anom: a, still: deathStillOf(d.scene), vid: deathVidOf(d.scene) };
 }
 function sceneCtxPhoto(svg, ph, dur){
   var c = sceneCtx(svg), root = svg.querySelector(".root"), bg = svg.querySelector(".bgL"), cover = svg.querySelector(".cover");
@@ -3403,10 +3547,11 @@ function sceneCtxPhoto(svg, ph, dur){
   if (ph.face != null) extra += piecesOf(ph.face);   // prod2 덧붙이는 조각
   if (ph.face === 2) extra += clockHandsP(P ? P.min : CT.START_MIN);   // ③ 사진엔 바늘이 없다 — 게임이 그린다
   if (ph.anom === "sitter" && AS("face3.sitter.backrest")) extra += '<clipPath id="cpBackD"><rect x="92.3" y="272.6" width="37.7" height="57.4"/></clipPath>' + pImg(useAsset("face3.sitter.backrest"), "dback", ' clip-path="url(#cpBackD)"');
-  bg.innerHTML = '<g class="pzoom">' + (ph.paper ? '<rect class="ibg" x="-40" y="-40" width="440" height="700" fill="#07090a"/>' : '') + '<image class="dimg" href="' + useAsset(ph.img) + '" x="0" y="-20" width="360" height="640" preserveAspectRatio="' + par + '"' + (ph.img === "face2.light_sweep" ? ' mask="url(#mSweepDim)"' : '') + '/>' + extra + '</g><rect class="pdark" x="0" y="-20" width="360" height="640" fill="#000" opacity="0"/>';
+  bg.innerHTML = '<g class="pzoom"><g class="dloop">' + (ph.paper ? '<rect class="ibg" x="-40" y="-40" width="440" height="700" fill="#07090a"/>' : '') + '<image class="dimg" href="' + useAsset(ph.img) + '" x="0" y="-20" width="360" height="640" preserveAspectRatio="' + par + '"' + (ph.img === "face2.light_sweep" ? ' mask="url(#mSweepDim)"' : '') + '/>' + extra + '</g>' +
+    (ph.still ? pImg(useAsset(ph.still), "dstill", ' opacity="0"') : '') + '</g><rect class="pdark" x="0" y="-20" width="360" height="640" fill="#000" opacity="0"/>';   // v4.1: 바퀴 그림(dloop) → 죽음 정지 그림(dstill, prod3)
   if (ph.anom === "clock_back"){ var mh = bg.querySelector(".clk .mh"), hh = bg.querySelector(".clk .hh"); if (mh) mh.setAttribute("transform", "rotate(200)"); if (hh) hh.setAttribute("transform", "rotate(90)"); }
   var hid = document.createElementNS("http://www.w3.org/2000/svg", "g"); hid.setAttribute("display", "none"); root.appendChild(hid);   // 장면 대본의 도형은 여기에(보이지 않게)
-  var pz = bg.querySelector(".pzoom"), dk = bg.querySelector(".pdark"), fx = ph.focus[0], fy = ph.focus[1];
+  var pz = bg.querySelector(".pzoom"), dk = bg.querySelector(".pdark"), fx = ph.still ? 180 : ph.focus[0], fy = ph.still ? 290 : ph.focus[1];   // 정지 그림은 1인칭 한 장 — 가운데로 키운다
   c.bgL = hid;
   c.bg = function(markup){ hid.innerHTML = markup; return hid; };
   c.face = function(n, anom, extra){ var st = { anom: anom, min: (extra && extra.min) || (P ? P.min : CT.START_MIN), dim: 0 }; hid.innerHTML = faceArt(n, st); return hid; };
@@ -3430,11 +3575,27 @@ function sceneCtxPhoto(svg, ph, dur){
     c.tw(t0, t0 + dur2, function(k){ placeY(g, y, 32, 0); tx.textContent = chars.slice(0, Math.round(chars.length * k)).join(""); });
     return g;
   };
-  c.tw(0, dur, function(k){ var e = k * k * (3 - 2 * k), z = 1 + 0.34 * e; pz.setAttribute("transform", "translate(" + fx + " " + fy + ") scale(" + z.toFixed(4) + ") translate(" + (-fx) + " " + (-fy) + ")"); dk.setAttribute("opacity", (0.55 * e).toFixed(3)); });   // 천천히 키우며 어둡게
+  var flow = deathFlow(c, dur, bg, bg.querySelector(".dloop"), bg.querySelector(".dstill"), ph.vid);
+  c.tw(0, dur, function(k){ var t = k * dur; if (flow.zFrom == null) return; var u = clamp((t - flow.zFrom) / Math.max(1, dur - flow.zFrom)), e = u * u * (3 - 2 * u), z = 1 + 0.34 * e, sx = Math.sin(t * 1.7) * 1.4 * e, sy = Math.cos(t * 1.3) * 1.1 * e;
+    pz.setAttribute("transform", "translate(" + (fx + sx).toFixed(2) + " " + (fy + sy).toFixed(2) + ") scale(" + z.toFixed(4) + ") translate(" + (-fx) + " " + (-fy) + ")"); dk.setAttribute("opacity", (0.55 * e).toFixed(3)); });   // 정지 그림을 천천히 키우며 어둡게 · 손에 든 듯 흔들림(영상이 도는 동안은 멈춤)
   c.photo = true;
   return c;
 }
-function addRushPhoto(c, dur){   // 마지막에 달려드는 형체 — 다가옴 "가까이"(얼굴 가림)를 빠르게 키운다
+var RUSH_F = 0.08;   // 달려듦 한 장 길이(v4.1 prod3 연속 4장)
+function addRushPhoto(c, dur){   // 마지막에 달려드는 형체 — prod3 연속 4장이 있으면 그것, 없으면 figure.rush 한 장을 빠르게 키운다(v4)
+  var R4 = [1, 2, 3, 4].map(function(i){ return AS("rush." + i) ? "rush." + i : null; });
+  if (R4.every(function(x){ return !!x; })){
+    var t4 = Math.max(0.6, dur - 0.62), hit = t4 + 4 * RUSH_F, g4 = mk(R4.map(function(id){ return pImg(useAsset(id), "rushimg", ' opacity="0"'); }).join("")), ims = g4.querySelectorAll("image");
+    g4.setAttribute("class", "rushP"); g4.setAttribute("opacity", 0); c.fxL.ownerSVGElement.appendChild(g4);
+    c.at(Math.max(0, hit - 1.1), function(){ Snd.rush(Math.min(1.1, hit - (deathRun ? deathRun.el : hit - 1.1))); });   // 파일은 부딪는 자리(약 1.1초)를 넷째 장 끝에 맞춘다(README §5-9)
+    c.at(t4, function(){ g4.setAttribute("opacity", 1); });
+    [0, 1, 2, 3].forEach(function(i){ c.at(t4 + i * RUSH_F, function(){ [].forEach.call(ims, function(im, j){ im.setAttribute("opacity", j === i ? 1 : 0); }); }); });
+    c.tw(t4 + 3 * RUSH_F, hit + 0.02, function(k){ ims[3].setAttribute("transform", "translate(180 300) scale(" + (1 + 0.14 * k * k).toFixed(3) + ") translate(-180 -300)"); });
+    c.shake(hit - 0.08, hit + 0.2, 12);
+    c.at(hit + 0.02, function(){ g4.setAttribute("opacity", 0); });
+    c.cover(hit + 0.01, hit + 0.02, 0, 1, "#000");
+    return;
+  }
   if (!AS("figure.rush")) return addRush(c, dur);
   var t0 = Math.max(0.6, dur - 0.62), g = mk(pImg(useAsset("figure.rush"), "rushimg")), im = g.firstChild; g.setAttribute("class", "rushP");
   g.setAttribute("opacity", 0); c.fxL.ownerSVGElement.appendChild(g);
@@ -3459,7 +3620,8 @@ function deathStep(dt){
 }
 function toSys(){
   var R = deathRun; if (!R || R.stage !== "scene") return;
-  Snd.quiet(true); try{ R.sc.finish(); }catch(e){} Snd.quiet(false);   // 넘긴 장면의 남은 소리는 틀지 않는다
+  R.stage = "fin"; Snd.quiet(true); try{ R.sc.finish(); }catch(e){} Snd.quiet(false);   // 넘긴 장면의 남은 소리는 틀지 않는다(fin = 영상도 새로 틀지 않는다)
+  if (R.skipped) Snd.rushStop();   // 아직 안 부딪힌 달려듦 소리
   R.stage = "sys"; R.sysAt = R.el; resetDeathVideo();
   $("dLine").classList.add("on"); $("dSys").classList.add("on"); $("dSkip").classList.remove("on");
   try{ if (showStill(R.d)) $("death").classList.add("expl"); }catch(e){ console.error(e); }
@@ -3477,7 +3639,7 @@ function playCmp(which){
   else if (id === "cut_name") cap = "[방송 — 천장 스피커] " + bc(n ? "normal" : "cut", "pa");
   else if (id === "voice_outside") cap = (n ? "[방송 — 천장 스피커] " : "[방송 — 유리문 밖에서] ") + bc("normal", n ? "pa" : "outside");
   else if (id === "knock3"){ if (n){ hush(1800); cap = "[도로 쪽 문 — 아무 소리 없음]"; } else { Snd.knock(0, 3); cap = "[노크 세 번 — 도로 쪽 문]"; } }
-  else if (id === "lights_noengine"){ if (n){ Snd.loopOn("engine", { face: 0, muffle: 700, level: .5, rise: .6 }); cmpTm.push(setTimeout(function(){ Snd.loopOff("engine", .5); }, 2600)); cap = "[엔진 소리 — 헤드라이트와 함께]"; } else { hush(2600); cap = "[헤드라이트 — 엔진 소리 없음]"; } }
+  else if (id === "lights_noengine"){ if (n){ Snd.loopOn("engine", { face: 0, muffle: 700, level: 1, rise: .6 }); cmpTm.push(setTimeout(function(){ Snd.loopOff("engine", .5); }, 2600)); cap = "[엔진 소리 — 헤드라이트와 함께]"; } else { hush(2600); cap = "[헤드라이트 — 엔진 소리 없음]"; } }
   $("dSndCap").textContent = (n ? "평소: " : "이번: ") + cap;
   logEv("death_cmp", { which: which, anom: id });
 }
@@ -3488,7 +3650,7 @@ function endDeath(){
   deathRun = null;
   stopCmp();
   logEv("death_end", { scene: R.d.scene, skipped: R.skipped, t_sys: R.sysAt != null ? +(R.el - R.sysAt).toFixed(1) : null, cmp: R.cmpN });
-  Snd.allLoopsOff(0.05); resetDeathVideo();
+  Snd.allLoopsOff(0.05); Snd.deathEnd(0.6); resetDeathVideo();
   $("death").classList.remove("show");
   if (S.deaths === 1 && !ADVSEEN.first_death && advLine("first_death")) interlude("first_death");   // 첫 죽음 뒤 돌아왔을 때 매점 목소리
   else { fadeTo(1, 0); beginLoop(); }
@@ -3656,7 +3818,7 @@ if (TEST){
       clock: P ? P.clock : null, anomaly: P ? P.anomaly : null, correct: P ? Core.correctChoice(P) : null, lure: P ? P.lure : null, ending: P ? P.ending : null,
       big: P ? !!P.big : false, wait: P ? P.wait : null, bEnd: P ? P.bEnd : null, deadline: P ? P.deadline : null, arrive: P ? P.arrive : null, passes: P ? P.passes : null,
       sheet2: P ? !!P.sheet2 : false, stareT: +stareT.toFixed(2), caption: $("capText").textContent, sit: !$("bSit").disabled, plat: $("bPlat").classList.contains("show"),
-      death: deathRun ? { scene: deathRun.d.scene, stage: deathRun.stage, first: deathRun.first, line: deathRun.d.line, sys: deathRun.d.sys } : null,
+      death: deathRun ? { scene: deathRun.d.scene, stage: deathRun.stage, first: deathRun.first, line: deathRun.d.line, sys: deathRun.d.sys, el: +deathRun.el.toFixed(2), dur: deathRun.dur } : null,
       end: $("end").classList.contains("show"), snd: Snd.state(), capOn: capOn, events: events.length, sitterIdx: sitterIdx, shutterFull: shutterFull, coinsOn: coinsOn,
       vib: VIBN, scares: SCN, listening: !!lis, inHint: $("inHint").textContent, expl: $("death").classList.contains("expl"), next: $("dNext").classList.contains("on"),
       readFrags: Object.keys(readFrags), advSeen: Object.keys(ADVSEEN), advText: $("tickVoice").classList.contains("on") ? $("tvText").textContent : null,
@@ -3703,6 +3865,8 @@ if (TEST){
     log: function(){ return events; },
     level: function(){ return Snd.level(); },
     hi: function(){ return Snd.hiLevel(); },
+    sndFiles: function(){ return Snd.files(); },
+    Snd: Snd, deathRun: function(){ return deathRun; },   // v4.1 검사: 달려듦 소리 시각 · 죽음 장면 시각   // v4.1: 받은 소리 파일 · 실패 · 쓰임(파일/합성)
     sndlog: function(clear){ var r = SNDLOG.slice(); if (clear) SNDLOG.length = 0; return r; },
     viblog: function(clear){ var r = VIBLOG.slice(); if (clear) VIBLOG.length = 0; return r; },
     assets: function(){ return { have: Object.keys(ASSETS), log: Object.assign({}, ASSET_LOG), photo: [0, 1, 2, 3].map(photoOn), gbOnly: GB_ONLY, vid: VIDLOG.slice() }; },
