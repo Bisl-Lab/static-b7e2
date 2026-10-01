@@ -268,6 +268,23 @@ html.still .grain{animation:none}
 #sNoteB.new:after{content:"";position:absolute;right:7px;top:7px;width:7px;height:7px;border-radius:4px;background:var(--sodium)}
 #dHand:empty{display:none}
 #dHand{font-size:13px !important;color:#cfc8ba !important;margin:8px 0 0 !important}
+/* 1장 v4.3.1 — 굵은 글씨 · 번진 잉크: 낙서 「있다」와 끼워 넣은 줄이 같은 손으로 보이게(같은 클래스). 폰 너비에서 번짐이 한눈에 */
+.wetink{position:relative;display:inline-block;isolation:isolate;font-family:"Nanum Pen Script",cursive;font-weight:900;color:#122040;-webkit-text-stroke:.7px #122040;letter-spacing:.02em;
+  text-shadow:0 0 1px rgba(18,32,64,.95),0 1px 2.5px rgba(24,44,86,.8),1px 3px 5px rgba(30,56,108,.6),-2px 5px 9px rgba(36,64,124,.45),2px 7px 13px rgba(36,64,124,.3)}
+.wetink:after{content:"";position:absolute;left:-6%;right:-6%;top:15%;bottom:-45%;z-index:-1;background:radial-gradient(ellipse 60% 55% at 45% 40%,rgba(36,64,124,.32),rgba(36,64,124,.12) 55%,rgba(36,64,124,0) 75%);filter:blur(2.5px);pointer-events:none}
+.wetink:before{content:"";position:absolute;left:32%;top:72%;width:2.5px;height:.95em;z-index:-1;background:linear-gradient(rgba(30,56,108,.75),rgba(30,56,108,0));border-radius:2px;filter:blur(.4px);box-shadow:1.1em .1em 0 -.2px rgba(30,56,108,.45);pointer-events:none}
+.lpages{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin:6px 0 4px;background:#d9d2c0;border-radius:3px;padding:10px 8px;box-shadow:inset -1px 0 0 #b3ab97}
+.lpage{font-family:"Nanum Pen Script",cursive;font-size:18px;line-height:1.25;padding:2px 4px}
+.lpage+.lpage{border-left:1px solid #b9b19c;padding-left:8px}
+.lpage .ll{margin:0 0 6px}.lpage .ll.blue{color:#1d3c8c}.lpage .ll.pencil{color:#5a5d60}.lpage .ll.black{color:#0d0f11}.lpage .ll.wet{margin-top:-2px;font-size:20px}
+.gwall{background:#c9c6bb;border-radius:3px;padding:26px 14px 22px;margin:6px 0 4px;font-family:"Nanum Pen Script",cursive;font-size:36px;text-align:center}
+.gwall .bp{color:#2b3550;font-weight:400}.gwall .ovr{position:relative;display:inline-block}
+.gwall .bp.gone{opacity:.55}.gwall .wetink.on{position:absolute;left:-.1em;top:-.55em;font-size:1.1em;transform:rotate(-4deg)}
+#sPBody .pen.wet{background:#e3ddcf;color:#122040;margin-top:-6px}
+#sPBody .pen.wet i,#notes .pen.wet i{color:#6b665d}
+#sPBody .nf .gwall{font-size:24px;padding:14px 10px;margin:4px 0 0}
+#sPBody p.sm{font-size:11px;margin:2px 0 8px}
+.m4cap{font-size:13px;color:#cfe3df;min-height:2.6em;margin:4px 0 0}
 /* 조각 화면(v4.3) */
 #frag{background:#050607;flex-direction:column;align-items:stretch;justify-content:center;padding:24px 26px calc(24px + env(safe-area-inset-bottom));gap:14px;z-index:30}
 #fragPic{flex:0 0 auto}
@@ -769,7 +786,7 @@ var Engine = (function(){
       var D0 = R.deaths[id], fk = !!(D0.fakeIf && P && R.variants[P.variant] && R.variants[P.variant][D0.fakeIf]);
       var rule = fk ? null : D0.rule, fake = fk ? D0.fake : null;
       var sys1 = "놓친 것: " + D0.missed;
-      var sys2 = fake ? "따른 가짜 규칙: " + fake + "번 — " + R.rules[fake - 1].text + " — 무전이 한 말과 같은 줄" : "어긴 규칙: 규칙 " + rule + " — " + R.rules[rule - 1].text;
+      var sys2 = fake ? "따른 가짜 규칙: 규칙 " + fake + " — " + R.rules[fake - 1].text + " — 무전이 한 말과 같은 줄" : "어긴 규칙: 규칙 " + rule + " — " + R.rules[rule - 1].text;
       var e = (fk ? D0.evidFake : D0.evid) || null;
       return { cause: id, scene: R.id + "." + id, dur: D0.dur, line: D0.line, fake: fake, rule: rule, sys: [sys1, sys2], anom: null, cmp: D0.cmp || null,
         evid: e ? evidOf(e) : null, seen: D0.seen, head: D0.head, room: R.id };
@@ -778,7 +795,8 @@ var Engine = (function(){
     function evidOf(e){
       var f = R.TEXT.facts.filter(function(x){ return x.id === e[0]; })[0], p = R.TEXT.notebook.filter(function(x){ return x.pen === e[1]; })[0];
       var last = e[2] == null, line = last ? p.lines[p.lines.length - 1] : p.lines[e[2]];
-      return [f.label + ": 「" + f.text + "」", R.TEXT.notebookName + ": 「" + line + "」(" + p.label + " · " + (last ? "마지막 줄" : "뒤가 있는 줄") + ")"];
+      var U = p.under ? R.TEXT.notebook.filter(function(x){ return x.pen === p.under; })[0] : null;   // 끼워 넣은 줄 — 펜이 아니다(그 펜 줄 아래)
+      return [f.label + ": 「" + f.text + "」", R.TEXT.notebookName + ": 「" + line + "」(" + p.label + " · " + (U ? U.label + " 줄 아래에 끼워 넣은 줄" : (last ? "마지막 줄" : "뒤가 있는 줄")) + ")"];
     }
     // 판정(06S §4.4) — 상태 기준. 결과: { correct, death? | reserve? | cleared?, say(무전 대답 · 결과 줄), set(상태 바꿈) }
     function judge(P, act, ctx){
@@ -990,7 +1008,7 @@ var ROOM01 = (function(){
     ],
     // 매점 목소리(조언자) — 바퀴 사이에만. 판마다 한 번. 작가용 칸은 tools/text_meta.json.
     adv: [
-      { id: "first_correct", text: "그 종이 다 믿지 마. 3번은 가짜야. 승강장 문에 붙은 거 봐. 나머지는… 여기 남은 것들이랑 맞춰 봐." },
+      { id: "first_correct", text: "처음이지. 그 종이 다 믿지 마. 3번은 가짜야. 승강장 문에 붙은 거 봐. 나머지는… 여기 남은 것들이랑 맞춰 봐." },
       { id: "sheet2", text: "둘째 장이야. 거기도 섞여 있어. …어느 줄인지는 모르겠다. 미안하다." },
       { id: "first_death", text: "돌아왔구나. 나도 여기서 몇 번이나 그랬어. …난 아직 여기 있어." },
     ],
@@ -1067,9 +1085,62 @@ var ROOM_A02 = (function(){
     { n: 5, text: "하류를 육안으로 보지 않는다. 모니터로만." },
     { n: 6, text: "수위와 조치만 기록한다. 시각은 적지 않는다.", damaged: "wet", wetFrom: "않는다." }   // 「시각은 적지」 뒤가 번졌다
   ];
+  // ── 글 자리(06S §10) — 10-A02_1장_글_추천안.md 확정(2026-10-01). 키 = 자리 id 그대로.
+  //    고정 문장(규칙 6줄 · 머리말 · 사실 다섯 · 무전 · 조각 2 · 흐린 조각 · 첫 문장 · 사망 3줄)은 아래 따로 — 추천안이 손대지 않는다.
+  var SL = {
+    "arrive.first": "버스에서 내리자 물소리부터 들렸다.",   // 고정(style_ref §6) — 모든 시도의 처음
+    "arrive.body": ["국도 갓길 아래로 낮은 콘크리트 건물이 보였고, 철문 옆 명판에 수문관리소라고 적혀 있었다.",
+      "물소리는 건물 뒤에서 났다. 한쪽만 반들반들한 철문을 열자 찬 기운이 손등에 닿았고, 안쪽 표지판에는 당직실이라고 적혀 있었다."],   // 첫 도착에만
+    "t1.room": "책상에 의자가 밀려 들어가 있었고, 옆에는 야전침대, 위쪽 벽에는 모니터와 눈금판이 있었다.",
+    "inspect.clock": "벽시계는 03:47에 멈춰 있었고 초침이 없었다.",
+    "inspect.log": "낡은 대학 노트 표지에 매직으로 근무 일지, 그 밑에 다른 글씨로 꼭 읽을 것이라고 적혀 있었고, 꼭 밑에는 줄이 두 번 그어져 있었다.",
+    "inspect.log.pages": "왼쪽은 파란 펜, 오른쪽은 연필과 검은 펜으로 적혀 있었다. 파란 펜 마지막 줄 아래 한 줄은 굵은 글씨였고 잉크가 물에 번져 있었다.",   // ⚖ 새 자리 — 일지 확대를 열면 펼친 두 쪽 위에
+    "inspect.cot": "야전침대 모포는 네 번 접혀 있었고, 네 모서리가 맞춰져 있었다.",
+    "inspect.radio": "채널 표시창 자리에 검은 테이프가 붙어 있었고, 볼륨 다이얼은 끝까지 돌아가 있었다. 테이프 끝은 표시창 테두리에 맞춰 잘려 있었다.",
+    "inspect.graffiti": "무전기 옆 벽에 볼펜으로 「본부는 없다」가 적혀 있었고, 「없다」 위에 굵은 글씨로 「있다」가 겹쳐 있었다. 「있다」만 잉크가 물에 번져 있었다.",   // ⚖
+    "inspect.monitor": "1, 2, 3번에는 흰 선이 칠해진 콘크리트 벽과 철문이 보였고, 그 사이로 검은 물이 차 있었다. 거의 검은 4번에서 물이 가끔 반짝였다.",
+    "inspect.monitor.after": "1, 2, 3번 화면에서 철문 사이로 물이 흘러 나갔고, 벽에 칠한 흰 선 아래로 수면이 내려갔다.",   // 수문을 연 뒤
+    "inspect.gauge": "눈금판 위쪽에 붉은 선이 그어져 있었다.",   // ⚖
+    "inspect.panel": "통로 끝 벽의 철제 상자에 붉은 레버 셋이 올라가 있었고, 손잡이 가운데가 닳아 있었다.",
+    "inspect.panel.after": "손잡이가 닳은 레버 셋이 모두 내려가 있었다.",   // 새 자리 — 수문을 연 뒤
+    "inspect.bankdoor": "강둑 쪽 철문 아래 틈으로 찬 바람이 들어왔고, 물소리는 닫힌 문 바로 너머에서 났다.",
+    "notebook.blue.1": "수위는 선까지 세 마디. 조치 없음.", "notebook.blue.2": "수위는 선까지 한 마디. 조치 없음.",   // ⚖ ③ 줄은 고정(아래 notebook)
+    "notebook.pencil.1": "선까지 두 마디. 순찰 조작반까지. 이상 없음.", "notebook.pencil.2": "무전에 수위 보고함. 대기하라고 함.",
+    "notebook.black.1": "선까지 두 마디. 조치 없음.", "notebook.black.2": "기준선 초과. 개방.",
+    "notebook.inserted": "본부 승인 수신 후 개방 완료. 이상 없음.",   // ⚖ 새 자리 — 끼워 넣은 줄(가짜 2 의 거짓 증언, 09 §6-1) · 시각 없음
+    "help.2": "2번은 아니다. 승인은 물이 들어온 뒤에야 왔다.",   // 도움 줄(확정 — 남은 기록을 푼 사람의 펜). 남은 기록이 아직 없어 데이터에만
+    "turn.stage.m3": "바늘은 붉은 선에서 손가락 세 마디 아래에 있었다.",   // ⚖ 턴 줄
+    "turn.stage.m2": "바늘은 붉은 선에서 손가락 두 마디 아래로 올라왔다.",
+    "turn.stage.m1": "바늘은 붉은 선에서 손가락 한 마디 아래였고, 바닥 밑에서 물소리가 났다.",
+    "turn.stage.p1": "바늘은 붉은 선을 넘어 있었고, 바닥 밑과 양쪽 벽 너머에서 물소리가 났다.",
+    "turn.stage.p2": "바늘은 붉은 선 위 두 마디였고, 강둑 쪽 문 아래로 물이 얇게 들어왔다.",
+    "turn.stage.after1": "바늘은 붉은 선 아래로 내려왔고, 물소리가 흐르는 소리로 바뀌었다.",
+    "turn.stage.after23": "바늘은 붉은 선 아래로 더 내려갔고, 물소리는 멀리서 났다.",
+    "turn.stage.dawn": "바늘은 붉은 선 아래 그대로였고, 물소리는 벽 너머로 물러났다.",   // 새벽 턴 사이 화면 — 바늘 · 물소리만(형광등은 turn.event.lights)
+    "turn.event.monitor": "모니터 4번 화면에 불이 들어와 있었다.",
+    "turn.event.lights": "형광등이 딸깍 꺼졌고, 강둑 쪽 문 아래 틈이 희게 밝아졌다.",   // 새벽 0.5초
+    "result.open": "레버 셋을 당기자 쇠 긁히는 소리가 났고, 고여 있던 물소리가 흐르는 소리로 바뀌며 바늘이 내려갔다. 무전기에서는 아무 말도 나오지 않았다.",
+    "result.report_ignored": "무전기가 잠시 조용해졌다가 같은 목소리로 「당직자. 응답하라. 수위 보고.」라고 했다.",
+    "result.name_ignored": "무전기가 치직거리다 조용해졌고, 볼륨 다이얼은 끝까지 돌아간 채였다.",
+    "result.thanks_reply": "무전기는 잠시 조용하다 「다음엔 이름을 부르마.」라고 했고, 치직 소리와 함께 끊겼다.",
+    "result.thanks_ignored": "무전기가 한 번 더 치직거린 뒤 조용해졌다.",
+    "mon4.caption.1": "걷는 사람은 물이 얕은 데만 디디며 걸었다.",   // 4번 영상 자막(회색 상자판 — 영상 자리)
+    "mon4.caption.2": "그 사람은 허리를 굽혀 나뭇가지를 건졌다가 손을 펴서 다시 놓았다.",
+    "mon4.caption.3": "그 사람이 다시 걸었고, 조명이 꺼졌다.",
+    "death.a.line": "물이 내 무릎까지 찼을 때 무전이 「승인. 개방하라.」고 했다.",
+    "death.b.line": "무전이 피로하지 않은 목소리로 「그거면 됐다.」고 했고, 치직 소리가 멎었다.",
+    "death.c.line": "하류에서 무언가 떠내려오고 있었다. 나뭇가지이길 바랐지만 나뭇가지가 아니었다.",
+    "death.d.line": "문턱을 넘자 물소리가 강 쪽이 아니라 발밑에서 났다.",
+    "death.e.line": "레버를 당기자 물이 수문 쪽에서 거꾸로 밀려왔고, 물속의 젖은 손이 내 발목을 잡았다.",
+    "death.e.seen": "수문 — 선 아래에서 열면 물이 거꾸로 온다.",
+    "exit.room": "형광등이 꺼진 방에서 4번 화면은 검었고, 벽 너머에서는 흐르는 물소리가 났다.",   // 바깥으로 넘어가기 전 한 줄
+    "exit.door": "반들반들한 철문에 손바닥을 댄 채 밀고 나가자, 문턱부터 노면까지 젖어 있었다.",   // 바깥 그림
+    "exit.bus": "갓길에는 버스가 서 있었고, 젖은 노면을 딛고 버스에 올랐다. 등 뒤로 물소리가 이어졌다."
+  };
   var TEXT = {
+    SL: SL,
     ruleHead: { h1: "당직 근무 규정", org: "하천관리공단 수문관리소", lead: { m: "남성 당직자 숙직실은 2층입니다. 당직 중에는 아래 규정을 준수하십시오.", f: "여성 당직자 숙직실은 2층입니다. 당직 중에는 아래 규정을 준수하십시오." } },
-    facts: [
+    facts: [   // ⚖ 고정(반박 근거로 인용된다 — 10-A02 브리프 §1)
       { id: "fact.A", obj: "factA", name: "조작반 표지", label: "조작반", text: "개방: 기준선을 넘으면 당직자가 즉시. 선 아래에선 열지 않음." },
       { id: "fact.B", obj: "factB", name: "무전기 라벨", label: "무전기", text: "본부 채널 — 운영 종료. 수문 조작은 현장 판단." },
       { id: "fact.C", obj: "factC", name: "근무표", label: "근무표", text: "성명: 당직자 · 당직자 · 당직자 · (빈칸)" },
@@ -1077,64 +1148,61 @@ var ROOM_A02 = (function(){
       { id: "fact.E", obj: "factE", name: "모니터 라벨", label: "모니터", text: "4 — 하류. 조명은 방류할 때 켜짐. 하류는 이 화면으로만." }
     ],
     notebookName: "근무 일지",
+    // 앞사람 흔적 — 펜 셋(③ 줄 = 그 사람의 마지막 줄, 시각은 마지막 줄에만 — 규칙 6 복원은 펜마다 센다) + 끼워 넣은 줄 하나(펜이 아니다 — under 의 줄 아래, 굵은 글씨 · 번진 잉크 = 낙서 「있다」와 같은 손)
     notebook: [
-      { pen: "blue", label: "파란 펜", lines: ["선까지 세 마디. 조치 없음.", "선까지 한 마디. 조치 없음.", "03:47 수위 기준선 초과. 본부 승인 대기."] },
-      { pen: "pencil", label: "연필", lines: ["선까지 두 마디. 순찰 조작반까지. 이상 없음.", "무전으로 수위 보고. 대기하라고 함.", "03:47 무전이 성명 물음. 당직자라고 응답."] },
-      { pen: "black", label: "검은 펜", lines: ["선까지 두 마디. 조치 없음.", "기준선 초과. 개방.", "수문 개방. 하류 확인차 강둑 이동. 04:"] }
+      { pen: "blue", label: "파란 펜", side: "left", lines: [SL["notebook.blue.1"], SL["notebook.blue.2"], "03:47 수위 기준선 초과. 본부 승인 대기."] },
+      { pen: "wet", label: "굵은 글씨", under: "blue", side: "left", lines: [SL["notebook.inserted"]] },
+      { pen: "pencil", label: "연필", side: "right", lines: [SL["notebook.pencil.1"], SL["notebook.pencil.2"], "03:47 무전이 성명 물음. 당직자라고 응답."] },
+      { pen: "black", label: "검은 펜", side: "right", lines: [SL["notebook.black.1"], SL["notebook.black.2"], "수문 개방. 하류 확인차 강둑 이동. 04:"] }
     ],
     notebookCover: "근무 일지 / 꼭 읽을 것",
     graffiti: { base: "본부는 없다", over: "있다" },
-    arrive: "버스에서 내리자 물소리부터 들렸다.",   // 고정(style_ref §6) — 모든 시도의 처음
-    stage: { "-3": "수위계 바늘은 붉은 선에서 손가락 세 마디 아래에 있었다.", "-2": "바늘이 올라와 붉은 선까지 손가락 두 마디가 남아 있었다.",
-      "-1": "바늘이 붉은 선에서 한 마디 아래까지 올라와 있었고, 물소리가 바닥 밑에서 났다.", "1": "바늘이 붉은 선을 넘어 있었다. 물소리가 바닥 밑과 양쪽 벽 너머에서 한꺼번에 났다.",
-      "2": "바늘이 선 위 두 마디에 있었고, 강둑 쪽 문 아래로 물이 얇게 들어와 있었다.", "open": "바늘이 붉은 선 아래로 내려와 있었고, 고여 있던 물소리가 흐르는 소리로 바뀌어 있었다.",
-      "dawn": "형광등이 딸깍 소리를 내며 꺼졌고, 강둑 쪽 문 아래 틈이 희게 밝아 있었다." },   // 06S §10 초안(temp)
-    result: { open: "레버 세 개를 내리자 쇠 긁히는 소리가 났고, 벽 너머 물소리가 흐르는 소리로 바뀌었다. 무전은 아무 말도 하지 않았다.",
-      report_ignored: "대답하지 않았다.", name_ignored: "무전기가 한참 치직거리다가 조용해졌다.", reply_report: "", reply_wait: "", wait: "", wait_over: "", reply_thanks: "", wait_thanks: "무전기가 한 번 더 치직거리고 조용해졌다." },   // temp
-    mon4: "모니터 4번 화면에 불이 들어와 있었다.",
-    sub: { cross: "바닥 밑과 양쪽 벽 너머에서 물소리", open: "통로 쪽에서 쇠 긁히는 소리", mon4: "책상 쪽에서 모니터 켜지는 소리", dawn: "형광등이 꺼지는 소리", doom: "문 아래로 물 들어오는 소리" },
-    exit: ["들어온 철문을 밀고 나가자 문턱부터 도로까지 젖어 있었다.", "갓길에 버스가 서 있었다."],   // temp(07 6-B 내용)
+    help: { 2: SL["help.2"] },
+    arrive: SL["arrive.first"],
+    sub: { cross: "바닥 밑과 양쪽 벽 너머에서 물소리", open: "통로 쪽에서 쇠 긁히는 소리", mon4: "책상 쪽에서 모니터 켜지는 소리", dawn: "형광등이 꺼지는 소리", doom: "문 아래로 물 들어오는 소리" },   // 소리 자막(06S §10 sound.sub)
     handless: "오늘도 빈손이었다."   // 00 v2.0 §8.2 사망 화면(시스템 줄)
   };
-  // 사물(면 셋) — 회색 상자 이름 = 설계서 §11 그림 이름. r = 면 좌표(360×600) 상자. text = 누르면 보이는 글(06S §2.1 초안)
+  // 사물(면 셋) — 회색 상자 이름 = 설계서 §11 그림 이름. r = 면 좌표(360×600) 상자. text · textAfter = 글 자리(SL)
   var OBJ = {
-    clock: { face: 0, name: "벽시계", r: [40, 96, 90, 90], text: "벽시계는 03:47에 멈춰 있었고 초침이 없었다." },
-    rules: { face: 0, name: "근무 규정(코팅 A4)", r: [150, 100, 100, 130], paper: true, text: "코팅된 종이의 아래쪽 3분의 1이 젖어 있었다." },
-    log: { face: 0, name: "근무 일지", r: [150, 290, 110, 70], log: true, text: "낡은 대학 노트 표지에 매직으로 근무 일지라고 적혀 있었고, 그 밑에 다른 글씨로 꼭 읽을 것이라고 적혀 있었다. 꼭 밑에는 줄이 두 번 그어져 있었다." },
+    clock: { face: 0, name: "벽시계", r: [40, 96, 90, 90], text: SL["inspect.clock"] },
+    rules: { face: 0, name: "근무 규정(코팅 A4)", r: [150, 100, 100, 130], paper: true, text: "" },
+    log: { face: 0, name: "근무 일지", r: [150, 290, 110, 70], log: true, text: SL["inspect.log"], pages: SL["inspect.log.pages"] },
     factC: { face: 0, name: "근무표", r: [270, 100, 70, 110], fact: "fact.C" },
-    cot: { face: 0, name: "야전침대", r: [30, 400, 200, 80], text: "야전침대 위에 모포가 반듯하게 개어져 있었다." },
-    radio: { face: 1, name: "무전기", r: [30, 330, 110, 80], text: "채널 표시창 자리에 검은 테이프가 붙어 있었고, 볼륨 다이얼은 끝까지 돌아가 있었다." },
+    cot: { face: 0, name: "야전침대", r: [30, 400, 200, 80], text: SL["inspect.cot"] },
+    radio: { face: 1, name: "무전기", r: [30, 330, 110, 80], text: SL["inspect.radio"] },
     factB: { face: 1, name: "무전기 라벨", r: [40, 416, 90, 30], fact: "fact.B" },
-    graffiti: { face: 1, name: "벽 낙서", r: [30, 230, 110, 80], graffiti: true, text: "무전기 옆 벽에 볼펜으로 본부는 없다라고 적혀 있었고, 없다 두 글자 위에 굵은 글씨로 있다가 겹쳐 쓰여 있었다. 있다 쪽만 잉크가 물에 번져 있었다." },
-    monitor: { face: 1, name: "모니터 4분할", r: [160, 110, 180, 130], monitor: true, text: "1, 2, 3번 화면에는 콘크리트 벽 사이의 철문이 하나씩 보였고, 벽에 칠한 흰 선 쪽으로 물이 검게 차 있었다. 4번 화면은 거의 검었고 가끔 물이 반짝였다." },
+    graffiti: { face: 1, name: "벽 낙서", r: [30, 230, 110, 80], graffiti: true, text: SL["inspect.graffiti"] },
+    monitor: { face: 1, name: "모니터 4분할", r: [160, 110, 180, 130], monitor: true, text: SL["inspect.monitor"], textAfter: SL["inspect.monitor.after"] },
     factE: { face: 1, name: "모니터 라벨", r: [200, 246, 100, 26], fact: "fact.E" },
-    gauge: { face: 1, name: "수위계", r: [200, 290, 110, 110], gauge: true, text: "눈금판 위쪽에 붉은 선이 그어져 있었다." },
-    panel: { face: 2, name: "조작반(붉은 레버 셋)", r: [40, 150, 130, 150], panel: true, text: "통로 끝 벽에 철제 상자가 붙어 있었고, 붉은 레버 세 개가 위로 올라가 있었다.", textOpen: "레버 세 개가 모두 아래로 내려가 있었다." },
+    gauge: { face: 1, name: "수위계", r: [200, 290, 110, 110], gauge: true, text: SL["inspect.gauge"] },
+    panel: { face: 2, name: "조작반(붉은 레버 셋)", r: [40, 150, 130, 150], panel: true, text: SL["inspect.panel"], textAfter: SL["inspect.panel.after"] },
     factA: { face: 2, name: "조작반 표지", r: [40, 310, 130, 34], fact: "fact.A" },
-    bankdoor: { face: 2, name: "강둑 쪽 문", r: [210, 170, 120, 300], door: true, text: "철문 아래 틈으로 찬 바람과 물소리가 들어왔다." },
+    bankdoor: { face: 2, name: "강둑 쪽 문", r: [210, 170, 120, 300], door: true, text: SL["inspect.bankdoor"] },
     factD: { face: 2, name: "강둑 쪽 문 표지", r: [220, 120, 100, 34], fact: "fact.D" }
   };
-  var radio = {   // 07-A02 턴 2~6 원문(치직은 소리) · V1 승인 대기 = 07 턴 4 원문(가짜 2 의 메아리 「승인 없이 개방하지 마라」)
+  var radio = {   // 07-A02 턴 2~6 원문(치직은 소리) · V1 승인 대기 = 07 턴 4 원문(가짜 2 의 메아리 「승인 없이 개방하지 마라」) — 고정
     report: "당직자. 본부다. 수위 보고.", report_again: "당직자. 응답하라. 수위 보고.", report_ack: "알았다. 대기하라.",
     name: "당직자. 성명 확인 바란다.", gotit: "그거면 됐다.",
     wait: "당직자. 수위 기준선 초과 확인. 개방 승인 대기 중. 대기하라. 반복한다. 승인 없이 개방하지 마라.",
     approve_pre: "수위 기준선 초과 확인.", approve: "승인. 개방하라.",
     thanks: "수고했다, 당직자.", last: "다음엔 이름을 부르마."
   };
-  var deaths = {   // 06S §5 — 장면 한 줄(초안) · 놓친 것 · 어긴/따른 · 근거 두 줄 [사실, 펜, 줄 번호] · 본 죽음 줄(06 도감 문구)
-    a: { dur: 7, missed: "기준선을 넘은 바늘", line: "물이 무릎까지 찼을 때 무전이 「승인. 개방하라.」고 했다.", rule: 1, fake: 2, fakeIf: "waitCall",
-         evid: ["fact.A", "blue"], evidFake: ["fact.B", "blue"], seen: "본부 — 승인은 온다. 늦게.", head: "바늘이 기준선을 넘은 뒤 본부 승인을 기다렸다", cmp: ["선 아래의 바늘", "선을 넘은 바늘"] },
-    b: { dur: 6, missed: "성명을 묻는 무전", line: "무전이 피로하지 않은 목소리로 「그거면 됐다.」고 했고, 치직 소리가 멎었다.", rule: 4,
+  var deaths = {   // 06S §5 — 장면 한 줄(추천안) · 놓친 것 · 어긴/따른 · 근거 두 줄 [사실, 펜, 줄 번호] · 본 죽음 줄
+    a: { dur: 7, missed: "기준선을 넘은 바늘", line: SL["death.a.line"], rule: 1, fake: 2, fakeIf: "waitCall",
+         evid: ["fact.A", "blue"], evidFake: ["fact.B", "wet"], seen: "본부 — 승인은 온다. 늦게.", head: "바늘이 기준선을 넘은 뒤 본부 승인을 기다렸다", cmp: ["선 아래의 바늘", "선을 넘은 바늘"] },   // V1(따른 가짜 2) 근거 = 무전기 라벨 + 끼워 넣은 줄 · V2 · V3(어긴 규칙 1) = 조작반 표지 + 파란 펜 마지막 줄
+    b: { dur: 6, missed: "성명을 묻는 무전", line: SL["death.b.line"], rule: 4,
          evid: ["fact.C", "pencil"], seen: "부르는 소리 — 무전: 역할도 이름이다.", head: "성명을 묻는 무전에 「당직자입니다」라고 답했다" },
-    c: { dur: 7, missed: "하류가 켜진 4번 화면", line: "하류에서 무언가 떠내려오고 있었다. 나뭇가지이길 바랐지만 나뭇가지가 아니었다.", rule: 5,
+    c: { dur: 7, missed: "하류가 켜진 4번 화면", line: SL["death.c.line"], rule: 5,
          evid: ["fact.E", "black"], seen: "떠내려오는 것 — 모니터로는 안 보인다.", head: "수문을 연 뒤 강둑 쪽 문으로 나갔다" },
-    d: { dur: 6, missed: "강둑 쪽 문의 출입 금지 표지", line: "문턱을 넘자 물소리가 강 쪽이 아니라 발밑에서 났다.", rule: 3,
+    d: { dur: 6, missed: "강둑 쪽 문의 출입 금지 표지", line: SL["death.d.line"], rule: 3,
          evid: ["fact.D", "pencil", 0], seen: "강둑 — 물은 강에만 있지 않다.", head: "수문을 열기 전에 강둑 쪽 문으로 나갔다" },
-    e: { dur: 6, missed: "선 아래의 바늘", line: "레버를 당기자 물이 수문 쪽에서 거꾸로 밀려 들어왔고, 물속에서 젖은 손이 발목을 잡았다.", rule: 1,
-         evid: ["fact.A", "blue", 1], seen: "수문 — 선 아래에서 열면 물이 거꾸로 온다.", head: "바늘이 기준선 아래일 때 수문을 열었다", cmp: ["선을 넘은 바늘", "선 아래의 바늘"] }
+    e: { dur: 6, missed: "선 아래의 바늘", line: SL["death.e.line"], rule: 1,
+         evid: ["fact.A", "blue", 1], seen: SL["death.e.seen"], head: "바늘이 기준선 아래일 때 수문을 열었다", cmp: ["선을 넘은 바늘", "선 아래의 바늘"] }
   };
+  // 검산 채널(가짜 2) — 앞사람 흔적 · 거짓 증언 · 반박 근거(공통 경로, 1턴부터 — 09 §6-1 · 06S §3.1)
+  var checks = { 2: { contra: [1], graffiti: "graffiti", facts: ["fact.A", "fact.B"], trace: ["blue#last", "black#1"], false: "wet", refute: ["fact.B", "graffiti", "contra"], echo: "radio.wait(V1)" } };   // 06S v0.4 §8 그대로 — 로그 · 검증용(판정에 들지 않는다)
   return { id: "a02", name: "수문관리소", kind: "script", T: T, clock: "03:47",
-    FACE_NAMES: ["기록 벽", "책상", "조작반 통로"], startFace: 1, OBJ: OBJ, rules: rules, TEXT: TEXT, radio: radio, deaths: deaths,
+    FACE_NAMES: ["기록 벽", "책상", "조작반 통로"], startFace: 1, OBJ: OBJ, rules: rules, TEXT: TEXT, radio: radio, deaths: deaths, checks: checks,
     acts: ["wait", "open", "reply", "bank"],
     ACTS: { wait: { label: "기다린다" }, open: { label: "개방한다" }, reply: { label: "무전에 답한다" }, bank: { label: "강둑 쪽 문" } },
     reply: { report: ["「선까지 세 마디.」", "「선까지 두 마디.」", "「선까지 한 마디.」"], name: "「당직자입니다.」", wait: "「수신. 대기하겠다.」", thanks: "「수고하셨습니다.」" },
@@ -1178,7 +1246,7 @@ var FAST = Q.fast === "1", STILL = Q.still === "1";
 if (STILL) document.documentElement.classList.add("still");
 
 // ── 로그 ── 기존 수집 주소(GAS). build proto-room01 · ver v3. 시험 모드에서는 보내지 않는다.
-var BUILD = "proto-room01", VER = "v4.3", PAGE = (location.pathname.split("/").pop() || "index.html");   // PAGE: 공개 시험판 v43.html 과 로컬 index.html 을 가른다
+var BUILD = "proto-room01", VER = "v4.3.1", PAGE = (location.pathname.split("/").pop() || "index.html");   // PAGE: 공개 시험판 v43.html 과 로컬 index.html 을 가른다
 var ENDPOINT = TEST ? "" : "https://script.google.com/macros/s/AKfycby4rrgNdXGb41bgr4IxwXNM8_PLNipORuUDpxlC2iamQu6fYENv7_3VvGLCE-i7wSzfZQ/exec";
 var LSK = { dev: "proto_room01_v43_device", runs: "proto_room01_v43_runs", queue: "proto_room01_v43_queue", snd: "proto_room01_v43_sound", cap: "proto_room01_v43_captions", seen: "proto_room01_v43_seen_deaths" };   // v4.3: v4.2(proto_room01_* · _v2_seen_deaths)와 겹치지 않게(사용자 결정 2026-09-30)
 function lsGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
@@ -4258,7 +4326,12 @@ var Sluice = (function(){
     Snd.loopOff("slosh", .3); Snd.loopOn("slosh", { level: 0.9, rise: .4, muffle: P2.s >= 1 || P2.doom ? 2400 : 480 });   // 바닥 밑(먹먹) → 사방(넓게)
   }
   // ── 턴 ──
-  function stageLine(P){ var X = R.TEXT.stage; if (P.doom) return X["2"]; if (P.dawn) return X.dawn; if (P.open) return X.open; return X[String(P.s)] || ""; }
+  // 턴 줄(turn.stage.*) — 바늘 · 물소리. 새벽은 턴 사이 화면이 dawn(바늘 · 물소리), 형광등 · 문 아래 틈 빛은 0.5초 turn.event.lights(06S §4.8 — 두 줄이 같은 말을 하지 않게)
+  var SL = R.TEXT.SL;
+  function stageLine(P){ var k; if (P.doom) k = "p2"; else if (P.dawn) k = "dawn"; else if (P.open) k = P.s === -1 ? "after1" : "after23"; else k = { "-3": "m3", "-2": "m2", "-1": "m1", "1": "p1", "2": "p2" }[String(P.s)]; return SL["turn.stage." + k] || ""; }
+  var RESULT = { open: "result.open", report_ignored: "result.report_ignored", name_ignored: "result.name_ignored", reply_thanks: "result.thanks_reply", wait_thanks: "result.thanks_ignored" };   // 판정 결과 → 글 자리
+  var att = null;   // 이 시도에서 연 것(1장 죽음 기록 — 끼워 넣은 줄에 속는지 재는 자료)
+  function attNew(){ att = { log: 0, inserted_card: 0, graffiti: 0, factB: 0 }; }
   function beginTurn(first){
     var prevS = P2 ? P2.s : (R.variants[S2.v].start - 1);
     P2 = A02.planTick(S2); t = 0; run = { ei: 0, btn: false }; dawnOn = false; lit4 = false; closePanel(true); line(""); E("sCap").classList.remove("show"); seenFace = []; seenFace[face] = 1;
@@ -4270,11 +4343,11 @@ var Sluice = (function(){
     requestAnimationFrame(function(){ requestAnimationFrame(function(){ var n = document.getElementById("tkNeedle"); if (n) n.style.transform = "rotate(" + needleAng(P2.s) + "deg)"; }); });
     if (P2.s >= 1 && !P2.open || P2.doom) sub(R.TEXT.sub.cross, 3600);
     water();
-    aft(K(AT.TICK) * 1000 + (P2.turn === 1 ? 300 : 0), function(){ tk.classList.remove("show"); st = P2.doom ? "doom" : "turn"; render(); if (P2.doom) doomRun(); });
+    aft(K(AT.TICK) * 1000 + (P2.turn === 1 ? 300 : 0), function(){ tk.classList.remove("show"); st = P2.doom ? "doom" : "turn"; render(); if (P2.doom) doomRun(); else if (P2.turn === 1 && S2.attempt === 1) line(SL["t1.room"], 6000); });   // 처음 보는 방(첫 시도 1턴)
   }
   function fire(ev){
-    if (ev.type === "mon4"){ lit4 = true; render(); Snd.tick(); sub(R.TEXT.sub.mon4, 3000); line(R.TEXT.mon4, 4200); logEv("mon4_on", { turn: P2.turn }); }
-    else if (ev.type === "dawn"){ dawnOn = true; Snd.humOff(); Snd.clunk(); sub(R.TEXT.sub.dawn, 3000); water(); render(); }
+    if (ev.type === "mon4"){ lit4 = true; render(); Snd.tick(); sub(R.TEXT.sub.mon4, 3000); line(SL["turn.event.monitor"], 4200); logEv("mon4_on", { turn: P2.turn }); }
+    else if (ev.type === "dawn"){ dawnOn = true; Snd.humOff(); Snd.clunk(); sub(R.TEXT.sub.dawn, 3000); line(SL["turn.event.lights"], 4200); water(); render(); }
     else if (ev.type === "radio") say(P2.say);
   }
   function step(dt){
@@ -4297,8 +4370,8 @@ var Sluice = (function(){
     else if (act === "reply"){ line("내가 말했다 — " + (P2.replyLabel || ""), 2400); }
     fadeTo(act === "wait" ? 0.5 : 0.3, 300);
     aft(K(AT.WALK[act] || 1) * 1000, function(){ fadeTo(0, 300); say(res.say, function(){
-      var rt = res.result && R.TEXT.result[res.result]; if (rt) line(rt, 2600);
-      aft(rt ? K(1.6) * 1000 : 200, function(){
+      var rt = res.result && RESULT[res.result] ? SL[RESULT[res.result]] : ""; if (rt) line(rt, K(3.2) * 1000);
+      aft(rt ? K(2.4) * 1000 : 200, function(){
         if (res.death) return die(res.death, res);
         if (res.cleared) return exitScene(res);
         A02.apply(S2, P2, res); beginTurn(false); }); }); });
@@ -4313,7 +4386,8 @@ var Sluice = (function(){
     st = "death"; closePanel(true); clearAft(); E("sCap").classList.remove("show"); line("");
     var first = !seenDeaths[d.scene];
     var drop = chainDied(d);
-    logEv("death", { room: "a02", cause: d.cause, scene: d.scene, fake: d.fake, rule: d.rule, first: first, missed: d.sys[0], turn: P2.turn, variant: P2.variant, attempt: P2.attempt, sm: smNow(), sm_drop: drop });
+    logEv("death", { room: "a02", cause: d.cause, scene: d.scene, fake: d.fake, rule: d.rule, first: first, missed: d.sys[0], turn: P2.turn, variant: P2.variant, attempt: P2.attempt, sm: smNow(), sm_drop: drop,
+      opened: att ? { log: att.log, inserted_card: att.inserted_card, graffiti: att.graffiti, factB: att.factB } : null });   // 이 시도에서 연 것 — 일지 펼침 · 끼워 넣은 줄 카드(수첩) · 낙서 · 무전기 라벨
     upload("death"); markSeenDeath(d.scene);
     Snd.allLoopsOff(0.05); Snd.humOff(true); Snd.deathStart(d.scene);
     $("dLine").textContent = d.line; $("dLine").classList.remove("on");
@@ -4343,22 +4417,29 @@ var Sluice = (function(){
     var R0 = sd; if (!R0) return; sd = null;
     logEv("death_end", { room: "a02", scene: R0.d.scene, t_sys: R0.sysAt != null ? +(R0.el - R0.sysAt).toFixed(1) : null });
     Snd.deathEnd(0.6); $("death").classList.remove("show"); $("dHand").textContent = ""; if (dNext0) $("dNext").textContent = dNext0;
-    A02.apply(S2, P2, R0.res); P2 = null; face = R.startFace;
+    A02.apply(S2, P2, R0.res); P2 = null; face = R.startFace; attNew();
     arrive(function(){ beginTurn(true); });
   }
   $("death").addEventListener("click", function(){ if (!sd) return; if (sd.stage === "scene"){ if (!sd.first) sdSys(); } else if (sd.next) sdEnd(); });
   // 도착 — 모든 시도의 처음(06S §7 첫 문장)
   function arrive(then){
     st = "arrive"; var tk = $("tick"); tickSet('<rect x="-46" y="-30" width="92" height="60" rx="6" fill="#1a1f20" stroke="#5d6b69" stroke-dasharray="4 3"/><text x="0" y="3" font-size="6" fill="#8a9" text-anchor="middle">a02.ext.night — 바깥</text>', false);
-    $("tickNote").textContent = R.TEXT.arrive; $("tickVoice").classList.remove("on"); tk.classList.add("show"); E("sroom").classList.add("show");
+    var firstIn = !S2 || S2.attempt === 1, body = firstIn ? SL["arrive.body"] : [];
+    $("tickNote").innerHTML = [SL["arrive.first"]].concat(body).map(esc).join("<br><br>"); $("tickVoice").classList.remove("on"); tk.classList.add("show"); E("sroom").classList.add("show");
     Snd.humOn(); Snd.loopOn("air", { level: 1, rise: .6 });
-    aft(K(2.2) * 1000, then);
+    var need = firstIn ? 2.2 + Array.from(body.join("")).length * 0.07 : 2.2, done = false, go = function(){ if (done) return; done = true; tickDone = null; busTap = false; then(); };
+    if (firstIn){ tickDone = go; busTap = true; }   // 첫 도착은 누르면 넘어간다
+    aft(K(need) * 1000, go);
   }
   function exitScene(res){
     st = "exit"; logEv("a02_exit", { turns: P2.turn, attempts: S2.attempt, deaths: S2.deaths, frag2: S2.flags.frag2 ? "whole" : "blur" });
-    var tk = $("tick"); tickSet('<rect x="-46" y="-30" width="92" height="60" rx="6" fill="#2a2f31" stroke="#8a9" stroke-dasharray="4 3"/><text x="0" y="3" font-size="6" fill="#cdd" text-anchor="middle">a02.ext.dawn — 바깥</text>', false);
-    $("tickNote").textContent = R.TEXT.exit.join(" "); tk.classList.add("show");
-    aft(K(3.4) * 1000, function(){ tk.classList.remove("show"); finish(); });
+    line(SL["exit.room"], K(3.0) * 1000);
+    aft(K(3.0) * 1000, function(){
+      var tk = $("tick"); tickSet('<rect x="-46" y="-30" width="92" height="60" rx="6" fill="#2a2f31" stroke="#8a9" stroke-dasharray="4 3"/><text x="0" y="3" font-size="6" fill="#cdd" text-anchor="middle">a02.ext.dawn — 바깥</text>', false);
+      $("tickNote").textContent = SL["exit.door"]; tk.classList.add("show"); Snd.door();
+      var n = 0, next = function(){ n++; if (n === 1){ $("tickNote").textContent = SL["exit.bus"]; Snd.loopOn("engine", { level: 0.5, rise: 1 }); tickDone = next; busTap = true; aft(K(3.4) * 1000, function(){ if (n === 1) next(); }); } else if (n === 2){ tickDone = null; busTap = false; Snd.loopOff("engine", .5); tk.classList.remove("show"); finish(); } };
+      tickDone = next; busTap = true; aft(K(3.4) * 1000, function(){ if (n === 0) next(); });
+    });
   }
   function finish(){
     st = "done"; clearAft(); Snd.allLoopsOff(.6); Snd.humOff(); E("sroom").classList.remove("show"); Snd.setFace(sndFace0);
@@ -4374,19 +4455,28 @@ var Sluice = (function(){
   function inspect(id){
     if (!(st === "turn" || st === "walk") || !OB[id]) return;
     var o = OB[id]; reads.push(id); logEv("inspect", { room: "a02", obj: id, turn: P2 ? P2.turn : null });
+    if (att){ if (o.log) att.log = 1; if (o.graffiti) att.graffiti = 1; if (o.fact === "fact.B") att.factB = 1; }
     if (o.paper) return openPaper();
     if (o.monitor) return openMonitor();
     var art = '<svg viewBox="0 0 320 200" class="sbig"><rect width="320" height="200" fill="#1b2021" stroke="#5d6b69" stroke-dasharray="5 3"/><text x="10" y="18" font-size="11" fill="#9aa">그림 자리 · a02.zoom.' + id + '</text>' +
       (o.gauge && P2 ? dial(160, 112, 70, P2.s) : '') + '</svg>', tx = "";
     if (o.fact){ var f = R.TEXT.facts.filter(function(x){ return x.id === o.fact; })[0]; tx = '<p class="sq">「' + esc(f.text) + '」</p>'; noteAdd(o.fact); }
-    else if (o.log){ tx = '<p>' + esc(o.text) + '</p>' + notebookHTML(); noteAdd("log"); }
-    else if (o.graffiti){ tx = '<p>' + esc(o.text) + '</p><p class="sq">「' + esc(R.TEXT.graffiti.base) + '」 위에 「' + esc(R.TEXT.graffiti.over) + '」(번짐)</p>'; noteAdd("graffiti"); }
+    else if (o.log){ art = ""; tx = '<p>' + esc(o.text) + '</p>' + logPagesHTML() + '<p>' + esc(o.pages) + '</p>'; noteAdd("log"); }
+    else if (o.graffiti){ art = ""; tx = graffitiHTML() + '<p>' + esc(o.text) + '</p>'; noteAdd("graffiti"); }
     else if (o.gauge) tx = '<p>' + esc(o.text) + ' ' + esc(stageLine(P2)) + '</p>';
-    else if (o.panel) tx = '<p>' + esc(P2 && P2.open ? o.textOpen : o.text) + '</p>';
+    else if (o.panel) tx = '<p>' + esc(P2 && P2.open ? o.textAfter : o.text) + '</p>';
     else tx = '<p>' + esc(o.text || "") + '</p>';
     openPanel("insp", o.name, art + tx);
   }
-  function notebookHTML(){ return '<div class="snb">' + R.TEXT.notebook.map(function(p){ return '<div class="pen ' + p.pen + '"><i>' + esc(p.label) + '</i>' + p.lines.map(esc).join("<br>") + '</div>'; }).join("") + '</div>'; }
+  // 수첩 「앞사람 흔적」 — 펜마다 한 장, 끼워 넣은 줄은 파란 펜 카드 아래 따로 한 장(라벨 「굵은 글씨」 — 글씨는 낙서 「있다」와 같은 번진 잉크)
+  function notebookHTML(){ return '<div class="snb">' + R.TEXT.notebook.map(function(p){ return '<div class="pen ' + p.pen + '"><i>' + esc(p.label) + '</i>' + p.lines.map(function(l){ return p.under ? '<span class="wetink">' + esc(l) + '</span>' : esc(l); }).join("<br>") + '</div>'; }).join("") + '</div>'; }
+  // 일지 펼친 두 쪽(코드로 그림 — 그림에 글자를 넣지 않는다) — 왼쪽 파란 펜 + 그 아래 끼워 넣은 줄, 오른쪽 연필 · 검은 펜
+  function logPagesHTML(){
+    var side = function(sd){ return R.TEXT.notebook.filter(function(p){ return p.side === sd; }).map(function(p){ return p.lines.map(function(l){ return '<div class="ll ' + p.pen + '">' + (p.under ? '<span class="wetink">' + esc(l) + '</span>' : esc(l)) + '</div>'; }).join(""); }).join(""); };
+    return '<div class="lpages"><div class="lpage">' + side("left") + '</div><div class="lpage">' + side("right") + '</div></div><p class="dim sm">그림 자리 · a02.zoom.log(펼친 두 쪽 — 글은 게임이 얹는다)</p>';
+  }
+  // 벽 낙서(코드로 그림) — 볼펜 「본부는 없다」의 「없다」 위에 굵은 글씨 「있다」(끼워 넣은 줄과 같은 번진 잉크)
+  function graffitiHTML(){ return '<div class="gwall"><span class="bp">본부는 </span><span class="ovr"><span class="bp gone">없다</span><span class="wetink on">있다</span></span></div><p class="dim sm">그림 자리 · a02.zoom.graffiti(빈 벽 — 글은 게임이 얹는다)</p>'; }
   function openPaper(){
     if (!(st === "turn" || st === "walk")) return;
     var H = R.TEXT.ruleHead, lis = R.rules.map(function(r){ var tx = esc(r.text); if (r.damaged === "wet") tx = esc(r.text.slice(0, r.text.length - r.wetFrom.length)) + '<span class="wet">' + esc(r.wetFrom) + '</span>';
@@ -4397,18 +4487,19 @@ var Sluice = (function(){
   function openMonitor(){
     var cells = [1, 2, 3, 4].map(function(n){ var on4 = n === 4 && lit4;
       return '<button type="button" class="scell' + (on4 ? " lit" : "") + '" data-cell="' + n + '"><b>' + n + '</b><span>' + (n < 4 ? "a02.cam.gate." + (P2 && P2.open ? "flow" : (P2 && P2.s >= 1 ? "over" : (P2 && P2.s >= -1 ? "mid" : "low"))) : (on4 ? "a02.cam.down.lit" : "a02.cam.down.dark")) + '</span></button>'; }).join("");
-    openPanel("mon", "모니터 4분할", '<div class="sgrid">' + cells + '</div><p>' + esc(OB.monitor.text) + '</p><div id="sM4"></div>');
+    openPanel("mon", "모니터 4분할", '<div class="sgrid">' + cells + '</div><p>' + esc(P2 && P2.open ? OB.monitor.textAfter : OB.monitor.text) + '</p><div id="sM4"></div>');
   }
   // 4번 화면(조각 사물) — 켜진 턴에 확대해 끝까지(AT.MON4 초) 보면 조각 2 온전(06S §4.7). 판정 밖 — 플래그만
   function m4Open(){
     var box0 = E("sM4"); if (!box0) return;
     if (!lit4){ box0.innerHTML = '<p class="dim">4번 화면은 거의 검었고 가끔 물이 반짝였다.</p>'; return; }
-    box0.innerHTML = '<svg viewBox="0 0 320 180" class="sbig"><rect width="320" height="180" fill="#0c1512"/><text x="8" y="14" font-size="10" fill="#8b9">그림 자리 · a02.vid.down(영상 — 하류를 걷는 사람)</text><rect x="0" y="120" width="320" height="60" fill="#1a2c2a"/><circle id="sM4p" cx="20" cy="118" r="7" fill="#050606"/><rect id="sM4bar" x="0" y="176" width="0" height="4" fill="#C9873F"/></svg>';
+    box0.innerHTML = '<svg viewBox="0 0 320 180" class="sbig"><rect width="320" height="180" fill="#0c1512"/><text x="8" y="14" font-size="10" fill="#8b9">그림 자리 · a02.vid.down(영상 — 하류를 걷는 사람)</text><rect x="0" y="120" width="320" height="60" fill="#1a2c2a"/><circle id="sM4p" cx="20" cy="118" r="7" fill="#050606"/><rect id="sM4bar" x="0" y="176" width="0" height="4" fill="#C9873F"/></svg><p class="m4cap" id="sM4cap"></p>';
     m4 = { el: 0 }; logEv("mon4", { act: "open", turn: P2.turn });
   }
   function m4Step(dt){
     m4.el += dt; var k = Math.min(1, m4.el / K(AT.MON4)), p = document.getElementById("sM4p"), b = document.getElementById("sM4bar");
     if (p) p.setAttribute("cx", (20 + 270 * k).toFixed(1)); if (b) b.setAttribute("width", (320 * k).toFixed(1));
+    var cp = document.getElementById("sM4cap"), ci = k < 1 / 3 ? 1 : (k < 2 / 3 ? 2 : 3); if (cp && cp.getAttribute("data-i") !== String(ci)){ cp.setAttribute("data-i", ci); cp.textContent = SL["mon4.caption." + ci]; }
     if (k >= 1) m4Done();
   }
   function m4Stop(done){ if (!m4) return; logEv("mon4", { act: done ? "done" : "closed", ms: Math.round(m4.el * 1000) }); m4 = null; }
@@ -4421,6 +4512,7 @@ var Sluice = (function(){
   }
   function openNotes(){
     if (!(st === "turn" || st === "walk")) return;
+    if (att && sNotes.indexOf("log") >= 0) att.inserted_card = 1;
     E("sNoteB").classList.remove("new"); openPanel("notes", "수첩", notesAll("a02")); logEv("notes", { room: "a02", act: "open", n: sNotes.length + notes.length });
   }
   // 수첩 — 이 장 쪽 + 지난 쪽(서장). 본 죽음은 죽어도 남는다(00 v2.0 §5.2-4 · §9)
@@ -4428,7 +4520,7 @@ var Sluice = (function(){
     var fs = sNotes.filter(function(id){ return /^fact\./.test(id); }), h = '<h3>수문관리소</h3><h4>읽은 안내문</h4>';
     h += fs.length ? fs.map(function(id){ var f = R.TEXT.facts.filter(function(x){ return x.id === id; })[0]; return '<div class="nf"><b>' + esc(f.label) + '</b>「' + esc(f.text) + '」</div>'; }).join("") : '<p class="empty">아직 없습니다.</p>';
     h += '<h4>' + esc(R.TEXT.notebookName) + '</h4>' + (sNotes.indexOf("log") >= 0 ? notebookHTML() : '<p class="empty">아직 없습니다.</p>');
-    if (sNotes.indexOf("graffiti") >= 0) h += '<div class="nf"><b>무전기 옆 벽</b>「' + esc(R.TEXT.graffiti.base) + '」 위에 「' + esc(R.TEXT.graffiti.over) + '」 — 「있다」만 번져 있다</div>';
+    if (sNotes.indexOf("graffiti") >= 0) h += '<div class="nf"><b>무전기 옆 벽</b>' + graffitiHTML().replace(/<p class="dim sm">[^<]*<\/p>/, "") + '</div>';   // 일지의 굵은 글씨와 나란히 보이게
     return h + deadHTML(["a02"]);
   }
   function notesAll(cur){ return cur === "a02" ? a02Page() + prologuePage() : prologuePage() + (J && J.stages.indexOf("a02") >= 0 ? a02Page() : ""); }
@@ -4446,7 +4538,7 @@ var Sluice = (function(){
   E("sNoteB").addEventListener("click", function(e){ e.stopPropagation(); if (panel === "notes") closePanel(); else { closePanel(true); openNotes(); } });
   document.addEventListener("keydown", function(e){ if (phase !== "a02") return; if (e.key === "ArrowLeft") turnFace(-1); else if (e.key === "ArrowRight") turnFace(1); else if (e.key === "Escape") closePanel(); });
   function start(o, cb){
-    o = o || {}; onClear = cb; fastQ = !!o.fast; S2 = A02.newSession({ seed: o.seed, fast: fastQ, variant: Q.variant }); P2 = null; face = R.startFace; sSus = {}; sNotes = []; reads = []; sd = null; m4 = null; panel = null;
+    o = o || {}; onClear = cb; fastQ = !!o.fast; S2 = A02.newSession({ seed: o.seed, fast: fastQ, variant: Q.variant }); P2 = null; face = R.startFace; sSus = {}; sNotes = []; reads = []; sd = null; m4 = null; panel = null; attNew();
     phase = "a02"; clearLater(); Snd.allLoopsOff(0.3); stopBroadcast(); Snd.setFace(sndFace); E("sNoteB").classList.remove("new");
     logEv("room_start", { room: "a02", seed: S2.seed, variant: S2.v });
     fadeTo(0, 10); E("sroom").classList.add("show"); render(); renderBar(false);
@@ -4456,7 +4548,7 @@ var Sluice = (function(){
     test: { state: function(){ return { st: st, turn: P2 ? P2.turn : null, s: P2 ? P2.s : null, call: P2 ? P2.call : null, open: P2 ? P2.open : null, doom: P2 ? P2.doom : null, variant: S2 ? S2.v : null,
         attempt: S2 ? S2.attempt : null, deaths: S2 ? S2.deaths : null, btn: !!(run && run.btn), face: face, panel: panel, frag2: !!(S2 && S2.flags.frag2), lit4: lit4, t: +t.toFixed(2),
         acts: [].map.call(document.querySelectorAll("#sActs [data-sact]"), function(b){ return b.getAttribute("data-sact") + (b.disabled ? ":off" : ":on") + ":" + b.textContent; }),
-        cap: E("sCap").classList.contains("show") ? E("sCapText").textContent : null, death: sd ? { scene: sd.d.scene, stage: sd.stage, next: sd.next, sys: sd.d.sys, evid: sd.d.evid } : null, notes: sNotes.slice(), sus: Object.keys(sSus).map(Number) }; },
+        cap: E("sCap").classList.contains("show") ? E("sCapText").textContent : null, line: E("sLine").classList.contains("show") ? E("sLine").textContent : null, att: att ? JSON.parse(JSON.stringify(att)) : null, death: sd ? { scene: sd.d.scene, stage: sd.stage, next: sd.next, sys: sd.d.sys, evid: sd.d.evid } : null, notes: sNotes.slice(), sus: Object.keys(sSus).map(Number) }; },
       choose: choose, face: function(n){ face = n; seenFace[n] = 1; render(); }, inspect: inspect, paper: openPaper, notes: openNotes, close: closePanel, monitor: function(){ inspect("monitor"); m4Open(); }, sdNext: function(){ if (sd){ if (sd.stage === "scene") sdSys(); sd.next = true; sdEnd(); } } } };
 })();
 function sndFace0(){ return phase === "death" ? 0 : (lookFace() < 0 ? cur : lookFace()); }
