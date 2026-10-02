@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>진동 어휘 시험</title>
+<link rel="stylesheet" href="lab.css">
+<link rel="icon" href="data:,">
+<style>
+.hrow{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0 4px}
+.hb{position:relative;min-height:64px;border-radius:12px;border:1px solid #33403f;background:#131919;color:var(--paper);font:inherit;padding:8px 10px;text-align:left;cursor:pointer;overflow:hidden}
+.hb:active{background:#1d2626}
+.hb b{display:block;font-size:14px}
+.hb small{display:block;font-size:11px;color:var(--dim);margin-top:2px;font-family:ui-monospace,Consolas,monospace}
+.hb .bar{position:absolute;left:0;right:0;bottom:0;height:5px;display:flex}
+.hb .bar i{display:block;height:100%}
+.hb .bar i.on{background:var(--sodium)}
+.hb .bar i.off{background:transparent}
+.hb.play{border-color:var(--sodium)}
+.hb .sweep{position:absolute;left:0;bottom:0;height:5px;width:2px;background:#fff;opacity:0}
+.hb.play .sweep{opacity:.8;animation:sw var(--dur) linear forwards}
+@keyframes sw{from{left:0}to{left:100%}}
+.vh{font-size:13px;font-weight:700;margin:18px 0 0;display:flex;align-items:baseline;gap:8px}
+.vh em{font-style:normal;font-family:ui-monospace,Consolas,monospace;color:#ffd9a8;font-size:14px}
+.vh span{font-weight:400;color:var(--dim);font-size:12px}
+.status{font-size:12.5px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);margin:10px 0}
+.status.ok{color:#bfe3c6;border-color:#2f5a3a}
+.status.no{color:#f0d0a0;border-color:#6a4a2a}
+.fair{border-left:3px solid var(--sodium);padding:6px 10px;background:rgba(201,135,63,.08);font-size:13.5px;margin:12px 0}
+</style>
+</head>
+<body>
+<header class="top"><div class="row"><h1>진동 어휘 — 다섯 × 후보 둘</h1><a class="back" href="index.html">목록</a></div></header>
+<div class="wrap">
+  <div class="status" id="status"></div>
+  <p class="lead">버튼을 누르면 그 패턴으로 떤다(안드로이드). 아래 띠 = 패턴(주황 = 떪 · 빈칸 = 쉼). 다섯 어휘마다 짧은 판 · 긴 판 중 하나를 고른다.</p>
+  <div class="fair"><b>공정성</b> — 플레이어가 한 일과, 이미 보이거나 들리는 사건에만 떤다. 이상이 「놓였다」고 떨지 않는다(신호 누출 — 00 v2.0 §5.3).</div>
+  <div id="vocab"></div>
+  <h2 class="sec" id="map">어디에 붙이나</h2>
+  <table class="t">
+    <tr><th>어휘</th><th>붙이는 곳(이것만)</th><th>지금 게임</th><th>떨지 않는 곳</th></tr>
+    <tr><td><b>tap</b></td><td>몸짓 성립 — 종이 뒤집기 · 전단 뒤집기 · 김 닦기 끝 · 귀 대기 성립 · 반환구 손 넣기 · 사물 누름 반응</td><td>12 · 15ms(뒤집기 · 몸짓)</td><td>그냥 버튼 누름(보조 버튼은 조용히 — 지금과 같음)</td></tr>
+    <tr><td><b>confirm</b></td><td>수첩에 적힘 — 새 사실 · 펜 카드 · 의심 줄 · 본 죽음이 수첩 칸에 들어갈 때</td><td>없음</td><td>이미 적힌 것을 다시 읽을 때</td></tr>
+    <tr><td><b>warn</b></td><td>큰 이상 신호 — 정적 1초 뒤 네 면 빛 · 자막과 같은 순간(이미 보이고 들리는 사건)</td><td>90ms</td><td>정적 1초 동안 · 신호 전</td></tr>
+    <tr><td><b>hit</b></td><td>형체 등장 — 유리문 밖 형체를 <u>처음 볼 때</u>(화면에 이미 보이는 순간 · lowHit 소리와 함께) · 입김이 걷혀 형체가 보이는 순간</td><td>60ms</td><td>형체가 「놓인」 바퀴 시작 · 안 보는 면에 있을 때</td></tr>
+    <tr><td><b>death</b></td><td>죽음 — 달려듦 순간(장면 끝) 한 번 · 시한 끝 놀람</td><td>[40,30,70] 시한 끝 놀람만</td><td>죽음 설명 화면 · 「오늘도 빈손이었다」</td></tr>
+  </table>
+  <p class="note">매핑 확정(자문 2026-10-02 11:25 — 11 §1 기준, S0 와 맞춤): 몸짓 성립 = tap · 수첩에 적힘 = confirm · 큰 이상 신호 = warn · 형체 등장 = hit · 죽음 = death. 패턴은 뜻을 따라 옮겼다(지금 게임 큰 이상 90ms → warn · 형체 60ms → hit).</p>
+  <h2 class="sec">iOS</h2>
+  <p class="note">iOS Safari 에는 <code>navigator.vibrate</code> 가 없다 — 웹에서는 아이폰이 떨지 않는다(누르면 띠만 움직인다). 앱으로 쌀 때(Capacitor 등) iOS 햅틱(UIImpactFeedbackGenerator · UINotificationFeedbackGenerator · Core Haptics)에 <b>같은 다섯 이름</b>으로 붙인다: tap → impact light · confirm → notification success · warn → notification warning · hit → impact heavy · death → Core Haptics 패턴(긴 판). 안드로이드도 방해 금지 · 진동 세기 0 이면 안 떤다. 크롬은 화면을 한 번 누르기 전에는 진동을 막는다.</p>
+  <h2 class="sec">고른 것</h2>
+  <p class="note" id="picked"></p>
+</div>
+<script>
+(function(){
+'use strict';
+var $ = function(id){ return document.getElementById(id); };
+var store = { get: function(){ try { return JSON.parse(localStorage.getItem('lab_s1') || '{}'); } catch (e) { return {}; } }, set: function(o){ try { localStorage.setItem('lab_s1', JSON.stringify(o)); } catch (e) {} } };
+var CH = store.get(); CH.haptic = CH.haptic || {};
+// 패턴 = [떪, 쉼, 떪, …] ms. 안드로이드는 세기를 못 정한다 — 짧을수록 약하게 느껴진다.
+var VOCAB = [
+  { id: 'tap',     name: '몸짓 성립', where: '뒤집기 · 닦기 · 귀 대기 · 손 넣기', s: [10], l: [18] },
+  { id: 'confirm', name: '수첩에 적힘', where: '새 줄이 칸에 들어감', s: [12, 70, 12], l: [16, 90, 28] },
+  { id: 'warn',    name: '큰 이상 신호', where: '정적 1초 뒤 빛 · 자막', s: [90], l: [120, 50, 160] },
+  { id: 'hit',     name: '형체 등장', where: '처음 보는 순간(lowHit 와 함께)', s: [45], l: [30, 60, 70] },
+  { id: 'death',   name: '죽음', where: '달려듦 순간', s: [60, 40, 180], l: [100, 60, 80, 60, 420] }
+];
+var IS_ANDROID = /Android/i.test(navigator.userAgent), can = 'vibrate' in navigator, IS_IOS = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+$('status').className = 'status ' + (can && IS_ANDROID ? 'ok' : 'no');
+$('status').textContent = can && IS_ANDROID ? '이 기기: 안드로이드 — 떤다(navigator.vibrate). 무음으로 두고 느껴 볼 것.' : (IS_IOS ? '이 기기: iOS — 웹에서는 진동이 없다. 띠만 움직인다.' : '이 기기: 안드로이드가 아님(데스크톱 등) — 떨 장치가 없다. 띠만 움직인다.');
+function sum(p){ return p.reduce(function(a, b){ return a + b; }, 0); }
+function bar(p){ var t = sum(p); return p.map(function(ms, i){ return '<i class="' + (i % 2 ? 'off' : 'on') + '" style="width:' + (ms / t * 100).toFixed(2) + '%"></i>'; }).join(''); }
+function render(){
+  $('vocab').innerHTML = VOCAB.map(function(v){
+    return '<div class="vh"><em>' + v.id + '</em>' + v.name + '<span>' + v.where + '</span></div><div class="hrow">' +
+      ['s', 'l'].map(function(k){ var p = v[k]; return '<button class="hb" data-v="' + v.id + '" data-k="' + k + '"><b>' + (k === 's' ? '짧은 판' : '긴 판') + '</b><small>[' + p.join(', ') + '] · ' + sum(p) + 'ms</small><span class="bar">' + bar(p) + '</span><span class="sweep"></span></button>'; }).join('') + '</div>' +
+      '<div class="pick"><span>고르기</span>' + [['s', '짧은 판'], ['l', '긴 판'], ['x', '안 씀']].map(function(o){ return '<button class="chip' + (CH.haptic[v.id] === o[0] ? ' on' : '') + '" data-pv="' + v.id + '" data-pk="' + o[0] + '">' + o[1] + '</button>'; }).join('') + '</div>';
+  }).join('');
+  document.querySelectorAll('.hb').forEach(function(b){ b.addEventListener('click', function(){ var v = VOCAB.filter(function(x){ return x.id === b.dataset.v; })[0], p = v[b.dataset.k]; try { if (can) navigator.vibrate(p); } catch (e) {}
+    b.classList.remove('play'); void b.offsetWidth; b.style.setProperty('--dur', sum(p) + 'ms'); b.classList.add('play'); setTimeout(function(){ b.classList.remove('play'); }, sum(p) + 300); }); });
+  document.querySelectorAll('[data-pv]').forEach(function(b){ b.addEventListener('click', function(){ CH.haptic[b.dataset.pv] = b.dataset.pk; store.set(CH); render(); }); });
+  picked();
+}
+function picked(){ var names = { s: '짧은 판', l: '긴 판', x: '안 씀' }; $('picked').textContent = VOCAB.map(function(v){ var k = CH.haptic[v.id]; return v.id + ' ' + (k ? names[k] + (k !== 'x' ? ' [' + v[k].join(',') + ']' : '') : '—'); }).join(' · '); }
+window.__haptic = { VOCAB: VOCAB };
+render();
+document.documentElement.dataset.ready = '1';
+})();
+</script>
+</body>
+</html>

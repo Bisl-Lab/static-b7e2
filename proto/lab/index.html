@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>S1 표현 시험</title>
+<link rel="stylesheet" href="lab.css">
+<link rel="icon" href="data:,">
+<style>
+.go{display:block;text-decoration:none;color:inherit;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:10px 0}
+.go:active{background:#151a1c}
+.go b{display:block;font-size:15px}
+.go span{display:block;font-size:12.5px;color:var(--dim);margin-top:2px}
+#sum{white-space:pre-wrap;font-size:12.5px;background:#0a0c0d;border:1px solid var(--line);border-radius:8px;padding:10px;color:#d8d0c2;min-height:3em}
+</style>
+</head>
+<body>
+<header class="top"><div class="row"><h1>S1 표현 시험 — 고르기</h1></div></header>
+<div class="wrap">
+  <p class="lead">게임 코드와 따로 둔 시험 페이지 다섯. 폰으로 보고 고르면 그 결과가 S1(표현 · UI)의 사양이 된다.</p>
+  <a class="go" href="ink.html"><b>① 글자 얹기</b><span>일지 · 규칙서 · 전단 · 벽 낙서 · 캔 — A 지금 / B 새 방식 · 펜 폰트 셋</span></a>
+  <a class="go" href="breath.html"><b>② 유리 입김</b><span>피어오르는 김 → 가장자리부터 걷힘 → 바깥(형체) · 숨소리 · 진동 / 지금(흐림 1.6초)</span></a>
+  <a class="go" href="haptic.html"><b>③ 진동 어휘</b><span>tap · confirm · warn · hit · death — 짧은 판 / 긴 판 · 붙일 곳 표 · 안드로이드만</span></a>
+  <a class="go" href="paper.html"><b>④ 종이 · 수첩 · 사물 반응</b><span>규칙서 꺼내기 · 넣기 · 뒤집기 · 수첩 판 A 종이 / B 카드 · 누르면 눌림 · 빛 · 소리</span></a>
+  <a class="go" href="phone.html"><b>⑤ 폰</b><span>잠금화면(뒷모습 · 03:47 · 41% · 긁힘 3단계) · 메모 위젯(조각 16칸 · 기록 · 쪽지 자리) · 죽음 화면 흐름(6장 전/뒤)</span></a>
+  <h2 class="sec">고른 것 <small>이 기기에만 저장 — 복사해서 붙여 넣기</small></h2>
+  <div id="sum"></div>
+  <div class="chips"><button class="chip" id="copy">요약 복사</button><button class="chip" id="clear">지우기</button></div>
+  <p class="note">소리 · 진동은 폰에서 한 번 화면을 누른 뒤부터 난다. 진동은 안드로이드만(iOS 웹은 안 떪). 사진 · 소리는 room01 것을 읽기만 한다.</p>
+</div>
+<script>
+(function(){
+'use strict';
+var $ = function(id){ return document.getElementById(id); };
+function get(){ try { return JSON.parse(localStorage.getItem('lab_s1') || '{}'); } catch (e) { return {}; } }
+var SP = { log: '일지', rules: '규칙서', flyer: '전단', wall: '벽 낙서', can: '캔' }, FN = { nanum: '나눔손글씨 펜', gaegu: '개구', melody: '하이멜로디', person: '사람마다' }, HK = { s: '짧은 판', l: '긴 판', x: '안 씀' };
+function text(){
+  var c = get(), out = ['[S1-lab 고른 것]'];
+  out.push('글자 얹기: ' + Object.keys(SP).map(function(k){ return SP[k] + ' ' + ((c.ink || {})[k] || '—'); }).join(' · ') + ' / 펜 폰트 ' + (FN[c.font] || '—'));
+  out.push('입김: ' + ({ A: '지금', B: '새 방식', none: '몸짓 빼기' }[c.breath] || '—'));
+  out.push('진동: ' + ['tap', 'confirm', 'warn', 'hit', 'death'].map(function(k){ return k + ' ' + (HK[(c.haptic || {})[k]] || '—'); }).join(' · '));
+  out.push('폰: 잠금화면 ' + ((c.phone || {}).lock || '—') + ' · 메모 ' + ((c.phone || {}).memo || '—') + ' · 죽음 흐름 ' + ((c.phone || {}).death || '—'));
+  out.push('규칙서 ' + ({ new: '새', old: '지금' }[c.paper] || '—') + ' · 수첩 ' + (c.notebook || '—') + ' · 사물 반응 ' + ({ new: '새', old: '지금' }[c.object] || '—'));
+  return out.join('\n');
+}
+function show(){ $('sum').textContent = text(); }
+$('copy').addEventListener('click', function(){ var t = text(); (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function(){ $('copy').textContent = '복사됨'; }, function(){ var r = document.createRange(); r.selectNodeContents($('sum')); var s = getSelection(); s.removeAllRanges(); s.addRange(r); $('copy').textContent = '골라 둠 — 길게 눌러 복사'; }); });
+$('clear').addEventListener('click', function(){ try { localStorage.removeItem('lab_s1'); } catch (e) {} show(); });
+window.addEventListener('pageshow', show); show();
+document.documentElement.dataset.ready = '1';
+})();
+</script>
+</body>
+</html>

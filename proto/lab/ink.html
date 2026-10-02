@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>글자 얹기 시험</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Hi+Melody&family=Nanum+Pen+Script&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="lab.css">
+<link rel="icon" href="data:,">
+</head>
+<body>
+<header class="top"><div class="row"><h1>글자 얹기 — A 지금 · B 새 방식</h1><a class="back" href="index.html">목록</a></div></header>
+<div class="wrap widepair">
+  <p class="lead">자리 다섯. 위가 <b>A 지금 방식</b>(사진 위에 글을 그대로), 아래가 <b>B 새 방식</b>. 그림을 누르면 크게 — 같은 자리에서 A ⇄ B 를 바꿔 볼 수 있다.</p>
+  <p class="note">B = 네 꼭짓점 원근 · 곱하기 섞기 · 사진 밝기 따르기(잉크색을 종이 평균색으로 나눠 곱함) · 잉크 번짐 · 종이 알갱이(사진의 밝은 알갱이가 잉크를 밀어냄) · 가장자리 미세 흐림(사진이 흐린 만큼) · 손떨림 · 캔은 원통 휨. 면 데이터는 각 자리 아래 「면 데이터」.</p>
+  <h2 class="sec">펜 글씨 폰트 <small>B 에만 — A 는 지금 게임(나눔손글씨 펜)</small></h2>
+  <div class="chips" id="fontChips"></div>
+  <p class="note" id="fontNote"></p>
+  <div class="err" id="err"></div>
+  <div id="spots"></div>
+  <h2 class="sec">폰트 · 라이선스</h2>
+  <table class="t">
+    <tr><th>폰트</th><th>만든 곳</th><th>라이선스 · 출처</th></tr>
+    <tr><td>나눔손글씨 펜 (Nanum Pen Script)</td><td>NHN · 산돌커뮤니케이션</td><td>SIL OFL 1.1 — github.com/google/fonts/tree/main/ofl/nanumpenscript · 예약 이름 「Nanum」(고쳐 쓰면 이름을 바꿔야 함)</td></tr>
+    <tr><td>개구 (Gaegu)</td><td>JIKJI SOFT</td><td>SIL OFL 1.1 — github.com/google/fonts/tree/main/ofl/gaegu</td></tr>
+    <tr><td>하이멜로디 (Hi Melody)</td><td>YoonDesign</td><td>SIL OFL 1.1 — github.com/google/fonts/tree/main/ofl/himelody</td></tr>
+  </table>
+  <p class="note">인쇄 글(규칙서 · 전단 · 캔)은 A·B 모두 게임과 같은 기기 글꼴. 1장 일지의 사진은 1장 그림이 아직 없어 대합실 앞사람 수첩 확대(zoom_notebook_open)를, 벽 낙서는 대합실 ② 매점 창 오른쪽 벽(라디오 옆)을 빌렸다.</p>
+</div>
+
+<div id="viewer">
+  <div class="vbar"><b id="vTitle"></b><button class="btn sm" id="vZoom">×2</button><button class="btn sm" id="vClose">닫기</button></div>
+  <div class="vscroll" id="vScroll"><canvas id="vA"></canvas><canvas id="vB" style="display:none"></canvas></div>
+  <div class="vfoot"><span class="which" id="vWhich">A 지금</span><button class="btn" id="vSwap" style="flex:1">A ⇄ B 바꾸기</button></div>
+</div>
+
+<script src="ink.js"></script>
+<script src="texts.js"></script>
+<script>
+(function(){
+'use strict';
+var L = window.InkLab, SURF = null;
+var $ = function(id){ return document.getElementById(id); };
+var store = { get: function(){ try { return JSON.parse(localStorage.getItem('lab_s1') || '{}'); } catch (e) { return {}; } }, set: function(o){ try { localStorage.setItem('lab_s1', JSON.stringify(o)); } catch (e) {} } };
+var CH = store.get(); CH.ink = CH.ink || {};
+var Q = new URLSearchParams(location.search);
+var fontChoice = Q.get('font') || CH.font || 'nanum';
+var scratch = document.createElement('canvas').getContext('2d');
+
+// ── 글(정본은 게임 TEXT — 여기는 옮겨 적은 것) ──
+var LOG = LabText.LOG, RULES = LabText.RULES;   // texts.js(정본은 게임 TEXT · 06S)
+var PEN_A = { blue: '#1d3c8c', pencil: '#5a5d60', black: '#101214' };
+var CLUE_PAGES = [[[0.2133, 0.3462], [0.4375, 0.2692], [0.5367, 0.7375], [0.3023, 0.7952]], [[0.4375, 0.2692], [0.6773, 0.1923], [0.7813, 0.6279], [0.5367, 0.7375]]];   // index.html CLUES.notebook.pages(prod2)
+var ALLTEXT = [].concat(LOG.blue, LOG.wet, LOG.pencil, LOG.black, [RULES.h1, RULES.lead, RULES.h3, RULES.foot], RULES.r, ['…를 찾습니다', '1994. __. __', '아직 찾습니다', '본부는 없다 있다', '2월 ○일', '0123456789']).join(' ');
+
+function fam(pen){ return L.penFamily(pen, fontChoice); }
+function sizeFor(family, inkHeight, weight){ return inkHeight / L.inkH(family, weight); }   // 「가」 높이가 inkHeight 가 되는 글자 크기
+
+// ── 자리별 B 글 배치(면 px) ──
+// 일지 — 두 쪽이 같은 글씨 크기 · 같은 줄 간격(둘 다 들어가는 가장 큰 크기). 두 칸에 한 줄이 안 되면 한 칸에 한 줄.
+function logBuild(side, sw, sh, every, hf){
+  var S = SURF['a02.log.' + side], rule = S.rule, pitch = rule.pitch * sh, N = Math.floor((1 - rule.top) / rule.pitch + 1e-6), R = L.rng(side === 'left' ? 11 : 23);
+  var groups = side === 'left' ? [{ pen: 'blue' }, { pen: 'wet', tight: true }] : [{ pen: 'pencil' }, { pen: 'black' }];
+  var x0 = 0.07 * sw, maxW = 0.87 * sw, ops = [], r = 1, ok = true;
+  groups.forEach(function(g, gi){
+    if (gi && !g.tight) r += every;
+    var wet = g.pen === 'wet', family = wet ? L.PEN_FONTS.nanum.family : fam(g.pen), weight = wet ? 700 : 400;
+    var ev = wet && every === 1 ? 2 : every, hfw = wet && every === 1 ? 0.42 : hf;   // 촘촘한 판(한 칸 한 줄)에서도 굵은 글씨는 두 칸
+    var size = sizeFor(family, hfw * pitch * ev * (wet ? 1.1 : 1), weight);
+    LOG[g.pen].forEach(function(line){
+      L.wrapW(scratch, line, family, size, weight, maxW - (wet ? 0.04 * sw : 0)).forEach(function(w, wi){
+        r += ev; var y = (rule.top + r * rule.pitch) * sh - 0.1 * pitch;
+        if (r > N - 0.5) ok = false;
+        var op = { t: w, x: x0 + (wi ? 0 : (R() - 0.3) * 0.02 * sw), y: y, size: size, family: family, weight: weight, ink: g.pen, jit: wet ? 0.35 : 0.55 };
+        if (wet){ op.stroke = 0.022; op.x -= 0.01 * sw; op.y += 0.15 * pitch; var tw = L.measure(scratch, op); op.drips = [0.18, 0.55, 0.83].map(function(f){ return { x: op.x + tw * (f + (R() - 0.5) * 0.06), y: op.y + 0.04 * size, len: (0.35 + R() * 0.45) * size, w: 0.07 * size }; }).slice(0, wi ? 1 : 3); }
+        ops.push(op);
+      });
+    });
+  });
+  return ok ? ops : null;
+}
+var logPlans = {};
+function logPlan(){   // 크기 고르기는 배율과 무관(글 크기 · 폭이 모두 쪽 크기에 비례) — 사진 px 크기로 한 번 정한다
+  if (logPlans[fontChoice]) return logPlans[fontChoice];
+  var dims = ['left', 'right'].map(function(sd){ var Q = SURF['a02.log.' + sd].quad.map(function(p){ return [p[0] * 1280, p[1] * 1040]; }), d = function(a, b){ return Math.hypot(a[0] - b[0], a[1] - b[1]); }; return [sd, (d(Q[0], Q[1]) + d(Q[3], Q[2])) / 2 * 2, (d(Q[0], Q[3]) + d(Q[1], Q[2])) / 2 * 2]; });
+  var fits = function(every, hf){ return dims.every(function(x){ return !!logBuild(x[0], x[1], x[2], every, hf); }); }, hf;
+  for (hf = 0.62; hf >= 0.4; hf -= 0.02) if (fits(2, hf)) return (logPlans[fontChoice] = { every: 2, hf: hf });
+  for (hf = 0.7; hf >= 0.5; hf -= 0.02) if (fits(1, hf)) return (logPlans[fontChoice] = { every: 1, hf: hf });
+  return (logPlans[fontChoice] = { every: 1, hf: 0.5 });
+}
+function logOps(side){
+  return function(sw, sh){ var p = logPlan(), ops = null; for (var k = 0; k < 6 && !ops; k++) ops = logBuild(side, sw, sh, p.every, p.hf - k * 0.015); return { ops: ops || [], pad: 0.1 }; };
+}
+var rulesOps = LabText.rulesOps;
+function flyerOps(side){
+  return function(sw, sh){
+    if (side === 'back'){   // 떨리는 손글씨 두 줄(A 와 같은 줄 나눔)
+      var family = fam('black'), size = sizeFor(family, 0.085 * sh), ops = [{ t: '아직', y: 0.43 * sh }, { t: '찾습니다', y: 0.43 * sh + size * 1.25 }].map(function(o){ return { t: o.t, x: sw / 2, y: o.y, size: size, family: family, align: 'center', ink: 'black', color: [50, 54, 62], rot: -2, jit: 1.4 }; });
+      var w = L.measure(scratch, ops[1]); if (w > 0.82 * sw) ops.forEach(function(o){ o.size *= 0.82 * sw / w; });
+      return { ops: ops, pad: 0.06 };
+    }
+    var t1 = { t: '…를 찾습니다', x: sw / 2, y: 0.62 * sh, size: 100, family: L.SANS, weight: 700, align: 'center', ink: 'copy' };
+    t1.size = Math.min(0.105 * sh, 100 * 0.82 * sw / L.measure(scratch, t1));
+    var t2 = { t: '1994. __. __', x: sw / 2, y: 0.785 * sh, size: t1.size * 0.62, family: L.SANS, weight: 400, align: 'center', ink: 'copy', color: [86, 82, 76] };
+    return { ops: [t1, t2], pad: 0.05 };
+  };
+}
+function wallFamily(){ return fontChoice === 'person' ? L.PEN_FONTS.nanum.family : L.PEN_FONTS[fontChoice].family; }
+function wallLayout(sw, sh){   // A · B 같은 자리: 「본부는 없다」 한 줄 · 「있다」는 「없다」 위에
+  var family = wallFamily(), probe = { t: '본부는 없다', size: 100, family: family }, size = 100 * 0.8 * sw / L.measure(scratch, probe);
+  var x0 = 0.1 * sw, y = 0.64 * sh, a = { t: '본부는 ', x: x0, y: y, size: size, family: family }, wA = L.measure(scratch, { t: '본부는 ', size: size, family: family }) + scratch.measureText(' ').width * 0;
+  return { family: family, size: size, x0: x0, y: y, xNo: x0 + L.measure(scratch, { t: '본부는', size: size, family: family }) + 0.3 * size };
+}
+function wallOps(sw, sh){
+  var w = wallLayout(sw, sh), R = L.rng(5);
+  var ops = [{ t: '본부는', x: w.x0, y: w.y, size: w.size, family: w.family, ink: 'wallpen', jit: 0.6 }, { t: '없다', x: w.xNo, y: w.y + 0.02 * w.size, size: w.size, family: w.family, ink: 'wallpen', jit: 0.6 }];
+  var wf = L.PEN_FONTS.nanum.family, wNo = L.measure(scratch, { t: '없다', size: w.size, family: w.family }), ws = 100 * 1.0 * wNo / L.measure(scratch, { t: '있다', size: 100, family: wf, weight: 700 });
+  var yes = { t: '있다', x: w.xNo - 0.08 * wNo, y: w.y - 0.82 * L.inkH(w.family) * w.size, size: ws, family: wf, weight: 700, stroke: 0.03, ink: 'wet', rot: -4, jit: 0.3 };
+  var tw = L.measure(scratch, yes);
+  yes.drips = [0.2, 0.52, 0.86].map(function(f){ return { x: yes.x + tw * f, y: yes.y + 0.02 * ws, len: (0.55 + R() * 0.6) * ws, w: 0.07 * ws }; });
+  ops.push(yes);
+  return { ops: ops, pad: 0.3 };
+}
+function canOps(sw, sh){
+  var o = { t: '2월 ○일', x: sw / 2, y: 0, size: 100, family: L.SANS, weight: 700, align: 'center', ink: 'inkjet' };
+  o.size = Math.min(0.56 * sh, 100 * 0.7 * sw / L.measure(scratch, o)); o.y = sh / 2 + o.size * 0.34; o.color = [8, 8, 10];   // 스티커 안 한 줄 · 어두운 잉크
+  return { ops: [o], pad: 0.08 };
+}
+
+// ── 자리별 A(지금 게임 코드) ──
+function quadAffine(ctx, view, quad, sw, sh){   // 면 px → 화면(평행사변형 — 정면 사진용)
+  var p0 = view.P(quad[0]), p1 = view.P(quad[1]), p3 = view.P(quad[3]);
+  ctx.setTransform((p1[0] - p0[0]) / sw, (p1[1] - p0[1]) / sw, (p3[0] - p0[0]) / sh, (p3[1] - p0[1]) / sh, p0[0], p0[1]);
+}
+function surfSize(view, id){ var Q = SURF[id].quad.map(function(p){ return [p[0] * view.imgW, p[1] * view.imgH]; }); var d = function(a, b){ return Math.hypot(a[0] - b[0], a[1] - b[1]); }; return [(d(Q[0], Q[1]) + d(Q[3], Q[2])) / 2, (d(Q[0], Q[3]) + d(Q[1], Q[2])) / 2]; }
+function flatOps(ctx, view, id, built){
+  var sz = surfSize(view, id);
+  ctx.save(); quadAffine(ctx, view, SURF[id].quad, sz[0], sz[1]);
+  built.ops.forEach(function(op){ ctx.fillStyle = op.color ? 'rgb(' + op.color.join(',') + ')' : '#14161A'; L.drawOp(ctx, op, null); });
+  ctx.restore();
+}
+function A_log(ctx, view){   // index.html notebookPages: 쪽 100×140 단위 · 9.2 · 줄 11.6 · 88 에서 줄바꿈(.82) · 펜 색 · 연필 .86 + 1장 굵은 글씨(.wetink)
+  var rows = function(lines, pen){ var out = []; lines.forEach(function(l){ L.gWrapT(l, 9.2, 88, 0.82).forEach(function(w){ out.push({ t: w, pen: pen }); }); }); return out; };
+  var cols = [rows(LOG.blue, 'blue').concat(rows(LOG.wet, 'wet')), rows(LOG.pencil, 'pencil').concat([null], rows(LOG.black, 'black'))];
+  cols.forEach(function(col, ci){
+    var q = CLUE_PAGES[ci], p0 = view.P(q[0]), p1 = view.P(q[1]), p3 = view.P(q[3]), a = (p1[0] - p0[0]) / 100, b = (p1[1] - p0[1]) / 100, c = (p3[0] - p0[0]) / 140, d = (p3[1] - p0[1]) / 140;
+    ctx.save(); ctx.setTransform(a, b, c, d, p0[0], p0[1]);
+    col.forEach(function(r, i){
+      if (!r) return; var y = 12 + i * 11.6;
+      if (r.pen === 'wet') L.gWetInk(ctx, r.t, 6, y, 9.2, Math.hypot(a, b));
+      else { ctx.font = '9.2px ' + L.PEN_FONTS.nanum.family; ctx.fillStyle = PEN_A[r.pen]; ctx.globalAlpha = r.pen === 'pencil' ? 0.86 : 1; ctx.fillText(r.t, 6, y); ctx.globalAlpha = 1; }
+    });
+    ctx.restore();
+  });
+}
+function A_wall(ctx, view){   // index.html .gwall: 볼펜 #2b3550 · 「없다」 .55 · 「있다」 = .wetink 1.1em · 왼 −.1em · 위 −.55em · −4°
+  var id = 'a02.graffiti', sz = surfSize(view, id), w = wallLayout(sz[0], sz[1]);
+  ctx.save(); quadAffine(ctx, view, SURF[id].quad, sz[0], sz[1]);
+  var nanum = L.PEN_FONTS.nanum.family, size = w.size * L.inkH(w.family) / L.inkH(nanum), sc = Math.hypot(view.P(SURF[id].quad[1])[0] - view.P(SURF[id].quad[0])[0], view.P(SURF[id].quad[1])[1] - view.P(SURF[id].quad[0])[1]) / sz[0];
+  ctx.font = size + 'px ' + nanum; ctx.fillStyle = '#2b3550';
+  ctx.fillText('본부는 ', w.x0, w.y); var xNo = w.x0 + ctx.measureText('본부는 ').width;
+  ctx.globalAlpha = 0.55; ctx.fillText('없다', xNo, w.y); ctx.globalAlpha = 1;
+  ctx.translate(xNo - 0.1 * size, w.y - 0.55 * size); ctx.rotate(-4 * Math.PI / 180);
+  L.gWetInk(ctx, '있다', 0, 0, size * 1.1, sc);
+  ctx.restore();
+}
+var VIEWS = { can: [0.4609, 0.5981, 0.5352, 0.6519], flyerFront: [0.2969, 0.5, 0.7031, 0.8269], flyerBack: [0.2969, 0.1923, 0.7031, 0.8077] };   // room01_assets.json views
+
+// ── 자리 다섯 ──
+var SPOTS = [
+  { id: 'log', title: '① 1장 일지 — 펼친 두 쪽', sub: '왼쪽 파란 펜 셋 + 그 아래 끼워 넣은 굵은 글씨 · 오른쪽 연필 · 검은 펜. B 는 공책 줄에 바탕선을 맞춘다(두 칸에 한 줄).',
+    img: function(){ return 'p2/zoom_notebook_open.webp'; }, crop: [230, 175, 800, 670], surfaces: ['a02.log.left', 'a02.log.right'],
+    A: A_log, B: { 'a02.log.left': logOps('left'), 'a02.log.right': logOps('right') } },
+  { id: 'rules', title: '② 서장 규칙서 종이', sub: '첫 차 대기 안내 · 규칙 1~6. 가운데 접힌 자국을 B 는 따라 밀고, 그늘을 따른다.',
+    img: function(){ return 'paper_base.webp'; }, crop: [0, 0, 1129, 1600], surfaces: ['prologue.rules'],
+    A: function(ctx, view){ var sz = surfSize(view, 'prologue.rules'); flatOps(ctx, view, 'prologue.rules', rulesOps(sz[0], sz[1])); }, B: { 'prologue.rules': rulesOps } },
+  { id: 'flyer', title: '③ 게시판 전단', sub: '오래된 전단 — 앞(복사한 인쇄 「…를 찾습니다」) · 뒤(떨리는 손글씨 「아직 찾습니다」).', sides: ['front', 'back'], sideNames: { front: '앞', back: '뒤' },
+    img: function(s){ return s === 'back' ? 'p2/zoom_flyerOld_back.webp' : 'p2/zoom_flyerOld_front.webp'; }, crop: [300, 70, 690, 900],
+    surfacesOf: function(s){ return ['prologue.flyer.' + s]; },
+    A: function(ctx, view, s){ if (s === 'back'){ L.gFitText(ctx, view, '아직 찾습니다', L.boxOf(VIEWS.flyerBack), { pen: true, fill: '#3b3f44', max: 40, rot: -2 }); return; }
+      var T = L.boxOf(VIEWS.flyerFront); L.gFitText(ctx, view, '…를 찾습니다', [T[0], T[1], T[2], T[3] * 0.5], { fill: '#3a3a38', max: 22 }); L.gFitText(ctx, view, '1994. __. __', [T[0], T[1] + T[3] * 0.5, T[2], T[3] * 0.4], { fill: '#5a5650', max: 18 }); },
+    B: { 'prologue.flyer.front': flyerOps('front'), 'prologue.flyer.back': flyerOps('back') } },
+  { id: 'wall', title: '④ 무전기 옆 벽 낙서', sub: '볼펜 「본부는 없다」 · 「없다」 위에 겹친 굵은 글씨 「있다」(번진 잉크 — 일지의 끼워 넣은 줄과 같은 손). 벽이라 B 의 번진 자국은 아래로 흐른다.',
+    img: function(){ return 'f1_base.webp'; }, crop: [590, 800, 380, 300], surfaces: ['a02.graffiti'],
+    A: A_wall, B: { 'a02.graffiti': wallOps } },
+  { id: 'can', title: '⑤ 캔 유통기한', sub: '반환구 캔의 흰 스티커 「2월 ○일」. A 는 지금 게임(밝은 글 · 기울임 없음). B 는 잉크젯 점 인쇄 + 원통 휨.',
+    img: function(){ return 'p2/zoom_vend_can.webp'; }, crop: [440, 420, 480, 330], surfaces: ['prologue.can'],
+    A: function(ctx, view){ L.gFitText(ctx, view, '2월 ○일', L.boxOf(VIEWS.can), { fill: '#f0ebe0', max: 18, weight: '600' }); }, B: { 'prologue.can': canOps } }
+];
+SPOTS.forEach(function(s){ s.side = s.sides ? s.sides[0] : null; });
+function surfacesOf(spot){ return spot.surfacesOf ? spot.surfacesOf(spot.side) : spot.surfaces; }
+
+// ── 그리기 ──
+async function render(spot, cA, cB, cssW, which){
+  var dpr = Math.min(window.devicePixelRatio || 1, 3), W = Math.round(cssW * dpr), H = Math.round(W * spot.crop[3] / spot.crop[2]);
+  var im = await L.loadImg(spot.img(spot.side));
+  var view = L.makeView(W, H, spot.crop, im.naturalWidth, im.naturalHeight);
+  if (cA && which !== 'B'){
+    cA.width = W; cA.height = H; cA.style.width = cssW + 'px';
+    var a = cA.getContext('2d'); L.drawPhoto(a, im, view, spot.crop); spot.A(a, view, spot.side);
+  }
+  if (cB && which !== 'A'){
+    cB.width = W; cB.height = H; cB.style.width = cssW + 'px';
+    var b = cB.getContext('2d', { willReadFrequently: true }); L.drawPhoto(b, im, view, spot.crop);
+    var photo = b.getImageData(0, 0, W, H), an = L.analyze(photo, W, H, view.k);
+    surfacesOf(spot).forEach(function(id, i){ L.placeB(photo, an, view, SURF[id], spot.B[id], { seed: 7 + i * 13 }); });
+    b.putImageData(photo, 0, 0);
+  }
+}
+function paneW(el){ return Math.max(200, Math.floor(el.getBoundingClientRect().width)); }
+var cards = {};
+function buildCards(){
+  var host = $('spots');
+  SPOTS.forEach(function(s){
+    var c = document.createElement('div'); c.className = 'card'; c.id = 'spot-' + s.id;
+    c.innerHTML = '<h3>' + s.title + '</h3><p class="sub">' + s.sub + '</p>' +
+      (s.sides ? '<div class="chips side">' + s.sides.map(function(sd){ return '<button class="chip' + (sd === s.side ? ' on' : '') + '" data-side="' + sd + '">' + s.sideNames[sd] + '</button>'; }).join('') + '</div>' : '') +
+      '<div class="pair"><div class="pane pA"><canvas></canvas><span class="tag">A 지금</span><span class="busy">그리는 중…</span></div><div class="pane pB"><canvas></canvas><span class="tag b">B 새 방식</span><span class="busy">그리는 중…</span></div></div>' +
+      '<div class="pick"><span>고르기</span>' + ['A', 'B', '둘 다 아님'].map(function(k){ return '<button class="chip' + (CH.ink[s.id] === k ? ' on' : '') + '" data-pick="' + k + '">' + k + '</button>'; }).join('') + '</div>' +
+      '<details class="data"><summary>면 데이터(S1 이 그대로 씀)</summary><pre></pre></details>';
+    host.appendChild(c);
+    cards[s.id] = { el: c, cA: c.querySelector('.pA canvas'), cB: c.querySelector('.pB canvas') };
+    c.querySelectorAll('.pane').forEach(function(p){ p.addEventListener('click', function(){ openViewer(s, p.classList.contains('pB') ? 'B' : 'A'); }); });
+    c.querySelectorAll('[data-pick]').forEach(function(b){ b.addEventListener('click', function(){ CH.ink[s.id] = b.dataset.pick; store.set(CH); c.querySelectorAll('[data-pick]').forEach(function(x){ x.classList.toggle('on', x === b); }); }); });
+    c.querySelectorAll('[data-side]').forEach(function(b){ b.addEventListener('click', function(){ s.side = b.dataset.side; c.querySelectorAll('[data-side]').forEach(function(x){ x.classList.toggle('on', x === b); }); fillData(s); drawSpot(s); }); });
+    fillData(s);
+  });
+}
+function fillData(s){ var o = {}; surfacesOf(s).forEach(function(id){ o[id] = SURF[id]; }); cards[s.id].el.querySelector('pre').textContent = JSON.stringify(o, null, 1).replace(/\n\s+(-?[\d.]+),?\n\s+(-?[\d.]+)\n\s+\]/g, ' $1, $2 ]'); }
+async function drawSpot(s, which){
+  var c = cards[s.id]; c.el.querySelectorAll('.busy').forEach(function(b){ b.style.display = 'flex'; });
+  await new Promise(function(r){ setTimeout(r, 16); });
+  try { await render(s, c.cA, c.cB, paneW(c.el.querySelector('.pane')), which); }
+  catch (e){ showErr(e); }
+  c.el.querySelectorAll('.busy').forEach(function(b){ b.style.display = 'none'; });
+}
+function showErr(e){ var el = $('err'); el.classList.add('on'); el.textContent = '그리지 못함: ' + (e && e.message || e) + (location.protocol === 'file:' ? ' — 파일로 열면 사진 픽셀을 읽지 못한다. 로컬 서버(node proto/lab/serve.js)로 열 것.' : ''); console.error(e); }
+
+// ── 펜 폰트 ──
+function buildFonts(){
+  var opts = [['nanum', '나눔손글씨 펜'], ['gaegu', '개구'], ['melody', '하이멜로디'], ['person', '사람마다 다르게']];
+  $('fontChips').innerHTML = opts.map(function(o){ return '<button class="chip' + (o[0] === fontChoice ? ' on' : '') + '" data-font="' + o[0] + '">' + o[1] + '</button>'; }).join('');
+  $('fontChips').querySelectorAll('[data-font]').forEach(function(b){ b.addEventListener('click', async function(){
+    fontChoice = b.dataset.font; CH.font = fontChoice; store.set(CH);
+    $('fontChips').querySelectorAll('[data-font]').forEach(function(x){ x.classList.toggle('on', x === b); }); fontNote();
+    for (var i = 0; i < SPOTS.length; i++) if (SPOTS[i].id !== 'rules' && SPOTS[i].id !== 'can') await drawSpot(SPOTS[i], 'B');
+  }); });
+  fontNote();
+}
+function fontNote(){ $('fontNote').textContent = fontChoice === 'person' ? '사람마다: 파란 펜 = 나눔손글씨 펜 · 연필 = 개구 · 검은 펜 = 하이멜로디. 굵은 글씨 · 「있다」는 늘 나눔손글씨 펜 굵게(지금 게임과 같은 손).' : '세 펜이 같은 폰트(지금 게임과 같음 — 색과 성질만 다름). 굵은 글씨 · 「있다」는 늘 나눔손글씨 펜 굵게.'; }
+
+// ── 크게 보기 ──
+var vSpot = null, vWhich = 'A', vZoom = 1;
+async function openViewer(s, which){
+  vSpot = s; vWhich = which; $('viewer').classList.add('on'); $('vTitle').textContent = s.title + (s.sides ? ' · ' + s.sideNames[s.side] : ''); document.body.style.overflow = 'hidden';
+  await drawViewer();
+}
+async function drawViewer(){
+  var w = Math.floor(window.innerWidth * vZoom); $('vZoom').textContent = vZoom === 1 ? '×2' : '×1';
+  await render(vSpot, $('vA'), $('vB'), w); showWhich();
+}
+function showWhich(){ $('vA').style.display = vWhich === 'A' ? 'block' : 'none'; $('vB').style.display = vWhich === 'B' ? 'block' : 'none'; $('vWhich').textContent = vWhich === 'A' ? 'A 지금' : 'B 새 방식'; $('vWhich').classList.toggle('b', vWhich === 'B'); }
+$('vSwap').addEventListener('click', function(){ vWhich = vWhich === 'A' ? 'B' : 'A'; showWhich(); });
+$('vZoom').addEventListener('click', function(){ vZoom = vZoom === 1 ? 2 : 1; drawViewer(); });
+$('vClose').addEventListener('click', function(){ $('viewer').classList.remove('on'); document.body.style.overflow = ''; vSpot = null; });
+
+// ── 시작 ──
+async function start(){
+  try {
+    SURF = (await (await fetch('surfaces.json', { cache: 'no-cache' })).json()).surfaces;
+  } catch (e){ showErr(new Error('surfaces.json 을 못 읽음 — 로컬 서버로 열 것')); return; }
+  buildFonts(); buildCards();
+  await L.fontsReady([L.PEN_FONTS.nanum.family, L.PEN_FONTS.gaegu.family, L.PEN_FONTS.melody.family], ALLTEXT);
+  for (var i = 0; i < SPOTS.length; i++) await drawSpot(SPOTS[i]);
+  document.documentElement.dataset.ready = '1';
+  var lastW = window.innerWidth;
+  window.addEventListener('resize', function(){ if (window.__noResize) return; if (Math.abs(window.innerWidth - lastW) < 40) return; lastW = window.innerWidth; SPOTS.forEach(function(s){ drawSpot(s); }); });
+}
+window.__ink = { SPOTS: SPOTS, drawSpot: drawSpot, openViewer: openViewer, setFont: function(f){ fontChoice = f; } };
+start();
+})();
+</script>
+</body>
+</html>

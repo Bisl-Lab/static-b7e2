@@ -1,0 +1,317 @@
+{
+  "_note": "S1-lab 글자 얹기 면(surface) — 2026-10-02. 한 면 = { img, quad, blend, grain, bleed, warp }. S1 이 Ink.place(slotId, el, surface) 의 surface 로 그대로 쓴다. 글(무엇을 쓰나)은 여기 없다 — 게임 TEXT 가 정본. 좌표는 그 사진의 비율(0~1, 기존 views · clues 와 같은 꼴).",
+  "_schema": {
+    "img": "room01/img 아래 사진(확대 조각 1280×1040 · 면 1080×1920 · 종이 1129×1600)",
+    "quad": "글이 놓이는 네 꼭짓점 [왼위, 오른위, 오른아래, 왼아래] — 사진 비율. 원근(호모그래피)으로 편다",
+    "blend": "{ mode: multiply(밝은 면 위 어두운 잉크) | normal | screen(어두운 면 위 밝은 글), follow: 0~1 사진 밝기 따르기(1 = 잉크색을 종이 평균색으로 나눠 곱함 — 그늘진 곳은 글도 그늘), opacity }",
+    "grain": "{ amount: 잉크 빠짐(종이 결) 0~1, scale: 결 크기(사진 px), photo: 사진의 밝은 알갱이가 잉크를 밀어내는 정도 0~1, press: 펜 눌림 흔들림 0~1, specks: 복사기 토너 점(선택), dots: 잉크젯 점 인쇄(선택) }",
+    "bleed": "{ px: 잉크 번짐 반경(사진 px), wet: 젖은 잉크(굵은 글씨 · 「있다」) 번짐 배수 — 0 이면 없음 }",
+    "warp": "{ kind: flat | cylinder, soft: 가장자리 흐림(사진 px — 사진이 흐린 만큼), disp: 사진 기복(접힌 자국)을 따라 미는 정도(사진 px), cylinder 면 dir(v) · from · to(보는 방향에서 잰 각도, 도) }"
+  },
+  "surfaces": {
+    "a02.log.left": {
+      "img": "p2/zoom_notebook_open.webp",
+      "quad": [
+        [
+          0.2133,
+          0.3462
+        ],
+        [
+          0.4375,
+          0.2692
+        ],
+        [
+          0.5367,
+          0.7375
+        ],
+        [
+          0.3023,
+          0.7952
+        ]
+      ],
+      "blend": {
+        "mode": "multiply",
+        "follow": 0.9,
+        "opacity": 0.94
+      },
+      "grain": {
+        "amount": 0.3,
+        "scale": 1.1,
+        "photo": 0.55,
+        "press": 0.3
+      },
+      "bleed": {
+        "px": 0.45,
+        "wet": 1
+      },
+      "warp": {
+        "kind": "flat",
+        "soft": 0.55,
+        "disp": 0
+      },
+      "rule": {
+        "top": 0.072,
+        "pitch": 0.0374,
+        "every": 2,
+        "_": "줄 친 공책 — 첫 줄 위치 · 줄 간격(쪽 높이 비율). every 2 = 두 칸에 글 한 줄(읽힘 우선)"
+      }
+    },
+    "a02.log.right": {
+      "img": "p2/zoom_notebook_open.webp",
+      "quad": [
+        [
+          0.4375,
+          0.2692
+        ],
+        [
+          0.6773,
+          0.1923
+        ],
+        [
+          0.7813,
+          0.6279
+        ],
+        [
+          0.5367,
+          0.7375
+        ]
+      ],
+      "blend": {
+        "mode": "multiply",
+        "follow": 0.9,
+        "opacity": 0.94
+      },
+      "grain": {
+        "amount": 0.3,
+        "scale": 1.1,
+        "photo": 0.55,
+        "press": 0.3
+      },
+      "bleed": {
+        "px": 0.45,
+        "wet": 1
+      },
+      "warp": {
+        "kind": "flat",
+        "soft": 0.55,
+        "disp": 0
+      },
+      "rule": {
+        "top": 0.075,
+        "pitch": 0.0374,
+        "every": 2
+      }
+    },
+    "prologue.rules": {
+      "img": "paper_base.webp",
+      "quad": [
+        [
+          0.085,
+          0.07
+        ],
+        [
+          0.915,
+          0.07
+        ],
+        [
+          0.915,
+          0.94
+        ],
+        [
+          0.085,
+          0.94
+        ]
+      ],
+      "blend": {
+        "mode": "multiply",
+        "follow": 0.9,
+        "opacity": 0.93
+      },
+      "grain": {
+        "amount": 0.16,
+        "scale": 0.9,
+        "photo": 0.4,
+        "press": 0.08
+      },
+      "bleed": {
+        "px": 0.35,
+        "wet": 0
+      },
+      "warp": {
+        "kind": "flat",
+        "soft": 0.45,
+        "disp": 2.2
+      }
+    },
+    "prologue.flyer.front": {
+      "img": "p2/zoom_flyerOld_front.webp",
+      "quad": [
+        [
+          0.2852,
+          0.1442
+        ],
+        [
+          0.7305,
+          0.1462
+        ],
+        [
+          0.7328,
+          0.8798
+        ],
+        [
+          0.2906,
+          0.8779
+        ]
+      ],
+      "blend": {
+        "mode": "multiply",
+        "follow": 0.85,
+        "opacity": 0.84
+      },
+      "grain": {
+        "amount": 0.42,
+        "scale": 1.4,
+        "photo": 0.8,
+        "press": 0.18,
+        "specks": 0.5
+      },
+      "bleed": {
+        "px": 0.6,
+        "wet": 0
+      },
+      "warp": {
+        "kind": "flat",
+        "soft": 0.8,
+        "disp": 0.6
+      }
+    },
+    "prologue.flyer.back": {
+      "img": "p2/zoom_flyerOld_back.webp",
+      "quad": [
+        [
+          0.2617,
+          0.101
+        ],
+        [
+          0.7383,
+          0.099
+        ],
+        [
+          0.7422,
+          0.9087
+        ],
+        [
+          0.2641,
+          0.9115
+        ]
+      ],
+      "blend": {
+        "mode": "multiply",
+        "follow": 0.9,
+        "opacity": 0.86
+      },
+      "grain": {
+        "amount": 0.35,
+        "scale": 1.2,
+        "photo": 0.7,
+        "press": 0.35
+      },
+      "bleed": {
+        "px": 0.5,
+        "wet": 0
+      },
+      "warp": {
+        "kind": "flat",
+        "soft": 0.8,
+        "disp": 0.4
+      }
+    },
+    "a02.graffiti": {
+      "img": "f1_base.webp",
+      "quad": [
+        [
+          0.6963,
+          0.4688
+        ],
+        [
+          0.875,
+          0.4688
+        ],
+        [
+          0.875,
+          0.5417
+        ],
+        [
+          0.6963,
+          0.5417
+        ]
+      ],
+      "blend": {
+        "mode": "multiply",
+        "follow": 0.95,
+        "opacity": 0.9
+      },
+      "grain": {
+        "amount": 0.5,
+        "scale": 1.6,
+        "photo": 0.9,
+        "press": 0.4
+      },
+      "bleed": {
+        "px": 0.45,
+        "wet": 1.2
+      },
+      "warp": {
+        "kind": "flat",
+        "soft": 1,
+        "disp": 0
+      },
+      "_img": "1장 그림이 아직 없어 대합실 ② 매점 창 오른쪽 벽(라디오 옆)을 빌렸다"
+    },
+    "prologue.can": {
+      "img": "p2/zoom_vend_can.webp",
+      "quad": [
+        [
+          0.4619,
+          0.619
+        ],
+        [
+          0.5346,
+          0.5969
+        ],
+        [
+          0.5273,
+          0.6262
+        ],
+        [
+          0.4555,
+          0.6526
+        ]
+      ],
+      "blend": {
+        "mode": "multiply",
+        "follow": 0.55,
+        "opacity": 1
+      },
+      "grain": {
+        "amount": 0.05,
+        "scale": 0.6,
+        "photo": 0.2,
+        "press": 0,
+        "dots": 1
+      },
+      "bleed": {
+        "px": 0.25,
+        "wet": 0
+      },
+      "warp": {
+        "kind": "cylinder",
+        "dir": "v",
+        "from": 18,
+        "to": 72,
+        "soft": 0.6,
+        "disp": 0
+      }
+    }
+  }
+}

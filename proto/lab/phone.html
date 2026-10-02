@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>폰 화면 시험</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="lab.css">
+<link rel="icon" href="data:,">
+<style>
+.phone{position:relative;width:100%;max-width:380px;margin:0 auto;aspect-ratio:9/18.5;max-height:720px;border-radius:26px;overflow:hidden;background:#000;border:1px solid #222;user-select:none;-webkit-user-select:none}
+.phone canvas.ph{position:absolute;left:0;width:100%;height:auto}
+/* 잠금화면 */
+.lock .time{position:absolute;left:0;right:0;top:9%;text-align:center;font-size:64px;font-weight:200;letter-spacing:.02em;color:#eef0ee;text-shadow:0 1px 8px rgba(0,0,0,.5);font-variant-numeric:tabular-nums}
+.lock .bat{position:absolute;left:0;right:0;top:calc(9% + 78px);text-align:center;font-size:14px;color:#c9ccc8;letter-spacing:.06em}
+.lock .bat i{display:inline-block;width:20px;height:10px;border:1.5px solid #c9ccc8;border-radius:2px;margin-left:6px;vertical-align:-1px;position:relative}
+.lock .bat i:before{content:"";position:absolute;left:1px;top:1px;bottom:1px;width:41%;background:#c9ccc8}
+.lock .bat i:after{content:"";position:absolute;right:-4px;top:2px;width:2px;height:4px;background:#c9ccc8;border-radius:1px}
+.lock .wid{position:absolute;left:0;right:0;bottom:7%;display:flex;gap:14px;justify-content:center;align-items:flex-end}
+.lock .wid button{width:72px;height:72px;border-radius:18px;border:1px solid rgba(255,255,255,.18);background:rgba(28,32,34,.72);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);color:#e8e2d6;font:inherit;font-size:13px}
+.lock .wid button.gear{width:36px;height:36px;border-radius:18px;font-size:16px;margin-left:18px}
+.lock .wid button:disabled{opacity:.45}
+/* 메모 위젯(전체 화면, 제목 없이 구분선만 — 06-UI_폰 §4-1) */
+.memo{position:absolute;inset:0;background:#0d0f10;color:#e8e2d6;display:none;flex-direction:column;z-index:5}
+.memo.on{display:flex}
+.memo .x{position:absolute;right:12px;top:12px;width:34px;height:34px;border-radius:17px;border:1px solid #33403f;background:#131919;color:#cfc8ba;font-size:16px}
+.memo .body{flex:1;overflow-y:auto;padding:56px 16px 20px}
+.memo hr{border:0;border-top:1px solid #253030;margin:18px 0}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.cell{aspect-ratio:1;border-radius:8px;border:1px solid #232b2b;background:#111516;display:flex;align-items:center;justify-content:center;text-align:center;font-size:12.5px;line-height:1.25;padding:4px;color:#e8e2d6}
+.cell.whole{background:#191f20;border-color:#3b4a48}
+.cell.blur{background:#141819;border-color:#2c3433;color:rgba(232,226,214,.55);filter:blur(.55px)}
+.cell.empty{background:transparent;border-style:dashed;border-color:#1d2424}
+.cell.tap{cursor:pointer}
+.frag{margin:10px 0 0;padding:10px 12px;border-radius:8px;background:#151a1b;font-size:13.5px;line-height:1.7;white-space:pre-line;display:none}
+.frag.on{display:block}
+.rec{display:flex;align-items:baseline;gap:10px;padding:9px 4px;border-bottom:1px solid #1b2222;font-size:14px}
+.rec b{font-weight:500;flex:1}
+.rec span{font-size:11.5px;color:var(--dim)}
+.slips{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+.slip{position:relative;min-width:92px;padding:10px 12px 8px;background:#e9e1cc;color:#8b8577;font-family:"Nanum Pen Script",cursive;font-size:21px;box-shadow:0 3px 8px rgba(0,0,0,.45);clip-path:polygon(0 4%,8% 0,22% 3%,40% 0,61% 2%,80% 0,100% 3%,98% 52%,100% 97%,78% 100%,55% 97%,33% 100%,12% 97%,0 100%,2% 50%)}
+.slip:nth-child(1){transform:rotate(-3deg)}.slip:nth-child(2){transform:rotate(2deg)}.slip:nth-child(3){transform:rotate(-1deg)}
+.ends{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.ends .cell{aspect-ratio:2.2}
+.cap{font-size:11px;color:#5f6866;margin:6px 0 0}
+/* 죽음 흐름 */
+.dstage .lay{position:absolute;inset:0;display:none}
+.dstage .lay.on{display:block}
+.dstage .line{position:absolute;left:24px;right:24px;top:42%;font-size:16px;line-height:1.75;color:#e8e2d6}
+.dstage .sys{position:absolute;left:18px;right:18px;top:12%;font-size:13px;line-height:1.7;color:#cfc8ba}
+.dstage .sys .h{color:#e8e2d6;font-size:14px;margin-bottom:10px}
+.dstage .sys .r{border-left:2px solid #6a4a2a;padding-left:10px;margin:8px 0}
+.dstage .sys .ev{color:#a9a397;font-size:12.5px}
+.dstage .sys .ev div{margin:3px 0}
+.dstage .tapnext{position:absolute;left:0;right:0;bottom:6%;text-align:center;font-size:11px;color:#6f7775}
+.dstage .wear{position:absolute;left:20px;right:20px;bottom:18%;text-align:center;font-size:15px;color:#e8e2d6;opacity:0;transition:opacity .4s}
+.dstage .wear.on{opacity:1}
+.dstage canvas.full{position:absolute;inset:0;width:100%;height:100%}
+.steps{display:flex;gap:4px;margin:8px 0;flex-wrap:wrap}
+.steps span{font-size:11px;padding:2px 8px;border-radius:10px;border:1px solid #26302f;color:#6f7775}
+.steps span.on{color:#ffd9a8;border-color:var(--sodium)}
+</style>
+</head>
+<body>
+<header class="top"><div class="row"><h1>폰 — 잠금화면 · 메모 · 죽음 흐름</h1><a class="back" href="index.html">목록</a></div></header>
+<div class="wrap">
+  <div class="err" id="err"></div>
+  <h2 class="sec">① 잠금화면 <small>03:47 고정 · 배터리 41% · 사진 = 화면 폭</small></h2>
+  <p class="note">사진은 지금 채택본(TASK_18 뒷모습 — 마루에 앉은 두 사람)을 임시로. 긁힘은 옆 사람 머리 자리 → 어깨 → 옆 사람 전체. 「메모」를 누르면 ② 가 열린다.</p>
+  <div class="chips" id="stChips"></div>
+  <div class="chips" id="gChips"><button class="chip on" data-g="m">형</button><button class="chip" data-g="f">언니</button></div>
+  <div class="phone lock" id="lock">
+    <canvas class="ph" id="lockPh"></canvas>
+    <div class="time">03:47</div><div class="bat">41%<i></i></div>
+    <div class="wid"><button id="bMemo">메모</button><button disabled>지도</button><button class="gear" disabled>⚙</button></div>
+    <div class="memo" id="memo"><button class="x" id="memoX">✕</button><div class="body" id="memoBody"></div></div>
+  </div>
+  <div class="pick" data-key="lock"><span>잠금화면 고르기</span><button class="chip" data-pick="ok">좋음</button><button class="chip" data-pick="fix">고칠 것 있음</button></div>
+
+  <h2 class="sec">② 메모 위젯 <small>기억(조각 16칸) · 기록(남은 기록 + 쪽지) · 끝 — 제목 없이 구분선만</small></h2>
+  <div class="chips" id="msChips"><button class="chip on" data-ms="c1">1장 뒤</button><button class="chip" data-ms="c6">6장 뒤 예시</button><button class="chip" id="openMemo">메모 열기</button></div>
+  <p class="note">조각: 얻은 칸 = 제목만(누르면 글) · 흐린 칸 = 흐린 제목(03 §5 — 제목이 지워진 조각은 「…」) · 빈 칸 = 이름도 번호도 없음. 기록: 지명 · 찾았는지. 쪽지: 반찬 이름 한 줄짜리 손글씨 종이 — <b>글 자리만</b>(글은 아직 없다). 끝: 본 엔딩만 제목.</p>
+  <div class="pick" data-key="memo"><span>메모 고르기</span><button class="chip" data-pick="ok">좋음</button><button class="chip" data-pick="fix">고칠 것 있음</button></div>
+
+  <h2 class="sec">③ 죽음 화면 흐름 <small>1장 죽음 (a) V1 로 시연</small></h2>
+  <div class="chips" id="dvChips"><button class="chip on" data-dv="pre">6장 전</button><button class="chip" data-dv="post">6장 뒤</button><button class="chip" id="dPlay">재생</button></div>
+  <div class="steps" id="steps"><span>장면 한 줄</span><span>설명</span><span>사진 닳음 0.6초</span><span>물속 1초</span><span>03:47 벽시계</span></div>
+  <div class="phone dstage" id="dst">
+    <div class="lay" id="dScene"><div class="line" id="dLine"></div></div>
+    <div class="lay" id="dSys"><div class="sys" id="dSysT"></div><div class="tapnext">누르면 넘어간다</div></div>
+    <div class="lay" id="dWear"><canvas class="ph" id="wearPh"></canvas><div class="wear" id="dWearT"></div></div>
+    <div class="lay" id="dWater"><canvas class="full" id="waterCv"></canvas></div>
+    <div class="lay" id="dClock"><canvas class="full" id="clockCv"></canvas></div>
+    <div class="lay on" id="dIdle"><div class="line" style="text-align:center;color:#6f7775;font-size:13px">「재생」을 누른다</div></div>
+  </div>
+  <p class="note">장면 한 줄(2.6초, 누르면 넘김) → 설명(놓친 것 · 따른 가짜 · 근거 두 줄 — 누를 때까지) → 사진 긁힘이 한 단계 번짐 0.6초 + 「사진이 조금 더 닳았다.」(6장 뒤: 「동생은 오늘도 아무것도 찾지 못했다.」) → 물속 1초(검은 물 · 위로 떠오름 · 물소리 · death 진동) → 03:47 벽시계(그 공간의 처음). 번진 긁힘은 ① 잠금화면에 남는다.</p>
+  <div class="pick" data-key="death"><span>죽음 흐름 고르기</span><button class="chip" data-pick="ok">좋음</button><button class="chip" data-pick="fix">고칠 것 있음</button></div>
+</div>
+<script src="ink.js"></script>
+<script>
+(function(){
+'use strict';
+var L = window.InkLab, $ = function(id){ return document.getElementById(id); };
+var store = { get: function(){ try { return JSON.parse(localStorage.getItem('lab_s1') || '{}'); } catch (e) { return {}; } }, set: function(o){ try { localStorage.setItem('lab_s1', JSON.stringify(o)); } catch (e) {} } };
+var CH = store.get(); CH.phone = CH.phone || {};
+function vib(p){ if (navigator.userActivation && !navigator.userActivation.hasBeenActive) return; try { if (navigator.vibrate) navigator.vibrate(p); } catch (e) {} }
+var HAPTIC = { death: [60, 40, 180] };   // haptic.html 짧은 판
+var SND = {}; function snd(path, vol){ try { var a = SND[path] || (SND[path] = new Audio('../room01/audio/' + path)); a.currentTime = 0; a.volume = vol == null ? 1 : vol; var p = a.play(); if (p && p.catch) p.catch(function(){}); } catch (e) {} }
+
+// ── 사진(뒷모습 · 긁힘 0~3) ──
+var G = 'm', stage = 0, PH = {};
+function phSrc(g, s){ return 'img/photo_' + g + (s ? '_b' + s : '') + '.webp'; }
+function loadPh(g){ var list = [0, 1, 2, 3].map(function(s){ return new Promise(function(res, rej){ var im = new Image(); im.onload = function(){ res(im); }; im.onerror = function(){ rej(new Error('사진을 못 받음: ' + phSrc(g, s))); }; im.src = phSrc(g, s); }); }); return Promise.all(list).then(function(a){ PH[g] = a; }); }
+function fitPh(cv, host){   // 화면 폭 · 가운데(06-UI_폰 §3 — 사진은 화면 폭)
+  var w = host.getBoundingClientRect().width, h = host.getBoundingClientRect().height, dpr = Math.min(window.devicePixelRatio || 1, 2.5), ih = w * 842 / 1082;
+  cv.width = Math.round(w * dpr); cv.height = Math.round(ih * dpr); cv.style.top = ((h - ih) / 2) + 'px'; return cv;
+}
+function drawLock(){ var cv = fitPh($('lockPh'), $('lock')), c = cv.getContext('2d'); c.drawImage(PH[G][stage], 0, 0, cv.width, cv.height); }
+var ST_NAMES = ['처음', '1 머리 자리', '2 어깨', '3 옆 사람 전체'];
+function stChips(){ $('stChips').innerHTML = ST_NAMES.map(function(n, i){ return '<button class="chip' + (i === stage ? ' on' : '') + '" data-st="' + i + '">' + n + '</button>'; }).join(''); $('stChips').querySelectorAll('[data-st]').forEach(function(b){ b.addEventListener('click', function(){ stage = +b.dataset.st; stChips(); drawLock(); }); }); }
+document.querySelectorAll('[data-g]').forEach(function(b){ b.addEventListener('click', async function(){ G = b.dataset.g; document.querySelectorAll('[data-g]').forEach(function(x){ x.classList.toggle('on', x === b); }); if (!PH[G]) await loadPh(G); prepSpread(); drawLock(); }); });
+
+// ── 메모 ──
+var FR = [   // 03_기억조각목록 — 제목(얻은 칸) · 흐린 제목(§5, 지워진 제목은 「…」) · 글(시험용 — 정본은 07 본문)
+  ['전단지', '전단지', '전봇대에 종이를 붙인다. 겨울이라 테이프가 잘 안 붙는다. 사진 속 얼굴은 뭉개져 있어서 누구인지 보이지 않는다.'],
+  ['강가', '강가', '하류를 걷는다.\n…\n…\n…\n놓는다.\n다시 걷는다.'],
+  ['밤의 대합실', '밤의 대합실', '세 시쯤 대합실에 앉아 있다. 형광등 하나가 죽어간다. 첫 차를 기다리는 게 아니다. 핸드폰을 본다. 03:47이 지나간다. 그냥 앉아 있는 것이다.'],
+  ['"이제 그만"', '…', '…\n누군가 어깨에 손을 얹는다.\n…\n고개를 끄덕인다.\n손이 떠난다.\n…'],
+  ['지갑 속 사진', '지갑 속 사진', '지갑을 열 때마다 사진이 있다. 모서리가 닳았다. 한쪽 머리 자리가 긁혀 있다. 어제보다 조금 넓다. 긁힌 쪽이 누구인지는 보지 않는다. 돈을 세고 닫는다.'],
+  ['마루', '마루', '마루에 둘이 앉아 있다.\n…\n찍는다.\n…\n…\n날짜는 모른다.'],
+  ['호칭', '…', '나는 대답하지 않는다.\n…\n…\n…\n말한 적은 없다.']
+];
+var MS = {   // 시험 상태 — 칸 번호 = 조각 번호(빈 칸은 이름 없이)
+  c1: { frag: { 1: 'whole', 2: 'blur' }, recs: [['저수지', '찾았다'], ['안전초소', '기록은 여기서 끊겨 있다'], ['의자 틈 종이', '아직 안 읽음']], slips: 1, ends: [] },
+  c6: { frag: { 1: 'whole', 2: 'blur', 3: 'whole', 4: 'blur', 5: 'whole', 6: 'whole', 7: 'blur' }, recs: [['저수지', '찾았다'], ['안전초소', '찾았다'], ['호실', '기록은 여기서 끊겨 있다'], ['편의점', '아직 안 읽음']], slips: 3, ends: [] }
+};
+var ms = 'c1';
+function renderMemo(){
+  var S = MS[ms], h = '<div class="grid">';
+  for (var i = 1; i <= 16; i++){ var st = S.frag[i], f = FR[i - 1]; h += st ? '<div class="cell tap ' + st + '" data-f="' + i + '">' + (st === 'blur' ? f[1] : f[0]) + '</div>' : '<div class="cell empty"></div>'; }
+  h += '</div><div class="frag" id="fragT"></div><hr>';
+  h += S.recs.map(function(r){ return '<div class="rec"><b>' + r[0] + '</b><span>' + r[1] + '</span></div>'; }).join('');
+  h += '<div class="slips">'; for (var k = 0; k < S.slips; k++) h += '<div class="slip">( 반찬 이름 )</div>'; h += '</div><p class="cap">쪽지 — 글 자리(글은 아직 없음)</p><hr>';
+  h += '<div class="ends"><div class="cell empty"></div><div class="cell empty"></div><div class="cell empty"></div></div>';
+  $('memoBody').innerHTML = h;
+  $('memoBody').querySelectorAll('[data-f]').forEach(function(c){ c.addEventListener('click', function(){ var i = +c.dataset.f, st = MS[ms].frag[i], t = $('fragT'); t.textContent = st === 'blur' ? FR[i - 1][2].split('\n').map(function(l, j){ return l; }).join('\n') : FR[i - 1][2]; t.classList.add('on'); }); });
+}
+function openMemo(){ renderMemo(); $('memo').classList.add('on'); $('lock').scrollIntoView({ block: 'center' }); }
+$('bMemo').addEventListener('click', openMemo); $('openMemo').addEventListener('click', openMemo);
+$('memoX').addEventListener('click', function(){ $('memo').classList.remove('on'); });
+document.querySelectorAll('[data-ms]').forEach(function(b){ b.addEventListener('click', function(){ ms = b.dataset.ms; document.querySelectorAll('[data-ms]').forEach(function(x){ x.classList.toggle('on', x === b); }); renderMemo(); }); });
+
+// ── 죽음 흐름 ──
+var DV = 'pre', DEATH = {   // 06S-A02 §5 · §5.1 (a) V1
+  line: '물이 내 무릎까지 찼을 때 무전이 「승인. 개방하라.」고 했다.',
+  head: '수문관리소 · 바늘이 기준선을 넘은 뒤 본부 승인을 기다렸다',
+  missed: '놓친 것: 기준선을 넘은 바늘',
+  rule: '따른 가짜 규칙: 규칙 2 — "본부 승인 없이 개방하지 않는다." 무전이 한 말과 같은 줄이다. 규칙 1은 "수위가 기준선을 넘을 때만, 즉시 개방한다."였다.',
+  evid: ['무전기: 「본부 채널 — 운영 종료. 수문 조작은 현장 판단.」', '근무 일지: 「본부 승인 수신 후 개방 완료. 이상 없음.」(굵은 글씨 · 파란 펜 줄 아래에 끼워 넣은 줄)'],
+  tail: '물이 무릎까지 찼을 때 승인이 왔다'
+};
+var WEAR = { pre: '사진이 조금 더 닳았다.', post: '동생은 오늘도 아무것도 찾지 못했다.' };
+document.querySelectorAll('[data-dv]').forEach(function(b){ b.addEventListener('click', function(){ DV = b.dataset.dv; document.querySelectorAll('[data-dv]').forEach(function(x){ x.classList.toggle('on', x === b); }); }); });
+function show(id){ ['dIdle', 'dScene', 'dSys', 'dWear', 'dWater', 'dClock'].forEach(function(k){ $(k).classList.toggle('on', k === id); }); var idx = ['dScene', 'dSys', 'dWear', 'dWater', 'dClock'].indexOf(id); document.querySelectorAll('#steps span').forEach(function(s, i){ s.classList.toggle('on', i === idx); }); }
+function waitTap(ms){ return new Promise(function(res){ var done = false, t = ms ? setTimeout(fin, ms) : null; function fin(){ if (done) return; done = true; clearTimeout(t); $('dst').removeEventListener('pointerdown', fin); res(); } setTimeout(function(){ $('dst').addEventListener('pointerdown', fin); }, 250); window.__phoneNext = fin; }); }
+function sleep(ms){ return new Promise(function(r){ setTimeout(r, ms); }); }
+var running = false;
+async function play(){
+  if (running) return; running = true; if (!PH[G]) await loadPh(G);
+  show('dScene'); $('dLine').textContent = DEATH.line; await waitTap(2600);
+  $('dSysT').innerHTML = '<div class="h">' + DEATH.head + '</div><div>' + DEATH.missed + '</div><div class="r">' + DEATH.rule + '</div><div class="ev">' + DEATH.evid.map(function(e){ return '<div>' + e + '</div>'; }).join('') + '</div><div style="margin-top:10px">' + DEATH.tail + '</div>';
+  show('dSys'); await waitTap(0);
+  show('dWear'); $('dWearT').textContent = WEAR[DV]; $('dWearT').classList.remove('on');
+  await spread(); $('dWearT').classList.add('on'); await sleep(1700);
+  show('dWater'); snd('death/coldwater.m4a', 0.9); vib(HAPTIC.death); await water(1000);
+  show('dClock'); drawClock(); await sleep(2200);
+  show('dIdle'); running = false; stChips(); drawLock();
+}
+$('dPlay').addEventListener('click', play);
+// 긁힘 번짐 0.6초 — 이번 단계 → 다음 단계. 달라진 자리의 무게중심에서 바깥으로(잡음 섞어) 번진다
+var SPREAD = {};
+function prepSpread(){
+  if (SPREAD[G]) return; var lw = 270, lh = 210, c = document.createElement('canvas'); c.width = lw; c.height = lh; var x = c.getContext('2d', { willReadFrequently: true }), out = [], R = L.rng(4), nz = L.vnoise(lw, lh, 9, R);
+  for (var s = 0; s < 3; s++){
+    x.drawImage(PH[G][s], 0, 0, lw, lh); var a = x.getImageData(0, 0, lw, lh).data; x.drawImage(PH[G][s + 1], 0, 0, lw, lh); var b = x.getImageData(0, 0, lw, lh).data;
+    var D = new Float32Array(lw * lh), sx = 0, sy = 0, n = 0, i;
+    for (i = 0; i < lw * lh; i++){ var d = Math.abs(a[i * 4] - b[i * 4]) + Math.abs(a[i * 4 + 1] - b[i * 4 + 1]) + Math.abs(a[i * 4 + 2] - b[i * 4 + 2]); D[i] = d; if (d > 40){ sx += i % lw; sy += (i / lw) | 0; n++; } }
+    var cx = n ? sx / n : lw / 2, cy = n ? sy / n : lh / 2, T = new Float32Array(lw * lh), mx = 1;
+    for (i = 0; i < lw * lh; i++){ var dx = i % lw - cx, dy = ((i / lw) | 0) - cy; T[i] = Math.sqrt(dx * dx + dy * dy); if (D[i] > 40) mx = Math.max(mx, T[i]); }
+    for (i = 0; i < lw * lh; i++) T[i] = T[i] / mx * 0.8 + nz[i] * 0.2;
+    out.push(T);
+  }
+  SPREAD[G] = { lw: lw, lh: lh, T: out };
+}
+function spread(){
+  return new Promise(function(res){
+    var cv = fitPh($('wearPh'), $('dst')), c = cv.getContext('2d'), s = stage, P = PH[G];
+    if (s >= 3){ c.drawImage(P[3], 0, 0, cv.width, cv.height); res(); return; }
+    var S = SPREAD[G], mk = document.createElement('canvas'); mk.width = S.lw; mk.height = S.lh; var mx = mk.getContext('2d'), md = mx.createImageData(S.lw, S.lh), T = S.T[s];
+    var tmp = document.createElement('canvas'); tmp.width = cv.width; tmp.height = cv.height; var tx = tmp.getContext('2d'), t0 = performance.now();
+    snd('sfx/scratch.m4a', 0.7);
+    (function step(now){
+      var p = Math.min(1, (now - t0) / 600);
+      for (var i = 0; i < T.length; i++){ var v = (p * 1.12 - T[i]) / 0.08; md.data[i * 4 + 3] = v <= 0 ? 0 : v >= 1 ? 255 : v * 255; }
+      mx.putImageData(md, 0, 0);
+      c.drawImage(P[s], 0, 0, cv.width, cv.height);
+      tx.globalCompositeOperation = 'source-over'; tx.clearRect(0, 0, tmp.width, tmp.height); tx.drawImage(P[s + 1], 0, 0, tmp.width, tmp.height);
+      tx.globalCompositeOperation = 'destination-in'; tx.drawImage(mk, 0, 0, tmp.width, tmp.height); c.drawImage(tmp, 0, 0);
+      if (p < 1) requestAnimationFrame(step); else { stage = s + 1; res(); }
+    })(t0);
+  });
+}
+// 물속 1초 — 검은 물, 위로 떠오르는 알갱이 · 위쪽이 차츰 밝아짐
+function water(ms){
+  return new Promise(function(res){
+    var cv = $('waterCv'), r = $('dst').getBoundingClientRect(), dpr = Math.min(window.devicePixelRatio || 1, 2); cv.width = Math.round(r.width * dpr); cv.height = Math.round(r.height * dpr);
+    var c = cv.getContext('2d'), W = cv.width, H = cv.height, R = L.rng(77), parts = [];
+    for (var i = 0; i < 90; i++) parts.push({ x: R() * W, y: H * (0.3 + R() * 0.9), r: (0.6 + R() * 2.4) * dpr, v: (0.25 + R() * 0.75) * H, a: 0.15 + R() * 0.45 });
+    var t0 = performance.now();
+    (function step(now){
+      var t = Math.min(1, (now - t0) / ms), g = c.createLinearGradient(0, 0, 0, H);
+      g.addColorStop(0, 'rgba(' + Math.round(24 + 30 * t) + ',' + Math.round(38 + 40 * t) + ',' + Math.round(44 + 44 * t) + ',1)'); g.addColorStop(0.35, '#05090b'); g.addColorStop(1, '#010203');
+      c.fillStyle = g; c.fillRect(0, 0, W, H);
+      c.globalAlpha = 0.18 + 0.25 * t; for (var k = 0; k < 5; k++){ c.fillStyle = 'rgba(160,190,190,.12)'; c.beginPath(); var x0 = W * (0.15 + k * 0.18) + Math.sin(now / 300 + k) * W * 0.03; c.moveTo(x0, 0); c.lineTo(x0 + W * 0.06, 0); c.lineTo(x0 + W * 0.14, H * 0.55); c.lineTo(x0 + W * 0.02, H * 0.55); c.fill(); } c.globalAlpha = 1;
+      parts.forEach(function(p){ var y = p.y - p.v * t, wob = Math.sin((now / 140) + p.x) * 2 * dpr; c.fillStyle = 'rgba(190,215,212,' + p.a + ')'; c.beginPath(); c.arc(p.x + wob, y, p.r, 0, Math.PI * 2); c.fill(); });
+      if (t < 1) requestAnimationFrame(step); else res();
+    })(t0);
+  });
+}
+// 03:47 벽시계 — 바퀴 사이 시계 조각(tick.clock) + 코드 바늘
+var clockIm = null;
+function drawClock(){
+  var cv = $('clockCv'), r = $('dst').getBoundingClientRect(), dpr = Math.min(window.devicePixelRatio || 1, 2.5); cv.width = Math.round(r.width * dpr); cv.height = Math.round(r.height * dpr);
+  var c = cv.getContext('2d'), W = cv.width, H = cv.height; c.fillStyle = '#000'; c.fillRect(0, 0, W, H);
+  if (!clockIm) return;
+  var s = Math.max(W / 1280, H / 1040) * 1.0, iw = 1280 * s, ih = 1040 * s, ox = (W - iw) / 2, oy = (H - ih) / 2;
+  c.drawImage(clockIm, ox, oy, iw, ih);
+  var cx = ox + 640 * s, cy = oy + 520 * s, rn = 175 * s;   // room01_assets.json ticks.clock — c [160,130] · rn 43.75(320 단위)
+  var hand = function(ang, len, w){ c.save(); c.translate(cx, cy); c.rotate(ang * Math.PI / 180); c.fillStyle = '#14161A'; c.shadowColor = 'rgba(0,0,0,.35)'; c.shadowBlur = 3 * dpr; c.shadowOffsetY = 1.5 * dpr; c.beginPath(); c.moveTo(-w / 2, len * 0.12); c.lineTo(-w * 0.35, -len); c.lineTo(w * 0.35, -len); c.lineTo(w / 2, len * 0.12); c.fill(); c.restore(); };
+  hand((3 + 47 / 60) * 30, rn * 0.55, rn * 0.075); hand(47 * 6, rn * 0.86, rn * 0.05);
+  c.fillStyle = '#14161A'; c.beginPath(); c.arc(cx, cy, rn * 0.05, 0, Math.PI * 2); c.fill();
+}
+// ── 고르기 ──
+document.querySelectorAll('.pick[data-key]').forEach(function(p){ var key = p.dataset.key; p.querySelectorAll('[data-pick]').forEach(function(b){ if (CH.phone[key] === b.dataset.pick) b.classList.add('on'); b.addEventListener('click', function(){ CH.phone[key] = b.dataset.pick; store.set(CH); p.querySelectorAll('[data-pick]').forEach(function(x){ x.classList.toggle('on', x === b); }); }); }); });
+window.__phone = { stage: function(s){ stage = s; stChips(); drawLock(); }, memo: function(m){ ms = m; document.querySelectorAll('[data-ms]').forEach(function(x){ x.classList.toggle('on', x.dataset.ms === m); }); openMemo(); }, frag: function(i){ var c = document.querySelector('[data-f="' + i + '"]'); if (c) c.click(); }, closeMemo: function(){ $('memo').classList.remove('on'); }, variant: function(v){ DV = v; }, play: play, next: function(){ if (window.__phoneNext) window.__phoneNext(); }, pause: function(on){ window.__pausePhone = on; } };
+stChips();
+Promise.all([loadPh('m'), new Promise(function(res){ clockIm = new Image(); clockIm.onload = res; clockIm.onerror = res; clockIm.src = '../room01/img/p2/between_clock_wide.webp'; }), document.fonts.load('400 20px "Nanum Pen Script"', '반찬 이름')])
+  .then(function(){ prepSpread(); drawLock(); document.documentElement.dataset.ready = '1'; })
+  .catch(function(e){ var el = $('err'); el.classList.add('on'); el.textContent = '그리지 못함: ' + e.message; document.documentElement.dataset.ready = '1'; });
+window.addEventListener('resize', function(){ if (PH[G]) drawLock(); });
+})();
+</script>
+</body>
+</html>

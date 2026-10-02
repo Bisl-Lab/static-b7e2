@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>종이 · 수첩 시험</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Hi+Melody&family=Nanum+Pen+Script&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="lab.css">
+<link rel="icon" href="data:,">
+<style>
+.room{position:relative;height:600px;border-radius:10px;overflow:hidden;background:#050607;user-select:none;-webkit-user-select:none}
+.room .bgimg{position:absolute;inset:0;background:url(../room01/img/f3_base.webp) center/cover;filter:brightness(.55)}
+.room .layer{position:absolute;left:0;right:0;top:0;bottom:64px;overflow:hidden;perspective:1400px}
+.room .bar{position:absolute;left:0;right:0;bottom:0;height:64px;z-index:5;background:#0b0d0f;border-top:1px solid #182020;display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:9px 10px}
+.room .bar button{position:relative;border-radius:10px;border:1px solid #4a3d2e;background:#16130f;color:#e3d6c0;font:inherit;font-size:14px}
+.room .bar button.new:after{content:"";position:absolute;right:8px;top:8px;width:7px;height:7px;border-radius:4px;background:var(--sodium)}
+/* 종이 */
+.sheet{position:absolute;display:none;touch-action:none;will-change:transform;border-radius:2px}
+.sheet.on{display:block}
+.sheet .inner{position:absolute;inset:0;transform-style:preserve-3d}
+.sheet .face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:2px;overflow:hidden}
+.sheet .face canvas{display:block;width:100%;height:100%}
+.sheet .face.back{transform:rotateY(180deg)}
+.sheet .face .shade{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none}
+.sheet .edge{position:absolute;top:0;bottom:0;left:50%;width:3px;margin-left:-1.5px;background:linear-gradient(90deg,#b9b4a6,#e8e3d6 50%,#9e998c);transform:rotateY(90deg)}
+.sheet .sheen{position:absolute;inset:0;pointer-events:none;mix-blend-mode:screen;opacity:.0;background:linear-gradient(112deg,rgba(255,255,255,0) 38%,rgba(255,255,255,.34) 47%,rgba(255,255,255,.08) 53%,rgba(255,255,255,0) 62%);background-size:300% 100%;background-position:120% 0}
+.sheet.coat .sheen{opacity:1}
+.room .pacts{position:absolute;left:0;right:0;bottom:72px;z-index:4;display:none;justify-content:center;gap:8px}
+.room .pacts.on{display:flex}
+.room .pacts button{min-height:36px;border-radius:18px;border:1px dashed #5a5246;background:rgba(10,12,13,.75);color:#d8cdb8;font:inherit;font-size:13px;padding:4px 14px}
+/* 수첩 공통 */
+.nb{position:absolute;left:0;right:0;top:0;bottom:64px;z-index:3;display:none;flex-direction:column}
+.nb.on{display:flex}
+.nb .tabs{display:flex;gap:4px;padding:10px 12px 0}
+.nb .x{margin-left:auto}
+/* 판 A — 종이 수첩 */
+.nbA{background:#d9d0bb url(../room01/img/paper_base.webp) center/cover;color:#22282c;box-shadow:0 -10px 30px rgba(0,0,0,.6)}
+.nbA:before{content:"";position:absolute;inset:0;background:rgba(214,203,178,.55);mix-blend-mode:multiply;pointer-events:none}
+.nbA .tabs button{position:relative;font-family:"Nanum Pen Script",cursive;font-size:21px;border:0;border-radius:6px 6px 0 0;padding:2px 12px 0;background:#c9bc9b;color:#3b3a33;box-shadow:inset 0 -3px 4px rgba(0,0,0,.12)}
+.nbA .tabs button.on{background:#efe6d0;color:#1d2a52}
+.nbA .tabs .x{font-family:inherit;font-size:13px;background:transparent;box-shadow:none;color:#5d5a50}
+.nbA .body{position:relative;flex:1;overflow-y:auto;padding:6px 16px 20px 46px;background-image:repeating-linear-gradient(transparent 0 25px,rgba(70,100,140,.28) 25px 26px);background-position:0 8px;line-height:26px;font-family:"Nanum Pen Script",cursive;font-size:20px;border-left:1px solid rgba(170,60,50,.35);margin-left:0}
+.nbA .body:before{content:"";position:absolute;left:36px;top:0;bottom:0;width:1px;background:rgba(170,60,50,.45)}
+.nbA h5{margin:0;font-weight:400;font-size:15px;letter-spacing:.06em;color:#6a5a3a;line-height:26px;font-family:-apple-system,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif}
+.nbA h5 b{font-weight:700}
+.nbA .ln{position:relative;min-height:26px}
+.nbA .ln .k{position:absolute;left:-32px;width:26px;text-align:right;color:#7a6a4a;font-size:17px}
+.nbA .ln.blank{color:rgba(60,60,60,.35)}
+.nbA .ln.blue{color:#1d3c8c}.nbA .ln.pencil{color:#5a5d60}.nbA .ln.black{color:#101214}
+.nbA .ln.wet{color:#122040;font-weight:700;text-shadow:0 1px 2px rgba(30,56,108,.45)}
+.nbA .ln.sus{color:#3a3a38}.nbA .ln.sus span{text-decoration:line-through;text-decoration-color:rgba(176,30,20,.9);text-decoration-thickness:2px}
+.nbA .ln.new .t{display:inline-block;animation:writeIn .7s steps(14) both}
+.nbA .ln.new .k:after{content:"새";position:absolute;left:-2px;top:-12px;font-size:13px;color:#b0281e;animation:fadeNew 4.5s forwards}
+@keyframes writeIn{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+@keyframes fadeNew{0%,70%{opacity:1}100%{opacity:0}}
+/* 판 B — 카드식 */
+.nbB{background:#0d1012;color:var(--paper);box-shadow:0 -10px 30px rgba(0,0,0,.6)}
+.nbB .tabs button{height:30px;padding:0 12px;border-radius:15px;border:1px solid #3a4645;background:transparent;color:var(--dim);font:inherit;font-size:13px}
+.nbB .tabs button.on{color:var(--paper);border-color:var(--sodium)}
+.nbB .body{flex:1;overflow-y:auto;padding:4px 12px 16px}
+.nbB .slot{margin:12px 0 0}
+.nbB .slot h6{margin:0 0 6px;font-size:10.5px;letter-spacing:.16em;color:var(--dim);font-weight:600;display:flex;justify-content:space-between}
+.nbB .row{position:relative;display:grid;grid-template-columns:22px 1fr;gap:6px;padding:6px 8px;border-radius:6px;background:rgba(255,255,255,.035);margin:0 0 4px;font-size:13.5px;line-height:1.45}
+.nbB .row .k{color:#c9a46a;font-weight:700;font-size:12px;padding-top:1px}
+.nbB .row small{display:block;color:var(--dim);font-size:10.5px;letter-spacing:.05em}
+.nbB .row.blank{background:transparent;border:1px dashed #263030;color:#4f5856}
+.nbB .row.pen{background:#e3ddcf;font-family:"Nanum Pen Script",cursive;font-size:19px;line-height:1.2;color:#0d0f11}
+.nbB .row.pen small{font-family:-apple-system,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif;color:#6b665d}
+.nbB .row.pen.blue{color:#1d3c8c}.nbB .row.pen.pencil{color:#5a5d60}.nbB .row.pen.wet{color:#122040;font-weight:700}
+.nbB .row.sus .t{text-decoration:line-through;text-decoration-color:rgba(214,60,44,.9);text-decoration-thickness:2px}
+.nbB .row.new{box-shadow:inset 3px 0 0 var(--sodium)}
+.nbB .row.new:after{content:"새";position:absolute;right:8px;top:6px;font-size:10px;font-family:-apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;color:#1a1208;background:var(--sodium);border-radius:8px;padding:0 6px;animation:fadeNew 4.5s forwards}
+/* 사물 반응 */
+.obj{position:relative;border-radius:10px;overflow:hidden;background:#000;touch-action:manipulation}
+.obj img{display:block;width:100%}
+.obj .hs{position:absolute;overflow:hidden;cursor:pointer}
+.obj .hs img{position:absolute;max-width:none}
+.obj .hs.press{animation:press .22s ease-out}
+@keyframes press{0%{filter:brightness(1)}25%{filter:brightness(.78) contrast(1.06);transform:translateY(1px)}100%{filter:brightness(1);transform:none}}
+.obj .glow{position:absolute;width:160px;height:160px;margin:-80px 0 0 -80px;border-radius:50%;pointer-events:none;mix-blend-mode:screen;background:radial-gradient(circle,rgba(255,236,200,.75),rgba(255,220,170,.28) 40%,rgba(255,210,160,0) 70%);animation:glow .5s ease-out forwards}
+@keyframes glow{0%{opacity:0;transform:scale(.5)}20%{opacity:1}100%{opacity:0;transform:scale(1.15)}}
+.obj .lbl{position:absolute;left:8px;bottom:8px;font-size:12px;background:rgba(0,0,0,.7);padding:3px 9px;border-radius:10px;opacity:0;transition:opacity .2s}
+.obj .lbl.on{opacity:1}
+</style>
+</head>
+<body>
+<header class="top"><div class="row"><h1>종이 · 수첩 · 사물 반응</h1><a class="back" href="index.html">목록</a></div></header>
+<div class="wrap">
+  <p class="lead">아래 막대의 <b>[종이]</b> · <b>[수첩]</b>을 누른다 — 게임 화면처럼. 종이는 옆으로 끌면 뒤집힌다.</p>
+  <div class="err" id="err"></div>
+  <h2 class="sec">규칙서 <small>꺼내기 · 넣기 · 뒤집기</small></h2>
+  <div class="chips"><button class="chip on" data-pm="new">새: 주머니에서 꺼냄</button><button class="chip" data-pm="old">지금: 그냥 열림</button><button class="chip on" id="coatChip">코팅 반사 켬</button></div>
+  <p class="note" id="pmNote"></p>
+  <div class="room" id="room">
+    <div class="bgimg"></div>
+    <div class="layer" id="layer">
+      <div class="sheet" id="sheet"><div class="inner" id="inner"><div class="face front"><canvas id="cvF"></canvas><div class="shade"></div></div><div class="face back"><canvas id="cvBk"></canvas><div class="shade"></div></div><div class="edge"></div></div><div class="sheen" id="sheen"></div></div>
+    </div>
+    <div class="pacts" id="pacts"><button id="bFlip">뒤집기</button><button id="bPut">넣기</button></div>
+    <div class="nb" id="nb"></div>
+    <div class="bar"><button id="bPaper">종이</button><button id="bNote">수첩</button></div>
+  </div>
+  <div class="pick" data-key="paper"><span>규칙서 고르기</span><button class="chip" data-pick="new">새</button><button class="chip" data-pick="old">지금</button></div>
+  <h2 class="sec">수첩 <small>판 A 종이 수첩 · 판 B 카드식 — 06S-A02 §3.3 · §3.4 실제 데이터</small></h2>
+  <div class="chips"><button class="chip on" data-nbs="A">A 종이 수첩</button><button class="chip" data-nbs="B">B 카드식</button><button class="chip" id="bWrite">새로 적기(시험)</button></div>
+  <p class="note">고정 구조: 공간 탭 × 칸 넷(방의 사실 A~E 고정 순서 · 앞사람 흔적 펜 고정 순서 · 의심한 줄 · 본 죽음). 아직 못 읽은 자리는 비워 둔다(이름은 안 보인다 — 어디를 볼지 알려 주지 않게). 새로 적힌 것만 잠깐 「새」. 「새로 적기」 = 다음 것 하나를 적는다(confirm 진동 + 연필 소리). 판 A 대합실 「본 죽음」은 서장에 본 죽음 줄이 아직 없어 「놓친 것」 줄로 채웠다.</p>
+  <div class="pick" data-key="notebook"><span>수첩 고르기</span><button class="chip" data-pick="A">A 종이 수첩</button><button class="chip" data-pick="B">B 카드식</button></div>
+  <h2 class="sec" id="objs">사물 반응 <small>눌림 · 빛 · 소리</small></h2>
+  <div class="chips"><button class="chip on" data-om="new">새: 눌림 · 빛 · 소리 뒤 확대</button><button class="chip" data-om="old">지금: 바로 확대</button></div>
+  <div class="obj" id="obj"><img src="../room01/img/f2_base.webp" alt="" id="objImg"><span class="lbl" id="objLbl"></span></div>
+  <p class="note">자판기 = 쇠 소리 · 시계 = 유리 소리 · 문 = 둔탁한 소리. 누른 자리에 빛이 번지고 사물이 잠깐 눌린다(0.22초) — 그 뒤 확대가 열린다(여기서는 글로만). 진동 tap.</p>
+  <div class="pick" data-key="object"><span>사물 반응 고르기</span><button class="chip" data-pick="new">새</button><button class="chip" data-pick="old">지금</button></div>
+</div>
+<script src="ink.js"></script>
+<script src="texts.js"></script>
+<script>
+(function(){
+'use strict';
+var L = window.InkLab, T = window.LabText, $ = function(id){ return document.getElementById(id); };
+var store = { get: function(){ try { return JSON.parse(localStorage.getItem('lab_s1') || '{}'); } catch (e) { return {}; } }, set: function(o){ try { localStorage.setItem('lab_s1', JSON.stringify(o)); } catch (e) {} } };
+var CH = store.get();
+var IS_ANDROID = /Android/i.test(navigator.userAgent);
+function vib(p){ if (navigator.userActivation && !navigator.userActivation.hasBeenActive) return; try { if (navigator.vibrate) navigator.vibrate(p); } catch (e) {} }
+var HAPTIC = { tap: [10], confirm: [12, 70, 12] };   // haptic.html 짧은 판
+var SND = {}; function snd(name, vol){ try { var a = SND[name] || (SND[name] = new Audio('../room01/audio/sfx/' + name + '.m4a')); a.currentTime = 0; a.volume = vol == null ? 1 : vol; var p = a.play(); if (p && p.catch) p.catch(function(){}); } catch (e) {} }
+
+// ── 규칙서 ──
+var pm = 'new', coat = true, open = false, busy = false, ang = 0, SW = 0, SH = 0;
+var faces = {};   // A(지금 글) · B(새 글) 앞면, 뒷면
+async function buildFaces(){
+  var SURF = (await (await fetch('surfaces.json', { cache: 'no-cache' })).json()).surfaces, S = SURF['prologue.rules'];
+  var lay = $('layer').getBoundingClientRect(); SW = Math.min(300, Math.round(lay.width * 0.84)); SH = Math.round(SW * 1.36);
+  var sh = $('sheet'); sh.style.width = SW + 'px'; sh.style.height = SH + 'px'; sh.style.left = Math.round((lay.width - SW) / 2) + 'px'; sh.style.top = Math.round((lay.height - SH) / 2 - 6) + 'px';
+  var dpr = Math.min(window.devicePixelRatio || 1, 2.5), W = Math.round(SW * dpr), H = Math.round(SH * dpr), im = await L.loadImg('paper_base.webp'), crop = [0, Math.round((1600 - 1129 * 1.36) / 2), 1129, Math.round(1129 * 1.36)];
+  var fam = L.penFamily('black', CH.font && CH.font !== 'person' ? CH.font : 'nanum');
+  await L.fontsReady([fam], T.RULES.back.join(' '));
+  function mk(kind){
+    var c = document.createElement('canvas'); c.width = W; c.height = H; var x = c.getContext('2d', { willReadFrequently: true }), v = L.makeView(W, H, crop, im.naturalWidth, im.naturalHeight);
+    if (kind === 'back'){ x.save(); x.translate(W, 0); x.scale(-1, 1); L.drawPhoto(x, im, v, crop); x.restore(); } else L.drawPhoto(x, im, v, crop);
+    if (kind === 'A'){   // 지금: 평면 글
+      var sz = [(S.quad[1][0] - S.quad[0][0]) * 1129, (S.quad[3][1] - S.quad[0][1]) * 1600], p0 = v.P(S.quad[0]), p1 = v.P(S.quad[1]), p3 = v.P(S.quad[3]);
+      x.save(); x.setTransform((p1[0] - p0[0]) / sz[0], 0, 0, (p3[1] - p0[1]) / sz[1], p0[0], p0[1]);
+      T.rulesOps(sz[0], sz[1]).ops.forEach(function(op){ x.fillStyle = op.color ? 'rgb(' + op.color.join(',') + ')' : '#14161A'; L.drawOp(x, op, null); }); x.restore();
+    } else {
+      var ph = x.getImageData(0, 0, W, H), an = L.analyze(ph, W, H, v.k);
+      if (kind === 'B') L.placeB(ph, an, v, S, T.rulesOps, { seed: 7 });
+      else L.placeB(ph, an, v, { quad: S.quad, blend: { mode: 'multiply', follow: 0.9, opacity: 0.9 }, grain: { amount: 0.3, scale: 1.1, photo: 0.5, press: 0.3 }, bleed: { px: 0.45 }, warp: { kind: 'flat', soft: 0.45, disp: 1.5 } }, T.backOps(fam), { seed: 3 });
+      x.putImageData(ph, 0, 0);
+    }
+    return c;
+  }
+  faces = { A: mk('A'), B: mk('B'), back: mk('back') };
+  paintFaces();
+}
+function paintFaces(){ [['cvF', pm === 'new' ? faces.B : faces.A], ['cvBk', faces.back]].forEach(function(p){ var c = $(p[0]); c.width = p[1].width; c.height = p[1].height; c.getContext('2d').drawImage(p[1], 0, 0); }); }
+var SH_UP = '0 16px 34px rgba(0,0,0,.55), 0 4px 10px rgba(0,0,0,.42)', SH_LIFT = '0 26px 46px rgba(0,0,0,.5), 0 8px 14px rgba(0,0,0,.4)', SH_LOW = '0 1px 2px rgba(0,0,0,.8)';
+function setAng(a){ ang = a; $('inner').style.transform = 'rotateY(' + a + 'deg)'; var c = Math.abs(Math.cos(a * Math.PI / 180)); document.querySelectorAll('.sheet .shade').forEach(function(s){ s.style.opacity = ((1 - c) * 0.45).toFixed(3); });
+  $('sheet').style.boxShadow = '0 ' + (6 + 10 * c).toFixed(1) + 'px ' + (14 + 20 * c).toFixed(1) + 'px rgba(0,0,0,' + (0.35 + 0.2 * c).toFixed(2) + ')';
+  $('sheen').style.backgroundPosition = (50 + Math.sin(a * Math.PI / 180) * 70).toFixed(1) + '% 0'; }
+function take(){
+  if (open || busy) return; open = true; $('sheet').classList.add('on'); $('pacts').classList.add('on'); setAng(0);
+  if (pm === 'old'){ $('sheet').style.transform = 'rotate(0deg)'; $('sheet').style.boxShadow = '0 10px 30px rgba(0,0,0,.5)'; snd('paper'); return; }   // 지금: .ov.show — 그냥 나타남 + 종이 소리
+  busy = true; snd('paper_slide', 0.9);
+  var an = $('sheet').animate([
+    { transform: 'translateY(118%) rotate(-9deg) scale(.93)', boxShadow: SH_LOW, easing: 'cubic-bezier(.3,.55,.45,1)' },
+    { offset: 0.62, transform: 'translateY(-3%) rotate(-0.4deg) scale(1.012)', boxShadow: SH_LIFT, easing: 'ease-in-out' },
+    { transform: 'translateY(0) rotate(-1.6deg) scale(1)', boxShadow: SH_UP }
+  ], { duration: 700, easing: 'linear', fill: 'forwards' });
+  if (coat) $('sheen').animate([{ backgroundPosition: '135% 0' }, { backgroundPosition: '-35% 0' }], { duration: 760, easing: 'ease-out', fill: 'forwards' });
+  setTimeout(function(){ snd('paper', 0.7); }, 380);
+  an.onfinish = function(){ busy = false; $('sheet').style.transform = 'rotate(-1.6deg)'; $('sheet').style.boxShadow = SH_UP; an.cancel(); };
+}
+function put(){
+  if (!open || busy) return;
+  if (pm === 'old'){ open = false; $('sheet').classList.remove('on'); $('pacts').classList.remove('on'); snd('paper'); return; }
+  busy = true; snd('paper_slide', 0.8);
+  var an = $('sheet').animate([{ transform: 'rotate(-1.6deg)', boxShadow: SH_UP }, { offset: 0.25, transform: 'translateY(-2%) rotate(-2.4deg) scale(1.01)', boxShadow: SH_LIFT }, { transform: 'translateY(125%) rotate(7deg) scale(.94)', boxShadow: SH_LOW }], { duration: 420, easing: 'cubic-bezier(.5,0,.75,.4)', fill: 'forwards' });
+  an.onfinish = function(){ busy = false; open = false; $('sheet').classList.remove('on'); $('pacts').classList.remove('on'); an.cancel(); setAng(0); };
+}
+function flipTo(target, via){
+  var a0 = ang, t0 = performance.now(), d = pm === 'old' ? 500 : 380; busy = true; snd('paper', 0.8);
+  (function step(now){ var p = Math.min(1, (now - t0) / d), e = pm === 'old' ? p * (2 - p) : 1 - Math.pow(1 - p, 3); setAng(a0 + (target - a0) * e); if (p < 1) requestAnimationFrame(step); else { busy = false; if (via === 'drag') vib(HAPTIC.tap); } })(t0);
+}
+function flip(){ if (!open || busy) return; var base = Math.round(ang / 180) * 180; flipTo(base + 180, 'button'); }
+// 끌어서 뒤집기 — 손가락을 따라 돈다(들어 올린 듯 조금 커짐)
+(function(){
+  var sh = $('sheet'), dn = null;
+  sh.addEventListener('pointerdown', function(e){ if (!open || busy) return; dn = { x: e.clientX, a: ang, base: Math.round(ang / 180) * 180 }; sh.setPointerCapture(e.pointerId); if (pm === 'new') sh.style.transform = 'rotate(-1.6deg) scale(1.025)'; });
+  sh.addEventListener('pointermove', function(e){ if (!dn) return; var dx = e.clientX - dn.x; setAng(dn.a + dx / (SW * 0.9) * 180); });
+  var up = function(){ if (!dn) return; var moved = ang - dn.base; if (pm === 'new') sh.style.transform = 'rotate(-1.6deg)'; var tgt = Math.abs(moved) > 60 ? dn.base + (moved > 0 ? 180 : -180) : dn.base; dn = null; if (tgt !== ang) flipTo(tgt, Math.abs(tgt - Math.round(ang / 180) * 180) < 1 ? 'none' : 'drag'); };
+  sh.addEventListener('pointerup', up); sh.addEventListener('pointercancel', up);
+})();
+$('bPaper').addEventListener('click', function(){ if (nbOpen) closeNb(); open ? put() : take(); });
+$('bFlip').addEventListener('click', flip); $('bPut').addEventListener('click', put);
+function pmNote(){ $('pmNote').textContent = pm === 'new' ? '새: 아래(주머니)에서 0.7초에 올라옴(0.43초 올라와 살짝 넘침 → 0.27초 자리 잡음) · 처음엔 그림자가 붙어 있다가 들리면서 커짐 · 기울기 −9° → −1.6° · 코팅 반사가 한 번 지나감 · 넣을 때는 거꾸로. 소리 = 종이 미끄러짐 + 종이. 글은 B(새 방식).' : '지금(index.html): .ov.show — 그냥 나타남 · 뒤집기 0.5초 · 글은 A(평면).'; }
+document.querySelectorAll('[data-pm]').forEach(function(b){ b.addEventListener('click', function(){ pm = b.dataset.pm; document.querySelectorAll('[data-pm]').forEach(function(x){ x.classList.toggle('on', x === b); }); pmNote(); paintFaces(); if (open){ open = false; $('sheet').classList.remove('on'); $('pacts').classList.remove('on'); } $('sheet').style.transform = ''; }); });
+$('coatChip').addEventListener('click', function(){ coat = !coat; this.classList.toggle('on', coat); this.textContent = coat ? '코팅 반사 켬' : '코팅 반사 끔'; $('sheet').classList.toggle('coat', coat); });
+$('sheet').classList.add('coat'); pmNote();
+
+// ── 수첩 ──
+var NB = {
+  prologue: { name: '대합실',
+    facts: [['A', '승강장 문', '승강장 문은 버스가 선 뒤에 열립니다.'], ['B', '게시판', '게시물은 관리소가 붙이고 뗍니다. 손대지 마십시오.'], ['C', '발권 장부', '첫차 — 발권 1매'], ['D', '매점 셔터', '야간에는 셔터를 반만 올립니다.'], ['E', '자판기', '반환구 고장 — 동전이 나오지 않습니다.']],
+    traces: [['blue', '파란 펜', ['03:48 평소 같아서 앉았다. 넘어갔다.', '03:49 셔터가 끝까지 올라가 있었다. 안 보고 나갔다 왔다. 넘어갔다.', '03:50 방송이 승강장으로 나오라고 한다. 나가 본다.']], ['pencil', '연필', ['03:48 넘어갔다.', '03:49 떨어진 전단을 다시 붙였다. 손에 뭐가 묻었다.']], ['black', '검은 펜', ['03:52 먼저 온 사람이 한 칸씩 가까이 온다. 규칙대로 기다린다.']]],
+    rules: { 3: '"승객 한 분, 바로 승강장으로 나와 주십시오." 하는 방송이 나오면 지체 없이 승강장으로 나가십시오.', 6: '게시판에서 떨어진 전단은 제자리에 다시 붙여 주십시오.' },
+    seen: [['shutter_up', '놓친 것 — 끝까지 올라간 매점 셔터'], ['call_platform', '놓친 것 — 승강장으로 부르는 방송']],
+    have: { facts: ['A', 'B', 'D'], traces: ['blue', 'pencil'], sus: [3], seen: ['shutter_up'] },
+    next: [['facts', 'C'], ['traces', 'black'], ['sus', 6], ['seen', 'call_platform'], ['facts', 'E']] },
+  a02: { name: '수문관리소',
+    facts: [['A', '조작반', '개방: 기준선을 넘으면 당직자가 즉시. 선 아래에선 열지 않음.'], ['B', '무전기', '본부 채널 — 운영 종료. 수문 조작은 현장 판단.'], ['C', '근무표', '성명: 당직자 · 당직자 · 당직자 · (빈칸)'], ['D', '강둑 쪽 문', '강둑 출입 금지. 순찰은 조작반까지.'], ['E', '모니터', '4 — 하류. 조명은 방류할 때 켜짐. 하류는 이 화면으로만.']],
+    traces: [['blue', '파란 펜', T.LOG.blue], ['wet', '굵은 글씨', T.LOG.wet], ['pencil', '연필', T.LOG.pencil], ['black', '검은 펜', T.LOG.black]],
+    rules: { 2: '본부 승인 없이 개방하지 않는다.', 6: '수위와 조치만 기록한다. 시각은 적지' },
+    seen: [['a', '본부 — 승인은 온다. 늦게.'], ['b', '부르는 소리 — 무전: 역할도 이름이다.'], ['c', '떠내려오는 것 — 모니터로는 안 보인다.'], ['d', '강둑 — 물은 강에만 있지 않다.'], ['e', '수문 — 선 아래에서 열면 물이 거꾸로 온다.']],
+    have: { facts: ['A', 'B'], traces: ['blue', 'wet', 'pencil', 'black'], sus: [2], seen: ['a', 'e'] },
+    next: [['facts', 'C'], ['seen', 'b'], ['facts', 'E'], ['sus', 6], ['facts', 'D']] }
+};
+var nbStyle = 'A', nbTab = 'a02', nbOpen = false, fresh = null;
+function esc(t){ return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
+function has(sp, k, id){ return NB[sp].have[k].indexOf(id) >= 0; }
+function isNew(k, id){ return fresh && fresh.sp === nbTab && fresh.k === k && fresh.id === id; }
+function renderNb(){
+  var sp = NB[nbTab], el = $('nb'), h = '';
+  el.className = 'nb on nb' + nbStyle;
+  h += '<div class="tabs">' + Object.keys(NB).map(function(k){ return '<button class="' + (k === nbTab ? 'on' : '') + '" data-tab="' + k + '">' + NB[k].name + '</button>'; }).join('') + '<button class="x" data-x="1">닫기</button></div><div class="body">';
+  var cnt = function(k, all){ return sp.have[k].length + '/' + all; };
+  if (nbStyle === 'A'){
+    h += '<h5><b>방의 사실</b></h5>' + sp.facts.map(function(f){ var on = has(nbTab, 'facts', f[0]); return '<div class="ln' + (on ? '' : ' blank') + (isNew('facts', f[0]) ? ' new' : '') + '"><span class="k">' + f[0] + '</span><span class="t">' + (on ? esc(f[1]) + ' — ' + esc(f[2]) : '') + '</span></div>'; }).join('');
+    h += '<h5><b>앞사람 흔적</b></h5>' + sp.traces.map(function(p){ var on = has(nbTab, 'traces', p[0]); if (!on) return '<div class="ln blank"><span class="k">·</span><span class="t"></span></div>'; return p[2].map(function(l, i){ return '<div class="ln ' + p[0] + (isNew('traces', p[0]) ? ' new' : '') + '"><span class="k">' + (i ? '' : (p[0] === 'wet' ? '굵' : p[1].charAt(0))) + '</span><span class="t">' + esc(l) + '</span></div>'; }).join(''); }).join('');
+    h += '<h5><b>의심한 줄</b></h5>' + (sp.have.sus.length ? sp.have.sus.map(function(n){ return '<div class="ln sus' + (isNew('sus', n) ? ' new' : '') + '"><span class="k">' + n + '.</span><span class="t"><span>' + esc(sp.rules[n] || '') + '</span></span></div>'; }).join('') : '<div class="ln blank"><span class="k"></span><span class="t"></span></div>');
+    h += '<h5><b>본 죽음</b></h5>' + sp.seen.filter(function(s){ return has(nbTab, 'seen', s[0]); }).map(function(s){ return '<div class="ln' + (isNew('seen', s[0]) ? ' new' : '') + '"><span class="k">✕</span><span class="t">' + esc(s[1]) + '</span></div>'; }).join('');
+  } else {
+    h += '<div class="slot"><h6><span>방의 사실</span><span>' + cnt('facts', 5) + '</span></h6>' + sp.facts.map(function(f){ var on = has(nbTab, 'facts', f[0]); return '<div class="row' + (on ? '' : ' blank') + (isNew('facts', f[0]) ? ' new' : '') + '"><span class="k">' + f[0] + '</span><span class="t">' + (on ? '<small>' + esc(f[1]) + '</small>「' + esc(f[2]) + '」' : '아직') + '</span></div>'; }).join('') + '</div>';
+    h += '<div class="slot"><h6><span>앞사람 흔적</span><span>' + cnt('traces', sp.traces.length) + '</span></h6>' + sp.traces.map(function(p){ var on = has(nbTab, 'traces', p[0]); return on ? '<div class="row pen ' + p[0] + (isNew('traces', p[0]) ? ' new' : '') + '"><span></span><span class="t"><small>' + esc(p[1]) + '</small>' + p[2].map(esc).join('<br>') + '</span></div>' : '<div class="row blank"><span class="k">·</span><span class="t">아직</span></div>'; }).join('') + '</div>';
+    h += '<div class="slot"><h6><span>의심한 줄</span><span>' + sp.have.sus.length + '</span></h6>' + (sp.have.sus.length ? sp.have.sus.map(function(n){ return '<div class="row sus' + (isNew('sus', n) ? ' new' : '') + '"><span class="k">' + n + '</span><span class="t">' + esc(sp.rules[n] || '') + '</span></div>'; }).join('') : '<div class="row blank"><span></span><span class="t">종이의 규칙 줄을 누르면 여기 남는다</span></div>') + '</div>';
+    h += '<div class="slot"><h6><span>본 죽음</span><span>' + sp.have.seen.length + '</span></h6>' + sp.seen.filter(function(s){ return has(nbTab, 'seen', s[0]); }).map(function(s){ return '<div class="row' + (isNew('seen', s[0]) ? ' new' : '') + '"><span class="k">✕</span><span class="t">' + esc(s[1]) + '</span></div>'; }).join('') + '</div>';
+  }
+  el.innerHTML = h + '</div>';
+  el.querySelectorAll('[data-tab]').forEach(function(b){ b.addEventListener('click', function(){ nbTab = b.dataset.tab; fresh = null; renderNb(); }); });
+  el.querySelector('[data-x]').addEventListener('click', closeNb);
+  var n = el.querySelector('.new'), bd = el.querySelector('.body'); if (n && bd) bd.scrollTop = Math.max(0, n.offsetTop - bd.clientHeight / 2);
+}
+function openNb(){ if (open) put(); nbOpen = true; $('bNote').classList.remove('new'); renderNb(); snd('paper', 0.6); if (nbStyle === 'A') $('nb').animate([{ transform: 'translateY(100%)' }, { transform: 'translateY(0)' }], { duration: 360, easing: 'cubic-bezier(.2,.8,.25,1)' }); }
+function closeNb(){ nbOpen = false; $('nb').classList.remove('on'); }
+function write(){
+  var sp = NB[nbTab], nx = sp.next.shift(); if (!nx){ return; }
+  sp.have[nx[0]].push(nx[1]); fresh = { sp: nbTab, k: nx[0], id: nx[1] };
+  snd('scratch', 0.8); vib(HAPTIC.confirm);
+  if (nbOpen) renderNb(); else $('bNote').classList.add('new');
+}
+$('bNote').addEventListener('click', function(){ nbOpen ? closeNb() : openNb(); });
+$('bWrite').addEventListener('click', write);
+document.querySelectorAll('[data-nbs]').forEach(function(b){ b.addEventListener('click', function(){ nbStyle = b.dataset.nbs; document.querySelectorAll('[data-nbs]').forEach(function(x){ x.classList.toggle('on', x === b); }); if (nbOpen) renderNb(); }); });
+
+// ── 사물 반응 ──
+var OBJ = [{ id: 'vend', name: '자판기', r: [140, 728, 300, 560], snd: 'clunk' }, { id: 'clock', name: '벽시계', r: [470, 478, 148, 150], snd: 'glass' }, { id: 'door', name: '도로 쪽 문', r: [678, 645, 268, 595], snd: 'thump' }];
+var CROP = [0, 380, 1080, 1020], om = 'new';
+(function(){
+  var box = $('obj'), img = $('objImg');
+  box.style.aspectRatio = CROP[2] + ' / ' + CROP[3];
+  img.style.cssText = 'position:absolute;left:0;top:' + (-CROP[1] / CROP[2] * 100).toFixed(3) + '%;width:100%';   // top % 는 폭 기준이 아니라 높이 기준 — 아래에서 다시 잼
+  function lay(){ var w = box.getBoundingClientRect().width, k = w / CROP[2]; img.style.top = (-CROP[1] * k) + 'px';
+    box.querySelectorAll('.hs').forEach(function(h){ var o = OBJ.filter(function(x){ return x.id === h.dataset.id; })[0]; h.style.left = (o.r[0] * k) + 'px'; h.style.top = ((o.r[1] - CROP[1]) * k) + 'px'; h.style.width = (o.r[2] * k) + 'px'; h.style.height = (o.r[3] * k) + 'px'; var im = h.querySelector('img'); im.style.width = (1080 * k) + 'px'; im.style.left = (-o.r[0] * k) + 'px'; im.style.top = (-o.r[1] * k) + 'px'; }); }
+  OBJ.forEach(function(o){ var h = document.createElement('div'); h.className = 'hs'; h.dataset.id = o.id; h.innerHTML = '<img src="../room01/img/f2_base.webp" alt="">'; box.appendChild(h);
+    h.addEventListener('pointerdown', function(e){ press(o.id, e.clientX, e.clientY); }); });
+  window.addEventListener('resize', lay); img.addEventListener('load', lay); lay();
+})();
+function press(id, cx, cy){
+  var o = OBJ.filter(function(x){ return x.id === id; })[0], box = $('obj'), h = box.querySelector('[data-id="' + id + '"]'), br = box.getBoundingClientRect(), hr = h.getBoundingClientRect();
+  if (cx == null){ cx = hr.left + hr.width / 2; cy = hr.top + hr.height * 0.45; }
+  var lbl = $('objLbl'); lbl.classList.remove('on');
+  if (om === 'old'){ lbl.textContent = '→ ' + o.name + ' 확대가 열린다(바로)'; lbl.classList.add('on'); return; }
+  h.classList.remove('press'); void h.offsetWidth; h.classList.add('press');
+  var g = document.createElement('div'); g.className = 'glow'; g.style.left = (cx - br.left) + 'px'; g.style.top = (cy - br.top) + 'px'; box.appendChild(g); setTimeout(function(){ g.remove(); }, 600);
+  snd(o.snd, 0.9); vib(HAPTIC.tap);
+  setTimeout(function(){ lbl.textContent = '→ ' + o.name + ' 확대가 열린다(0.22초 뒤)'; lbl.classList.add('on'); }, 220);
+}
+document.querySelectorAll('[data-om]').forEach(function(b){ b.addEventListener('click', function(){ om = b.dataset.om; document.querySelectorAll('[data-om]').forEach(function(x){ x.classList.toggle('on', x === b); }); }); });
+// ── 고르기 ──
+document.querySelectorAll('.pick[data-key]').forEach(function(p){ var key = p.dataset.key; p.querySelectorAll('[data-pick]').forEach(function(b){ if (CH[key] === b.dataset.pick) b.classList.add('on'); b.addEventListener('click', function(){ CH[key] = b.dataset.pick; store.set(CH); p.querySelectorAll('[data-pick]').forEach(function(x){ x.classList.toggle('on', x === b); }); }); }); });
+
+window.__paper = { at: function(ms){ document.getAnimations().forEach(function(a){ a.pause(); a.currentTime = ms; }); }, resume: function(){ document.getAnimations().forEach(function(a){ a.play(); }); }, ang: function(a){ setAng(a); }, take: take, put: put, flip: flip, notebook: function(s){ nbStyle = s; document.querySelectorAll('[data-nbs]').forEach(function(x){ x.classList.toggle('on', x.dataset.nbs === s); }); document.getElementById('room').scrollIntoView({ block: 'start' }); scrollBy(0, -56); if (!nbOpen) openNb(); else renderNb(); }, write: write, tab: function(t){ nbTab = t; fresh = null; renderNb(); }, close: closeNb, press: function(id){ om = 'new'; press(id); } };
+buildFaces().then(function(){ document.documentElement.dataset.ready = '1'; }).catch(function(e){ var el = $('err'); el.classList.add('on'); el.textContent = '그리지 못함: ' + e.message + (location.protocol === 'file:' ? ' — 로컬 서버로 열 것' : ''); document.documentElement.dataset.ready = '1'; });
+})();
+</script>
+</body>
+</html>
