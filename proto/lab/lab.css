@@ -15,7 +15,7 @@ header.top .row{max-width:448px;margin:0 auto;display:flex;align-items:center;ga
 header.top h1{font-size:16px;margin:0;font-weight:700;letter-spacing:.02em;flex:1}
 header.top a.back{font-size:13px;color:var(--dim);text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:3px 10px}
 p.lead{color:#cfc8ba;font-size:14px;margin:14px 0 8px}
-p.note,.note{color:var(--dim);font-size:12.5px;line-height:1.55}
+p.note,.note{color:var(--dim);font-size:12.5px;line-height:1.55;overflow-wrap:anywhere}
 h2.sec{font-size:15px;margin:26px 0 6px;font-weight:700}
 h2.sec small{font-weight:400;color:var(--dim);font-size:12px;margin-left:6px}
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}

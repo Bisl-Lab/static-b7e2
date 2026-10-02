@@ -22,7 +22,7 @@
   <a class="go" href="breath.html"><b>② 유리 입김</b><span>피어오르는 김 → 가장자리부터 걷힘 → 바깥(형체) · 숨소리 · 진동 / 지금(흐림 1.6초)</span></a>
   <a class="go" href="haptic.html"><b>③ 진동 어휘</b><span>tap · confirm · warn · hit · death — 짧은 판 / 긴 판 · 붙일 곳 표 · 안드로이드만</span></a>
   <a class="go" href="paper.html"><b>④ 종이 · 수첩 · 사물 반응</b><span>규칙서 꺼내기 · 넣기 · 뒤집기 · 수첩 판 A 종이 / B 카드 · 누르면 눌림 · 빛 · 소리</span></a>
-  <a class="go" href="phone.html"><b>⑤ 폰</b><span>잠금화면(뒷모습 · 03:47 · 41% · 긁힘 3단계) · 메모 위젯(조각 16칸 · 기록 · 쪽지 자리) · 죽음 화면 흐름(6장 전/뒤)</span></a>
+  <a class="go" href="phone.html"><b>⑤ 폰</b><span>잠금화면(뒷모습 · 03:47 · 41% · 긁힘 3단계) · 메모 위젯(조각 16칸 · 기록 · 쪽지) · 한결 글씨 후보 둘 · 죽음 화면 흐름(6장 전/뒤)</span></a>
   <h2 class="sec">고른 것 <small>이 기기에만 저장 — 복사해서 붙여 넣기</small></h2>
   <div id="sum"></div>
   <div class="chips"><button class="chip" id="copy">요약 복사</button><button class="chip" id="clear">지우기</button></div>
@@ -39,7 +39,7 @@ function text(){
   out.push('글자 얹기: ' + Object.keys(SP).map(function(k){ return SP[k] + ' ' + ((c.ink || {})[k] || '—'); }).join(' · ') + ' / 펜 폰트 ' + (FN[c.font] || '—'));
   out.push('입김: ' + ({ A: '지금', B: '새 방식', none: '몸짓 빼기' }[c.breath] || '—'));
   out.push('진동: ' + ['tap', 'confirm', 'warn', 'hit', 'death'].map(function(k){ return k + ' ' + (HK[(c.haptic || {})[k]] || '—'); }).join(' · '));
-  out.push('폰: 잠금화면 ' + ((c.phone || {}).lock || '—') + ' · 메모 ' + ((c.phone || {}).memo || '—') + ' · 죽음 흐름 ' + ((c.phone || {}).death || '—'));
+  out.push('폰: 한결 글씨 ' + ({ a: 'East Sea Dokdo', b: 'Poor Story' }[(c.phone || {}).hand] || '—') + ' · 잠금화면 ' + ((c.phone || {}).lock || '—') + ' · 메모 ' + ((c.phone || {}).memo || '—') + ' · 죽음 흐름 ' + ((c.phone || {}).death || '—'));
   out.push('규칙서 ' + ({ new: '새', old: '지금' }[c.paper] || '—') + ' · 수첩 ' + (c.notebook || '—') + ' · 사물 반응 ' + ({ new: '새', old: '지금' }[c.object] || '—'));
   return out.join('\n');
 }
