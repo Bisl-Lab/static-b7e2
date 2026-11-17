@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="data:,">
+<title>귀 확인 — 소리</title>
+<style>
+:root {
+  --bg: #0d0f10;
+  --card: #171a1b;
+  --line: #2c3433;
+  --ink: #ece4d4;
+  --dim: #b7afa0;
+  --a: #c9873f;
+  --a-ink: #1a1208;
+  --b: #3f6f78;
+  --b-ink: #f2f7f8;
+}
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg: #f4f1ea;
+    --card: #fffdf8;
+    --line: #d9d3c6;
+    --ink: #24231f;
+    --dim: #5e5a51;
+    --a: #9a5f22;
+    --a-ink: #fff8ee;
+    --b: #2f6470;
+    --b-ink: #fff;
+  }
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 16px/1.6 "Malgun Gothic", "Apple SD Gothic Neo", system-ui, sans-serif;
+  word-break: keep-all;
+}
+main {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: calc(16px + env(safe-area-inset-top)) 16px calc(24px + env(safe-area-inset-bottom));
+}
+h1 { font-size: 20px; margin: 4px 0 6px; }
+h2 { font-size: 17px; margin: 22px 0 4px; }
+.guide { margin: 0 0 12px; color: var(--dim); font-size: 15px; }
+.item {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 10px 14px 12px;
+  margin: 0 0 8px;
+}
+h3 { margin: 0 0 6px; font-size: 16px; font-weight: 400; }
+.row { display: flex; gap: 8px; }
+button {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 48px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--a);
+  color: var(--a-ink);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+button + button { background: var(--b); color: var(--b-ink); }
+button[aria-pressed="true"] { outline: 2px solid var(--ink); outline-offset: 2px; }
+button:focus-visible { outline: 2px dashed var(--ink); outline-offset: 2px; }
+</style>
+</head>
+<body>
+<main>
+<h1>귀 확인 — 소리</h1>
+<p class="guide">단추를 누르면 바로 들립니다. 다시 누르면 멈춥니다. 이어폰으로 들어 주세요.</p>
+
+<section aria-labelledby="memories">
+  <h2 id="memories">종장 기억 소리 다섯</h2>
+  <p class="guide">소리마다 그 이름처럼 들리는 쪽을 골라 주세요. 다 아니면 그렇게 말해 주세요.</p>
+  <article class="item">
+    <h3>물속에서 듣는 물살 소리</h3>
+    <div class="row">
+      <button type="button" aria-controls="clip-1" aria-pressed="false" aria-label="물속에서 듣는 물살 소리 가">가</button>
+      <button type="button" aria-controls="clip-2" aria-pressed="false" aria-label="물속에서 듣는 물살 소리 나">나</button>
+    </div>
+    <audio id="clip-1" src="v92_sound/current-a.wav" preload="auto" loop></audio>
+    <audio id="clip-2" src="v92_sound/current-b.wav" preload="auto" loop></audio>
+  </article>
+  <article class="item">
+    <h3>조용한 병실에서 나는 소리</h3>
+    <div class="row">
+      <button type="button" aria-controls="clip-3" aria-pressed="false" aria-label="조용한 병실에서 나는 소리 가">가</button>
+      <button type="button" aria-controls="clip-4" aria-pressed="false" aria-label="조용한 병실에서 나는 소리 나">나</button>
+    </div>
+    <audio id="clip-3" src="v92_sound/ward-a.wav" preload="auto" loop></audio>
+    <audio id="clip-4" src="v92_sound/ward-b.wav" preload="auto" loop></audio>
+  </article>
+  <article class="item">
+    <h3>얕은 물을 딛는 발소리</h3>
+    <div class="row">
+      <button type="button" aria-controls="clip-5" aria-pressed="false" aria-label="얕은 물을 딛는 발소리 가">가</button>
+      <button type="button" aria-controls="clip-6" aria-pressed="false" aria-label="얕은 물을 딛는 발소리 나">나</button>
+    </div>
+    <audio id="clip-5" src="v92_sound/steps-a.wav" preload="auto"></audio>
+    <audio id="clip-6" src="v92_sound/steps-b.wav" preload="auto"></audio>
+  </article>
+  <article class="item">
+    <h3>폰으로 답장을 치는 소리</h3>
+    <div class="row">
+      <button type="button" aria-controls="clip-7" aria-pressed="false" aria-label="폰으로 답장을 치는 소리 가">가</button>
+      <button type="button" aria-controls="clip-8" aria-pressed="false" aria-label="폰으로 답장을 치는 소리 나">나</button>
+    </div>
+    <audio id="clip-7" src="v92_sound/typing-a.wav" preload="auto"></audio>
+    <audio id="clip-8" src="v92_sound/typing-b.wav" preload="auto"></audio>
+  </article>
+  <article class="item">
+    <h3>방문 너머에서 소리치는 소리</h3>
+    <div class="row">
+      <button type="button" aria-controls="clip-9" aria-pressed="false" aria-label="방문 너머에서 소리치는 소리 가">가</button>
+      <button type="button" aria-controls="clip-10" aria-pressed="false" aria-label="방문 너머에서 소리치는 소리 나">나</button>
+    </div>
+    <audio id="clip-9" src="v92_sound/shout-a.wav" preload="auto" loop></audio>
+    <audio id="clip-10" src="v92_sound/shout-b.wav" preload="auto" loop></audio>
+  </article>
+</section>
+
+<section aria-labelledby="broadcast">
+  <h2 id="broadcast">방송 게임 한 줄 — 끝의 소음</h2>
+  <p class="guide">끝에 남던 소음이 없어졌는지 들어 주세요.</p>
+  <article class="item">
+    <h3>「환 님, 댁에서 전화 와 있습니다.」</h3>
+    <div class="row">
+      <button type="button" aria-controls="clip-11" aria-pressed="false" aria-label="「환 님, 댁에서 전화 와 있습니다.」 지금 판">지금 판</button>
+      <button type="button" aria-controls="clip-12" aria-pressed="false" aria-label="「환 님, 댁에서 전화 와 있습니다.」 고친 판">고친 판</button>
+    </div>
+    <audio id="clip-11" src="./c650_M01_pa_real_cover_3_5.m4a" preload="auto"></audio>
+    <audio id="clip-12" src="v92_sound/m01_pa_real_cover_3_fixed.m4a" preload="auto"></audio>
+  </article>
+</section>
+</main>
+<script>
+let activeButton = null;
+
+function reset(button) {
+  button.setAttribute("aria-pressed", "false");
+  if (activeButton === button) activeButton = null;
+}
+
+for (const button of document.querySelectorAll("button[aria-controls]")) {
+  const audio = document.getElementById(button.getAttribute("aria-controls"));
+  button.addEventListener("click", async () => {
+    const wasActive = activeButton === button;
+    if (activeButton) {
+      const previous = document.getElementById(activeButton.getAttribute("aria-controls"));
+      previous.pause();
+      reset(activeButton);
+    }
+    if (wasActive) return;
+    activeButton = button;
+    button.setAttribute("aria-pressed", "true");
+    try {
+      audio.currentTime = 0;
+      await audio.play();
+    } catch {
+      if (audio.paused) reset(button);
+    }
+  });
+  audio.addEventListener("ended", () => reset(button));
+  audio.addEventListener("error", () => reset(button));
+}
+</script>
+</body>
+</html>
