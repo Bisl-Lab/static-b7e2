@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="icon" href="data:,">
+<title>귀 확인 7 — 아버지 목소리</title>
+<style>
+:root{--bg:#0d0f10;--card:#171a1b;--line:#2c3433;--ink:#ece4d4;--dim:#a39d90;--acc:#c9873f;--acc-ink:#1a1208}
+@media (prefers-color-scheme:light){:root{--bg:#f4f1ea;--card:#fffdf8;--line:#d9d3c6;--ink:#24231f;--dim:#5e5a51;--acc:#9a5f22;--acc-ink:#fff8ee}}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;word-break:keep-all;overflow-wrap:break-word}
+main{max-width:560px;margin:0 auto;padding:calc(16px + env(safe-area-inset-top)) 16px calc(24px + env(safe-area-inset-bottom))}
+h1{font-size:20px;margin:4px 0 6px}
+h2{font-size:17px;margin:22px 0 4px}
+.lead,.guide{margin:0 0 12px;color:var(--dim);font-size:15px}
+.item{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 14px 16px;margin:0 0 12px}
+.where{font-size:13px;color:var(--dim);margin:0 0 4px}
+.say{margin:0 0 10px}
+.row{display:flex;gap:8px}
+button{flex:1 1 0;min-width:0;min-height:58px;padding:4px 2px;border:0;border-radius:12px;background:var(--acc);color:var(--acc-ink);font:inherit;font-weight:700;cursor:pointer;touch-action:manipulation}
+button small{display:block;font-size:12px}
+button:focus-visible,button[aria-pressed="true"]{outline:3px solid var(--ink);outline-offset:2px}
+#status:empty{display:none}
+.father .row + .say{margin-top:10px}
+.father .say:last-of-type,.where:last-of-type{margin-bottom:0}
+button:disabled{opacity:.45;cursor:default}
+</style>
+</head>
+<body>
+
+
+
+<main>
+<h1>귀 확인 7 — 아버지 목소리</h1>
+<p class="lead">단추를 누르면 바로 들립니다. 다시 누르면 멈춥니다. 이어폰으로 들어 주세요.</p>
+<section id="father" aria-label="아버지 두 대답">
+<p class="guide">지난번 판과 비교해서 「갈게」와 「탈게」가 가장 자연스럽게 이어지는 짝을 골라 주세요.</p>
+<article class="item father" id="previous">
+<p class="say" id="previous-title">지난번(손질5 — 끊긴다고 하신 판)</p>
+<div class="row" role="group" aria-labelledby="previous-title">
+<button type="button" aria-controls="previous-audio-0" aria-describedby="previous-text-0" aria-pressed="false">첫째 대답</button>
+<button type="button" aria-controls="previous-audio-1" aria-describedby="previous-text-1" aria-pressed="false">둘째 대답</button>
+</div>
+<p class="say" id="previous-text-0">어, 아빠야. 첫차 타고 갈게.</p>
+<p class="say" id="previous-text-1">아직 안 왔어. 오면 바로 탈게.</p>
+<audio id="previous-audio-0" src="v92_ko7/ko5_father_3_reply1.m4a" preload="none" hidden></audio>
+<audio id="previous-audio-1" src="v92_ko7/ko5_father_3_reply2.m4a" preload="none" hidden></audio>
+</article>
+<article class="item father" id="pair1">
+<p class="say" id="pair1-title">1번 짝</p>
+<div class="row" role="group" aria-labelledby="pair1-title">
+<button type="button" aria-controls="pair1-audio-0" aria-describedby="pair1-text-0" aria-pressed="false">첫째 대답</button>
+<button type="button" aria-controls="pair1-audio-1" aria-describedby="pair1-text-1" aria-pressed="false">둘째 대답</button>
+</div>
+<p class="say" id="pair1-text-0">어, 아빠야. 첫차 타고 갈게.</p>
+<p class="say" id="pair1-text-1">아직 안 왔어. 오면 바로 탈게.</p>
+<audio id="pair1-audio-0" src="v92_ko7/ko6-father-v3-r1-base-s03.m4a" preload="none" hidden></audio>
+<audio id="pair1-audio-1" src="v92_ko7/ko6-father-v3-r2-base-s13.m4a" preload="none" hidden></audio>
+</article>
+<article class="item father" id="pair2">
+<p class="say" id="pair2-title">2번 짝</p>
+<div class="row" role="group" aria-labelledby="pair2-title">
+<button type="button" aria-controls="pair2-audio-0" aria-describedby="pair2-text-0" aria-pressed="false">첫째 대답</button>
+<button type="button" aria-controls="pair2-audio-1" aria-describedby="pair2-text-1" aria-pressed="false">둘째 대답</button>
+</div>
+<p class="say" id="pair2-text-0">어, 아빠야. 첫차 타고 갈게.</p>
+<p class="say" id="pair2-text-1">아직 안 왔어. 오면 바로 탈게.</p>
+<audio id="pair2-audio-0" src="v92_ko7/ko6-father-v3-r1-base-s07.m4a" preload="none" hidden></audio>
+<audio id="pair2-audio-1" src="v92_ko7/ko6-father-v3-r2-base-s14.m4a" preload="none" hidden></audio>
+</article>
+<article class="item father" id="pair3">
+<p class="say" id="pair3-title">3번 짝</p>
+<div class="row" role="group" aria-labelledby="pair3-title">
+<button type="button" aria-controls="pair3-audio-0" aria-describedby="pair3-text-0" aria-pressed="false">첫째 대답</button>
+<button type="button" aria-controls="pair3-audio-1" aria-describedby="pair3-text-1" aria-pressed="false">둘째 대답</button>
+</div>
+<p class="say" id="pair3-text-0">어, 아빠야. 첫차 타고 갈게.</p>
+<p class="say" id="pair3-text-1">아직 안 왔어. 오면 바로 탈게.</p>
+<audio id="pair3-audio-0" src="v92_ko7/ko6-father-v3-r1-base-s07.m4a" preload="none" hidden></audio>
+<audio id="pair3-audio-1" src="v92_ko7/ko6-father-v3-r2-base-s17.m4a" preload="none" hidden></audio>
+</article>
+</section>
+</main>
+<script>
+function player() {
+  let active = null;
+  function stop() {
+    if (!active) return;
+    const selected = active;
+    active = null;
+    selected.audio.pause();
+    selected.audio.currentTime = 0;
+    selected.button.setAttribute("aria-pressed", "false");
+  }
+  for (const button of document.querySelectorAll("button[aria-controls]")) {
+    const audio = document.getElementById(button.getAttribute("aria-controls"));
+    button.addEventListener("click", () => {
+      if (active?.button === button) {
+        stop();
+        return;
+      }
+      stop();
+      const selected = { button, audio };
+      active = selected;
+      button.setAttribute("aria-pressed", "true");
+      audio.play().catch(() => {
+        if (active === selected) stop();
+      });
+    });
+    audio.addEventListener("ended", () => {
+      if (active?.audio === audio) stop();
+    });
+    audio.addEventListener("error", () => {
+      if (active?.audio === audio) stop();
+    });
+  }
+  window.addEventListener("pagehide", stop);
+}
+player();
+</script>
+</body>
+</html>
