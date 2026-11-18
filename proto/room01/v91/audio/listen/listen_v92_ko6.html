@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="icon" href="data:,">
+<title>귀 확인 6 — 다시 만든 목소리</title>
+<style>
+:root{--bg:#0d0f10;--card:#171a1b;--line:#2c3433;--ink:#ece4d4;--dim:#a39d90;--acc:#c9873f;--acc-ink:#1a1208}
+@media (prefers-color-scheme:light){:root{--bg:#f4f1ea;--card:#fffdf8;--line:#d9d3c6;--ink:#24231f;--dim:#5e5a51;--acc:#9a5f22;--acc-ink:#fff8ee}}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;word-break:keep-all;overflow-wrap:break-word}
+main{max-width:560px;margin:0 auto;padding:calc(16px + env(safe-area-inset-top)) 16px calc(24px + env(safe-area-inset-bottom))}
+h1{font-size:20px;margin:4px 0 6px}
+h2{font-size:17px;margin:22px 0 4px}
+.lead,.guide{margin:0 0 12px;color:var(--dim);font-size:15px}
+.item{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 14px 16px;margin:0 0 12px}
+.where{font-size:13px;color:var(--dim);margin:0 0 4px}
+.say{margin:0 0 10px}
+.row{display:flex;gap:8px}
+button{flex:1 1 0;min-width:0;min-height:58px;padding:4px 2px;border:0;border-radius:12px;background:var(--acc);color:var(--acc-ink);font:inherit;font-weight:700;cursor:pointer;touch-action:manipulation}
+button small{display:block;font-size:12px}
+button:focus-visible,button[aria-pressed="true"]{outline:3px solid var(--ink);outline-offset:2px}
+#status:empty{display:none}
+.father .row + .say{margin-top:10px}
+.father .say:last-of-type,.where:last-of-type{margin-bottom:0}
+button:disabled{opacity:.45;cursor:default}
+</style>
+</head>
+<body>
+
+
+<main>
+<h1>귀 확인 6 — 다시 만든 목소리</h1>
+<p class="lead">단추를 누르면 바로 들립니다. 다시 누르면 멈춥니다. 이어폰으로 들어 주세요.</p>
+<section id="father" aria-labelledby="father-heading">
+<h2 id="father-heading">가. 아버지</h2>
+<p class="guide">「갈게」와 「탈게」가 앞말에 자연스럽게 이어지는지 들어 주세요.</p>
+<article class="item father" id="father-current">
+<p class="say">어, 아빠야. 첫차 타고 갈게.</p>
+<p class="say">아직 안 왔어. 오면 바로 탈게.</p>
+<p class="where">이번엔 새 음원을 고르지 못했습니다. 지금 판을 씁니다.</p>
+</article>
+</section>
+<section id="daughter" aria-labelledby="daughter-heading">
+<h2 id="daughter-heading">나. 딸의 전화</h2>
+<p class="guide">첫 전화와 같은 사람으로 들리는지 비교해 주세요.</p>
+<article class="item" id="line.girl.d02">
+<p class="say" id="line.girl.d02-text">아빠? 나야. 첫차 탔어? ……아빠. 거기 있는 거 맞지?</p>
+<p class="where">이번엔 새 음원을 고르지 못했습니다. 지금 판을 씁니다.</p>
+</article>
+<article class="item" id="line.girl.d06">
+<p class="say" id="line.girl.d06-text">아빠, 나야. 터미널이야. 첫차 타고 와. 도착하는 데서 기다릴게.</p>
+<p class="where">이번엔 새 음원을 고르지 못했습니다. 지금 판을 씁니다.</p>
+</article>
+<p class="guide">정함 · 「……아빠?」는 귀 확인 5의 나, 「아빠, 첫차 탔어?」는 나를 씁니다.</p>
+</section>
+<section id="door" aria-labelledby="door-heading">
+<h2 id="door-heading">다. 「니 꺼야」</h2>
+<p class="guide">「니 꺼야」 앞에서 말이 끊기지 않는 판을 골라 주세요.</p>
+<article class="item" id="a12.exit.phone">
+<p class="say" id="a12.exit.phone-text">이거, 니 거야.</p>
+<div class="row" role="group" aria-labelledby="a12.exit.phone-text">
+<button type="button" aria-controls="clip-a12_exit_phone_1" aria-pressed="false">1</button>
+<button type="button" aria-controls="clip-a12_exit_phone_2" aria-pressed="false">2</button>
+<button type="button" aria-controls="clip-a12_exit_phone_3" aria-pressed="false">3</button>
+</div>
+<audio id="clip-a12_exit_phone_1" src="v92_ko6/a12_exit_phone_1.m4a" preload="none" hidden></audio>
+<audio id="clip-a12_exit_phone_2" src="v92_ko6/a12_exit_phone_2.m4a" preload="none" hidden></audio>
+<audio id="clip-a12_exit_phone_3" src="v92_ko6/a12_exit_phone_3.m4a" preload="none" hidden></audio>
+</article>
+<article class="item" id="line.near.h52">
+<p class="say" id="line.near.h52-text">김 나는 두 그릇은 내가 떠 놨어. 하나는 니 거야.</p>
+<p class="where">이번엔 새 음원을 고르지 못했습니다. 지금 판을 씁니다.</p>
+</article>
+</section>
+</main>
+<script>
+function player() {
+  let active = null;
+  function stop() {
+    if (!active) return;
+    const selected = active;
+    active = null;
+    selected.audio.pause();
+    selected.audio.currentTime = 0;
+    selected.button.setAttribute("aria-pressed", "false");
+  }
+  for (const button of document.querySelectorAll("button[aria-controls]")) {
+    const audio = document.getElementById(button.getAttribute("aria-controls"));
+    button.addEventListener("click", () => {
+      if (active?.button === button) {
+        stop();
+        return;
+      }
+      stop();
+      const selected = { button, audio };
+      active = selected;
+      button.setAttribute("aria-pressed", "true");
+      audio.play().catch(() => {
+        if (active === selected) stop();
+      });
+    });
+    audio.addEventListener("ended", () => {
+      if (active?.audio === audio) stop();
+    });
+    audio.addEventListener("error", () => {
+      if (active?.audio === audio) stop();
+    });
+  }
+  window.addEventListener("pagehide", stop);
+}
+player();
+</script>
+</body>
+</html>
