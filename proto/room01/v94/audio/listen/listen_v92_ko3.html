@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="icon" href="data:,">
+<title>귀 확인 3 — 한국어 남은 줄</title>
+<style>
+:root{--bg:#0d0f10;--card:#171a1b;--line:#2c3433;--ink:#ece4d4;--dim:#a39d90;--acc:#c9873f;--acc-ink:#1a1208}
+@media (prefers-color-scheme:light){:root{--bg:#f4f1ea;--card:#fffdf8;--line:#d9d3c6;--ink:#24231f;--dim:#5e5a51;--acc:#9a5f22;--acc-ink:#fff8ee}}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;word-break:keep-all;overflow-wrap:break-word}
+main{max-width:560px;margin:0 auto;padding:calc(16px + env(safe-area-inset-top)) 16px calc(24px + env(safe-area-inset-bottom))}
+h1{font-size:20px;margin:4px 0 6px}
+h2{font-size:17px;margin:22px 0 4px}
+.lead,.guide{margin:0 0 12px;color:var(--dim);font-size:15px}
+.item{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 14px 16px;margin:0 0 12px}
+.where{font-size:13px;color:var(--dim);margin:0 0 4px}
+.say{margin:0 0 10px}
+.row{display:flex;gap:8px}
+button{flex:1 1 0;min-width:0;min-height:57px;padding:4px 2px;border:0;border-radius:12px;background:var(--acc);color:var(--acc-ink);font:inherit;font-weight:700;cursor:pointer;touch-action:manipulation}
+button small{display:block;font-size:12px}
+button:focus-visible,button[aria-pressed="true"]{outline:3px solid var(--ink);outline-offset:2px}
+#status:empty{display:none}
+</style>
+</head>
+<body>
+<main>
+<h1>귀 확인 3 — 한국어 남은 줄</h1>
+<p class="lead">단추를 누르면 바로 들립니다. 다시 누르면 멈춥니다. 이어폰으로 들어 주세요. 「가」만 들으셔도 됩니다.</p>
+<section id="must" aria-labelledby="must-heading">
+<h2 id="must-heading">가. 꼭 — 낱말이 글자대로 들리는지</h2>
+<p class="guide">기계가 받아쓴 글이 게임 글과 달랐던 줄입니다. 아래에 적은 낱말이 글자대로 들리는지만 들어 주세요.</p>
+<article class="item" id="a12.s5.box">
+<p class="say" id="a12.s5.box-text">니 물건, 거기다 다 넣어 놨어.</p>
+<p class="where" id="a12.s5.box-note">볼 낱말: 니 물건 (「내 물건」으로 들리면 안 됩니다)</p>
+<div class="row" role="group" aria-labelledby="a12.s5.box-text" aria-describedby="a12.s5.box-note">
+<button type="button" aria-controls="clip-a12.s5.box-new" aria-pressed="false">새</button>
+<button type="button" aria-controls="clip-a12.s5.box-old" aria-pressed="false">지금</button>
+</div>
+<audio id="clip-a12.s5.box-new" src="v92_ko3/a12_s5_box_new.m4a" preload="none" hidden></audio>
+<audio id="clip-a12.s5.box-old" src="v92_ko3/a12_s5_box_old.m4a" preload="none" hidden></audio>
+</article>
+<article class="item" id="line.vent.h41">
+<p class="say" id="line.vent.h41-text">전단 갈아 붙이던 할머니가 있었는데, 올겨울부터 안 와.</p>
+<p class="where" id="line.vent.h41-note">볼 곳: 끝의 「안 와.」 (두 번 들리면 안 됩니다)</p>
+<div class="row" role="group" aria-labelledby="line.vent.h41-text" aria-describedby="line.vent.h41-note">
+<button type="button" aria-controls="clip-line.vent.h41-new" aria-pressed="false">새</button>
+<button type="button" aria-controls="clip-line.vent.h41-old" aria-pressed="false">지금</button>
+</div>
+<audio id="clip-line.vent.h41-new" src="v92_ko3/line_vent_h41_new.m4a" preload="none" hidden></audio>
+<audio id="clip-line.vent.h41-old" src="v92_ko3/line_vent_h41_old.m4a" preload="none" hidden></audio>
+</article>
+<article class="item" id="line.near.h51">
+<p class="say" id="line.near.h51-text">거기 마루지? 밥상에 밥 셋 있잖아.</p>
+<p class="where" id="line.near.h51-note">볼 낱말: 마루지</p>
+<div class="row" role="group" aria-labelledby="line.near.h51-text" aria-describedby="line.near.h51-note">
+<button type="button" aria-controls="clip-line.near.h51-new" aria-pressed="false">새</button>
+<button type="button" aria-controls="clip-line.near.h51-old" aria-pressed="false">지금</button>
+</div>
+<audio id="clip-line.near.h51-new" src="v92_ko3/line_near_h51_new.m4a" preload="none" hidden></audio>
+<audio id="clip-line.near.h51-old" src="v92_ko3/line_near_h51_old.m4a" preload="none" hidden></audio>
+</article>
+<article class="item" id="line.near.h29">
+<p class="say" id="line.near.h29-text">……여기서 그거 물으면 안 되는 거, 알잖아.</p>
+<p class="where" id="line.near.h29-note">볼 낱말: 물으면</p>
+<div class="row" role="group" aria-labelledby="line.near.h29-text" aria-describedby="line.near.h29-note">
+<button type="button" aria-controls="clip-line.near.h29-new" aria-pressed="false">새</button>
+<button type="button" aria-controls="clip-line.near.h29-old" aria-pressed="false">지금</button>
+</div>
+<audio id="clip-line.near.h29-new" src="v92_ko3/line_near_h29_new.m4a" preload="none" hidden></audio>
+<audio id="clip-line.near.h29-old" src="v92_ko3/line_near_h29_old.m4a" preload="none" hidden></audio>
+</article>
+</section>
+<section id="reselected" aria-labelledby="reselected-heading">
+<h2 id="reselected-heading">나. 다시 고른 줄 — 새 / 지금</h2>
+<p class="guide">새 목소리로 바꾸지 못했던 줄을 다시 고른 것입니다. 「새」가 다른 줄과 같은 사람으로 들리면 됩니다.</p>
+<article class="item" id="a12.s5.this">
+<p class="say" id="a12.s5.this-text">이거야.</p>
+<div class="row" role="group" aria-labelledby="a12.s5.this-text">
+<button type="button" aria-controls="clip-a12.s5.this-new" aria-pressed="false">새</button>
+<button type="button" aria-controls="clip-a12.s5.this-old" aria-pressed="false">지금</button>
+</div>
+<audio id="clip-a12.s5.this-new" src="v92_ko3/a12_s5_this_new.m4a" preload="none" hidden></audio>
+<audio id="clip-a12.s5.this-old" src="v92_ko3/a12_s5_this_old.m4a" preload="none" hidden></audio>
+</article>
+<article class="item" id="a12.s5.phone.1">
+<p class="say" id="a12.s5.phone.1-text">폰 줘.</p>
+<div class="row" role="group" aria-labelledby="a12.s5.phone.1-text">
+<button type="button" aria-controls="clip-a12.s5.phone.1-new" aria-pressed="false">새</button>
+<button type="button" aria-controls="clip-a12.s5.phone.1-old" aria-pressed="false">지금</button>
+</div>
+<audio id="clip-a12.s5.phone.1-new" src="v92_ko3/a12_s5_phone_1_new.m4a" preload="none" hidden></audio>
+<audio id="clip-a12.s5.phone.1-old" src="v92_ko3/a12_s5_phone_1_old.m4a" preload="none" hidden></audio>
+</article>
+<article class="item" id="a12.s5.up.blur">
+<p class="say" id="a12.s5.up.blur-text">올라가. 밝은 데서 보자.</p>
+<div class="row" role="group" aria-labelledby="a12.s5.up.blur-text">
+<button type="button" aria-controls="clip-a12.s5.up.blur-new" aria-pressed="false">새</button>
+<button type="button" aria-controls="clip-a12.s5.up.blur-old" aria-pressed="false">지금</button>
+</div>
+<audio id="clip-a12.s5.up.blur-new" src="v92_ko3/a12_s5_up_blur_new.m4a" preload="none" hidden></audio>
+<audio id="clip-a12.s5.up.blur-old" src="v92_ko3/a12_s5_up_blur_old.m4a" preload="none" hidden></audio>
+</article>
+<article class="item" id="a12.call.F4">
+<p class="say" id="a12.call.F4-text">오빠.</p>
+<div class="row" role="group" aria-labelledby="a12.call.F4-text">
+<button type="button" aria-controls="clip-a12.call.F4-new" aria-pressed="false">새</button>
+<button type="button" aria-controls="clip-a12.call.F4-old" aria-pressed="false">지금</button>
+</div>
+<audio id="clip-a12.call.F4-new" src="v92_ko3/a12_call_F4_new.m4a" preload="none" hidden></audio>
+<audio id="clip-a12.call.F4-old" src="v92_ko3/a12_call_F4_old.m4a" preload="none" hidden></audio>
+</article>
+<article class="item" id="a12.call.T">
+<p class="say" id="a12.call.T-text">오빠.</p>
+<div class="row" role="group" aria-labelledby="a12.call.T-text">
+<button type="button" aria-controls="clip-a12.call.T-new" aria-pressed="false">새</button>
+<button type="button" aria-controls="clip-a12.call.T-old" aria-pressed="false">지금</button>
+</div>
+<audio id="clip-a12.call.T-new" src="v92_ko3/a12_call_T_new.m4a" preload="none" hidden></audio>
+<audio id="clip-a12.call.T-old" src="v92_ko3/a12_call_T_old.m4a" preload="none" hidden></audio>
+</article>
+<article class="item" id="line.near.h16">
+<p class="say" id="line.near.h16-text">저번에도 받더니 이번에도 받네.</p>
+<div class="row" role="group" aria-labelledby="line.near.h16-text">
+<button type="button" aria-controls="clip-line.near.h16-new" aria-pressed="false">새</button>
+<button type="button" aria-controls="clip-line.near.h16-old" aria-pressed="false">지금</button>
+</div>
+<audio id="clip-line.near.h16-new" src="v92_ko3/line_near_h16_new.m4a" preload="none" hidden></audio>
+<audio id="clip-line.near.h16-old" src="v92_ko3/line_near_h16_old.m4a" preload="none" hidden></audio>
+</article>
+<article class="item" id="line.near.h30">
+<p class="say" id="line.near.h30-text">안 받더니 이제 받네.</p>
+<div class="row" role="group" aria-labelledby="line.near.h30-text">
+<button type="button" aria-controls="clip-line.near.h30-new" aria-pressed="false">새</button>
+<button type="button" aria-controls="clip-line.near.h30-old" aria-pressed="false">지금</button>
+</div>
+<audio id="clip-line.near.h30-new" src="v92_ko3/line_near_h30_new.m4a" preload="none" hidden></audio>
+<audio id="clip-line.near.h30-old" src="v92_ko3/line_near_h30_old.m4a" preload="none" hidden></audio>
+</article>
+<article class="item" id="line.near.h58">
+<p class="say" id="line.near.h58-text">미닫이는 열지 마. 누가 열어 달래도. 잠금쇠 올라가면 꾹 눌러 놔.</p>
+<div class="row" role="group" aria-labelledby="line.near.h58-text">
+<button type="button" aria-controls="clip-line.near.h58-new" aria-pressed="false">새</button>
+<button type="button" aria-controls="clip-line.near.h58-old" aria-pressed="false">지금</button>
+</div>
+<audio id="clip-line.near.h58-new" src="v92_ko3/line_near_h58_new.m4a" preload="none" hidden></audio>
+<audio id="clip-line.near.h58-old" src="v92_ko3/line_near_h58_old.m4a" preload="none" hidden></audio>
+</article>
+<article class="item" id="a12.s5.wall">
+<p class="say" id="a12.s5.wall-text">벽 너머 말고 이렇게 보는 건 처음이지.</p>
+<div class="row" role="group" aria-labelledby="a12.s5.wall-text">
+<button type="button" aria-controls="clip-a12.s5.wall-new" aria-pressed="false">새</button>
+<button type="button" aria-controls="clip-a12.s5.wall-old" aria-pressed="false">지금</button>
+</div>
+<audio id="clip-a12.s5.wall-new" src="v92_ko3/a12_s5_wall_new.m4a" preload="none" hidden></audio>
+<audio id="clip-a12.s5.wall-old" src="v92_ko3/a12_s5_wall_old.m4a" preload="none" hidden></audio>
+</article>
+</section>
+<section id="metrics" aria-labelledby="metrics-heading">
+<h2 id="metrics-heading">다. 시간 되실 때 — 잰 값이 튄 줄</h2>
+<p class="guide">길이나 높낮이가 낭독과 많이 달랐던 줄입니다. 이상하게 들리는 줄만 말씀해 주세요.</p>
+<article class="item" id="a12.s5.school.blur">
+<p class="say" id="a12.s5.school.blur-text">학교 대신 여기 있었어.</p>
+<div class="row" role="group" aria-labelledby="a12.s5.school.blur-text">
+<button type="button" aria-controls="clip-a12.s5.school.blur-new" aria-pressed="false">새</button>
+<button type="button" aria-controls="clip-a12.s5.school.blur-old" aria-pressed="false">지금</button>
+</div>
+<audio id="clip-a12.s5.school.blur-new" src="v92_ko3/a12_s5_school_blur_new.m4a" preload="none" hidden></audio>
+<audio id="clip-a12.s5.school.blur-old" src="v92_ko3/a12_s5_school_blur_old.m4a" preload="none" hidden></audio>
+</article>
+<article class="item" id="line.vent.h45_3">
+<p class="say" id="line.vent.h45_3-text">……거기 있는 거 알아. 대답 안 해도 돼. 원래 안 하잖아.</p>
+<div class="row" role="group" aria-labelledby="line.vent.h45_3-text">
+<button type="button" aria-controls="clip-line.vent.h45_3-new" aria-pressed="false">새</button>
+<button type="button" aria-controls="clip-line.vent.h45_3-old" aria-pressed="false">지금</button>
+</div>
+<audio id="clip-line.vent.h45_3-new" src="v92_ko3/line_vent_h45_3_new.m4a" preload="none" hidden></audio>
+<audio id="clip-line.vent.h45_3-old" src="v92_ko3/line_vent_h45_3_old.m4a" preload="none" hidden></audio>
+</article>
+<article class="item" id="a12.s5.enough">
+<p class="say" id="a12.s5.enough-text">됐어. 안 나오면 안 나오는 거지.</p>
+<div class="row" role="group" aria-labelledby="a12.s5.enough-text">
+<button type="button" aria-controls="clip-a12.s5.enough-new" aria-pressed="false">새</button>
+<button type="button" aria-controls="clip-a12.s5.enough-old" aria-pressed="false">지금</button>
+</div>
+<audio id="clip-a12.s5.enough-new" src="v92_ko3/a12_s5_enough_new.m4a" preload="none" hidden></audio>
+<audio id="clip-a12.s5.enough-old" src="v92_ko3/a12_s5_enough_old.m4a" preload="none" hidden></audio>
+</article>
+<article class="item" id="line.vent.h45">
+<p class="say" id="line.vent.h45-text">……거기 있는 거 알아. 대답 안 해도 돼. 원래 안 하잖아.</p>
+<div class="row" role="group" aria-labelledby="line.vent.h45-text">
+<button type="button" aria-controls="clip-line.vent.h45-new" aria-pressed="false">새</button>
+<button type="button" aria-controls="clip-line.vent.h45-old" aria-pressed="false">지금</button>
+</div>
+<audio id="clip-line.vent.h45-new" src="v92_ko3/line_vent_h45_new.m4a" preload="none" hidden></audio>
+<audio id="clip-line.vent.h45-old" src="v92_ko3/line_vent_h45_old.m4a" preload="none" hidden></audio>
+</article>
+<article class="item" id="a12.s5.match">
+<p class="say" id="a12.s5.match-text">맞지? 맞나?</p>
+<div class="row" role="group" aria-labelledby="a12.s5.match-text">
+<button type="button" aria-controls="clip-a12.s5.match-new" aria-pressed="false">새</button>
+<button type="button" aria-controls="clip-a12.s5.match-old" aria-pressed="false">지금</button>
+</div>
+<audio id="clip-a12.s5.match-new" src="v92_ko3/a12_s5_match_new.m4a" preload="none" hidden></audio>
+<audio id="clip-a12.s5.match-old" src="v92_ko3/a12_s5_match_old.m4a" preload="none" hidden></audio>
+</article>
+<article class="item" id="line.vent.h50t">
+<p class="say" id="line.vent.h50t-text">왔네……</p>
+<div class="row" role="group" aria-labelledby="line.vent.h50t-text">
+<button type="button" aria-controls="clip-line.vent.h50t-new" aria-pressed="false">새</button>
+<button type="button" aria-controls="clip-line.vent.h50t-old" aria-pressed="false">지금</button>
+</div>
+<audio id="clip-line.vent.h50t-new" src="v92_ko3/line_vent_h50t_new.m4a" preload="none" hidden></audio>
+<audio id="clip-line.vent.h50t-old" src="v92_ko3/line_vent_h50t_old.m4a" preload="none" hidden></audio>
+</article>
+<article class="item" id="a12.s5.read.2">
+<p class="say" id="a12.s5.read.2-text">아니다. 됐어.</p>
+<div class="row" role="group" aria-labelledby="a12.s5.read.2-text">
+<button type="button" aria-controls="clip-a12.s5.read.2-new" aria-pressed="false">새</button>
+<button type="button" aria-controls="clip-a12.s5.read.2-old" aria-pressed="false">지금</button>
+</div>
+<audio id="clip-a12.s5.read.2-new" src="v92_ko3/a12_s5_read_2_new.m4a" preload="none" hidden></audio>
+<audio id="clip-a12.s5.read.2-old" src="v92_ko3/a12_s5_read_2_old.m4a" preload="none" hidden></audio>
+</article>
+<article class="item" id="a12.s5.wrong">
+<p class="say" id="a12.s5.wrong-text">그날 새벽에 너 떡국 해 두고 갔잖아.</p>
+<div class="row" role="group" aria-labelledby="a12.s5.wrong-text">
+<button type="button" aria-controls="clip-a12.s5.wrong-new" aria-pressed="false">새</button>
+<button type="button" aria-controls="clip-a12.s5.wrong-old" aria-pressed="false">지금</button>
+</div>
+<audio id="clip-a12.s5.wrong-new" src="v92_ko3/a12_s5_wrong_new.m4a" preload="none" hidden></audio>
+<audio id="clip-a12.s5.wrong-old" src="v92_ko3/a12_s5_wrong_old.m4a" preload="none" hidden></audio>
+</article>
+<article class="item" id="a12.call.F2">
+<p class="say" id="a12.call.F2-text">오빠. 오빠.</p>
+<div class="row" role="group" aria-labelledby="a12.call.F2-text">
+<button type="button" aria-controls="clip-a12.call.F2-new" aria-pressed="false">새</button>
+<button type="button" aria-controls="clip-a12.call.F2-old" aria-pressed="false">지금</button>
+</div>
+<audio id="clip-a12.call.F2-new" src="v92_ko3/a12_call_F2_new.m4a" preload="none" hidden></audio>
+<audio id="clip-a12.call.F2-old" src="v92_ko3/a12_call_F2_old.m4a" preload="none" hidden></audio>
+</article>
+<article class="item" id="a12.s5.first">
+<p class="say" id="a12.s5.first-text">오빠.</p>
+<div class="row" role="group" aria-labelledby="a12.s5.first-text">
+<button type="button" aria-controls="clip-a12.s5.first-new" aria-pressed="false">새</button>
+<button type="button" aria-controls="clip-a12.s5.first-old" aria-pressed="false">지금</button>
+</div>
+<audio id="clip-a12.s5.first-new" src="v92_ko3/a12_s5_first_new.m4a" preload="none" hidden></audio>
+<audio id="clip-a12.s5.first-old" src="v92_ko3/a12_s5_first_old.m4a" preload="none" hidden></audio>
+</article>
+<article class="item" id="a12.s5.name">
+<p class="say" id="a12.s5.name-text">한결.</p>
+<div class="row" role="group" aria-labelledby="a12.s5.name-text">
+<button type="button" aria-controls="clip-a12.s5.name-new" aria-pressed="false">새</button>
+<button type="button" aria-controls="clip-a12.s5.name-old" aria-pressed="false">지금</button>
+</div>
+<audio id="clip-a12.s5.name-new" src="v92_ko3/a12_s5_name_new.m4a" preload="none" hidden></audio>
+<audio id="clip-a12.s5.name-old" src="v92_ko3/a12_s5_name_old.m4a" preload="none" hidden></audio>
+</article>
+<article class="item" id="line.near.h04">
+<p class="say" id="line.near.h04-text">……좋겠다.</p>
+<div class="row" role="group" aria-labelledby="line.near.h04-text">
+<button type="button" aria-controls="clip-line.near.h04-new" aria-pressed="false">새</button>
+<button type="button" aria-controls="clip-line.near.h04-old" aria-pressed="false">지금</button>
+</div>
+<audio id="clip-line.near.h04-new" src="v92_ko3/line_near_h04_new.m4a" preload="none" hidden></audio>
+<audio id="clip-line.near.h04-old" src="v92_ko3/line_near_h04_old.m4a" preload="none" hidden></audio>
+</article>
+<article class="item" id="line.near.h52">
+<p class="say" id="line.near.h52-text">김 나는 두 그릇은 내가 떠 놨어. 하나는 니 거야.</p>
+<div class="row" role="group" aria-labelledby="line.near.h52-text">
+<button type="button" aria-controls="clip-line.near.h52-new" aria-pressed="false">새</button>
+<button type="button" aria-controls="clip-line.near.h52-old" aria-pressed="false">지금</button>
+</div>
+<audio id="clip-line.near.h52-new" src="v92_ko3/line_near_h52_new.m4a" preload="none" hidden></audio>
+<audio id="clip-line.near.h52-old" src="v92_ko3/line_near_h52_old.m4a" preload="none" hidden></audio>
+</article>
+<article class="item" id="line.near.h61">
+<p class="say" id="line.near.h61-text">전도 부쳐 놨어. 너 좋아하는 거…… 뭐였더라. 아, 됐다. 다 먹고 가.</p>
+<div class="row" role="group" aria-labelledby="line.near.h61-text">
+<button type="button" aria-controls="clip-line.near.h61-new" aria-pressed="false">새</button>
+<button type="button" aria-controls="clip-line.near.h61-old" aria-pressed="false">지금</button>
+</div>
+<audio id="clip-line.near.h61-new" src="v92_ko3/line_near_h61_new.m4a" preload="none" hidden></audio>
+<audio id="clip-line.near.h61-old" src="v92_ko3/line_near_h61_old.m4a" preload="none" hidden></audio>
+</article>
+<article class="item" id="a12.s5.note">
+<p class="say" id="a12.s5.note-text">이건 못 띄웠어.</p>
+<div class="row" role="group" aria-labelledby="a12.s5.note-text">
+<button type="button" aria-controls="clip-a12.s5.note-new" aria-pressed="false">새</button>
+<button type="button" aria-controls="clip-a12.s5.note-old" aria-pressed="false">지금</button>
+</div>
+<audio id="clip-a12.s5.note-new" src="v92_ko3/a12_s5_note_new.m4a" preload="none" hidden></audio>
+<audio id="clip-a12.s5.note-old" src="v92_ko3/a12_s5_note_old.m4a" preload="none" hidden></audio>
+</article>
+</section>
+<section id="continuity" aria-labelledby="continuity-heading">
+<h2 id="continuity-heading">라. 시간 되실 때 — 옛 목소리로 남는 줄</h2>
+<p class="guide">둘째 · 셋째 · 넷째 줄은 옛 목소리 그대로이고 첫째 · 다섯째 줄은 새 목소리입니다. 차례대로 들었을 때 한 사람으로 들리는지 봐 주세요.</p>
+<article class="item" id="line.near.h06">
+<p class="say" id="line.near.h06-text">저번엔 인터폰, 이번엔 이 전화야. 또 나야.</p>
+<div class="row" role="group" aria-labelledby="line.near.h06-text">
+<button type="button" aria-controls="clip-line.near.h06-new" aria-pressed="false">새</button>
+</div>
+<audio id="clip-line.near.h06-new" src="v92_ko3/line_near_h06_new.m4a" preload="none" hidden></audio>
+</article>
+<article class="item" id="line.near.h08">
+<p class="say" id="line.near.h08-text">받았구나. ……아, 다행이다.</p>
+<div class="row" role="group" aria-labelledby="line.near.h08-text">
+<button type="button" aria-controls="clip-line.near.h08-old" aria-pressed="false">지금</button>
+</div>
+<audio id="clip-line.near.h08-old" src="v92_ko3/line_near_h08_old.m4a" preload="none" hidden></audio>
+</article>
+<article class="item" id="line.near.h09">
+<p class="say" id="line.near.h09-text">거기 의자 하나씩 세고 있지. 세지 마. 명단만 봐. 명단만 봐.</p>
+<div class="row" role="group" aria-labelledby="line.near.h09-text">
+<button type="button" aria-controls="clip-line.near.h09-old" aria-pressed="false">지금</button>
+</div>
+<audio id="clip-line.near.h09-old" src="v92_ko3/line_near_h09_old.m4a" preload="none" hidden></audio>
+</article>
+<article class="item" id="line.near.h10">
+<p class="say" id="line.near.h10-text">명단에 적혀 있는 게 사람이고 나머지는 그냥 가만히 앉아 있는 거야.</p>
+<div class="row" role="group" aria-labelledby="line.near.h10-text">
+<button type="button" aria-controls="clip-line.near.h10-old" aria-pressed="false">지금</button>
+</div>
+<audio id="clip-line.near.h10-old" src="v92_ko3/line_near_h10_old.m4a" preload="none" hidden></audio>
+</article>
+<article class="item" id="line.near.h11">
+<p class="say" id="line.near.h11-text">0번엔 숫자만 말해. 널 뭐라고 부르면 되냐고 묻거든— 아, 너 이름 없지. 그럼 됐고.</p>
+<div class="row" role="group" aria-labelledby="line.near.h11-text">
+<button type="button" aria-controls="clip-line.near.h11-new" aria-pressed="false">새</button>
+</div>
+<audio id="clip-line.near.h11-new" src="v92_ko3/line_near_h11_new.m4a" preload="none" hidden></audio>
+</article>
+</section>
+</main>
+<script>
+function player() {
+  let active = null;
+  function stop() {
+    if (!active) return;
+    const selected = active;
+    active = null;
+    selected.audio.pause();
+    selected.audio.currentTime = 0;
+    selected.button.setAttribute("aria-pressed", "false");
+  }
+  for (const button of document.querySelectorAll("button[aria-controls]")) {
+    const audio = document.getElementById(button.getAttribute("aria-controls"));
+    button.addEventListener("click", () => {
+      if (active?.button === button) {
+        stop();
+        return;
+      }
+      stop();
+      const selected = { button, audio };
+      active = selected;
+      button.setAttribute("aria-pressed", "true");
+      audio.play().catch(() => {
+        if (active === selected) stop();
+      });
+    });
+    audio.addEventListener("ended", () => {
+      if (active?.audio === audio) stop();
+    });
+    audio.addEventListener("error", () => {
+      if (active?.audio === audio) stop();
+    });
+  }
+  window.addEventListener("pagehide", stop);
+}
+player();
+</script>
+</body>
+</html>

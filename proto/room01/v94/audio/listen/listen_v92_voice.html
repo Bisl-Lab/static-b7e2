@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="icon" href="data:,">
+<title>귀 확인 — 목소리</title>
+<style>
+:root{--bg:#0d0f10;--card:#171a1b;--line:#2c3433;--ink:#ece4d4;--dim:#a39d90;--acc:#c9873f;--acc-ink:#1a1208}
+@media (prefers-color-scheme:light){:root{--bg:#f4f1ea;--card:#fffdf8;--line:#d9d3c6;--ink:#24231f;--dim:#5e5a51;--acc:#9a5f22;--acc-ink:#fff8ee}}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;word-break:keep-all;overflow-wrap:break-word}
+main{max-width:560px;margin:0 auto;padding:calc(16px + env(safe-area-inset-top)) 16px calc(24px + env(safe-area-inset-bottom))}
+h1{font-size:20px;margin:4px 0 6px}
+h2{font-size:17px;margin:22px 0 4px}
+.lead,.guide{margin:0 0 12px;color:var(--dim);font-size:15px}
+.item{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 14px 16px;margin:0 0 12px}
+.where{font-size:13px;color:var(--dim);margin:0 0 4px}
+.say{margin:0 0 10px}
+.row{display:flex;gap:8px}
+button{flex:1 1 0;min-width:0;min-height:56px;padding:4px 2px;border:0;border-radius:12px;background:var(--acc);color:var(--acc-ink);font:inherit;font-weight:700;cursor:pointer;touch-action:manipulation}
+button small{display:block;font-size:12px}
+button:focus-visible,button[aria-pressed="true"]{outline:3px solid var(--ink);outline-offset:2px}
+#status:empty{display:none}
+</style>
+</head>
+<body>
+<main>
+<h1>귀 확인 — 목소리</h1>
+
+<p class="lead">단추를 누르면 바로 들립니다. 다시 누르면 멈춥니다. 이어폰으로 들어 주세요.</p>
+
+<section aria-labelledby="section-1">
+<h2 id="section-1">편지 게임 03:30 — 딸의 첫 전화</h2>
+<p class="guide">들뜨지 않고 차분한지, 뒤 문장이 급하지 않은지 들어 주세요. 어느 쪽이 좋으세요?</p>
+<div class="item"><p class="say" id="ko-1">아빠, 나야. 나 지금 터미널이야. 첫차 타고 와, 응? 도착하는 데서 기다릴게.</p><div class="row" role="group" aria-labelledby="ko-1"><button type="button" aria-pressed="false" data-src="../line/c317_girl_d01.m4a">지금 판</button><button type="button" aria-pressed="false" data-src="v92_voice/ko-01-da.m4a">다</button><button type="button" aria-pressed="false" data-src="v92_voice/ko-01-ra1.m4a">라-1</button><button type="button" aria-pressed="false" data-src="v92_voice/ko-01-ra2.m4a">라-2<small>새 목소리</small></button></div></div>
+</section>
+
+<section aria-labelledby="section-2">
+<h2 id="section-2">편지 게임 — 아버지 대답(새 글)</h2>
+<p class="guide">남자 목소리로 들리는지, 두 대답이 같은 사람인지 들어 주세요. 어느 쪽이 좋으세요?</p>
+<div class="item"><p class="say" id="ko-2">어, 아빠야. 첫차 타고 갈게.</p><p class="say" id="ko-3">아직 안 왔어. 오면 바로 탈게.</p><div class="row" role="group" aria-labelledby="ko-2 ko-3"><button type="button" aria-pressed="false" data-src="../line/c642_voice_v0259.m4a ../line/c642_voice_v0261.m4a">지금 판</button><button type="button" aria-pressed="false" data-src="v92_voice/ko-02-raA.m4a v92_voice/ko-03-raA.m4a">라-㉮</button><button type="button" aria-pressed="false" data-src="v92_voice/ko-02-raB.m4a v92_voice/ko-03-raB.m4a">라-㉯</button></div></div>
+</section>
+
+<section aria-labelledby="section-3">
+<h2 id="section-3">문 너머 목소리 — 나 / 다 / 라</h2>
+<p class="guide">합성으로 통일합니다. 나는 지난번에 들으신 합성, 다와 라는 낭독 판의 말결을 본으로 삼아 다시 만든 합성입니다(다 = 지금 모델 · 라 = 새 모델). 가는 지금 게임에 든 낭독 판으로, 견주어 들으시라고 함께 실었습니다. 나 · 다 · 라 가운데 전체로 한 쪽을 골라 주세요.</p>
+<div class="item"><p class="where" id="benchmark">기준 — 6장 끝 환풍구 너머 부름</p><div class="row" role="group" aria-labelledby="benchmark"><button type="button" aria-pressed="false" data-src="../line/c625_vent_h15.m4a">듣기</button></div></div>
+<div class="item"><p class="say" id="ko-4">벽 두 번이면 나야. 문은 몇 번을 두드려도 그냥 둬.</p><div class="row" role="group" aria-labelledby="ko-4"><button type="button" aria-pressed="false" data-src="../line/c317_vent_h35.wav">가</button><button type="button" aria-pressed="false" data-src="v92_voice/ko-04-na.m4a">나</button><button type="button" aria-pressed="false" data-src="v92_voice/ko-04-da.m4a">다</button><button type="button" aria-pressed="false" data-src="v92_voice/ko-04-ra.m4a">라</button></div></div>
+<div class="item"><p class="say" id="ko-5">알고 있었어. 그래도 날마다 계속 걸었어.</p><div class="row" role="group" aria-labelledby="ko-5"><button type="button" aria-pressed="false" data-src="../line/c433_e21_t01__near.m4a">가</button><button type="button" aria-pressed="false" data-src="v92_voice/ko-05-na.m4a">나</button><button type="button" aria-pressed="false" data-src="v92_voice/ko-05-da.m4a">다</button><button type="button" aria-pressed="false" data-src="v92_voice/ko-05-ra.m4a">라</button></div></div>
+<div class="item"><p class="say" id="ko-6">읽었네. 읽고도 아무 말도 안 했네.</p><div class="row" role="group" aria-labelledby="ko-6"><button type="button" aria-pressed="false" data-src="../line/c433_e30_t01__near.m4a">가</button><button type="button" aria-pressed="false" data-src="v92_voice/ko-06-na.m4a">나</button><button type="button" aria-pressed="false" data-src="v92_voice/ko-06-da.m4a">다</button><button type="button" aria-pressed="false" data-src="v92_voice/ko-06-ra.m4a">라</button></div></div>
+<div class="item"><p class="say" id="ko-7">아니다. 됐어.</p><div class="row" role="group" aria-labelledby="ko-7"><button type="button" aria-pressed="false" data-src="../line/c433_e31_t01__near.m4a">가</button><button type="button" aria-pressed="false" data-src="v92_voice/ko-07-na.m4a">나</button><button type="button" aria-pressed="false" data-src="v92_voice/ko-07-da.m4a">다</button><button type="button" aria-pressed="false" data-src="v92_voice/ko-07-ra.m4a">라</button></div></div>
+<div class="item"><p class="say" id="ko-8">한결.</p><div class="row" role="group" aria-labelledby="ko-8"><button type="button" aria-pressed="false" data-src="../line/c433_e33_t01__near.m4a">가</button><button type="button" aria-pressed="false" data-src="v92_voice/ko-08-na.m4a">나</button><button type="button" aria-pressed="false" data-src="v92_voice/ko-08-da.m4a">다</button><button type="button" aria-pressed="false" data-src="v92_voice/ko-08-ra.m4a">라</button></div></div>
+<div class="item"><p class="say" id="ko-9">가면 다시 오지 마.</p><div class="row" role="group" aria-labelledby="ko-9"><button type="button" aria-pressed="false" data-src="../line/c433_e75_t01__near.m4a">가</button><button type="button" aria-pressed="false" data-src="v92_voice/ko-09-na.m4a">나</button><button type="button" aria-pressed="false" data-src="v92_voice/ko-09-da.m4a">다</button><button type="button" aria-pressed="false" data-src="v92_voice/ko-09-ra.m4a">라</button></div></div>
+<div class="item"><p class="say" id="ko-10">집 가자. 거실장, 아직 안 열었어.</p><div class="row" role="group" aria-labelledby="ko-10"><button type="button" aria-pressed="false" data-src="../line/c433_e73_t01__near.m4a">가</button><button type="button" aria-pressed="false" data-src="v92_voice/ko-10-na.m4a">나</button><button type="button" aria-pressed="false" data-src="v92_voice/ko-10-da.m4a">다</button><button type="button" aria-pressed="false" data-src="v92_voice/ko-10-ra.m4a">라</button></div></div>
+</section>
+
+<section aria-labelledby="section-4">
+<h2 id="section-4">영어 표본 — 같은 목소리로</h2>
+<p class="guide">외국어 목소리를 이 길로 만들 수 있는지 보는 표본입니다. 사람 말처럼 들리는지, 한국어 판과 같은 사람으로 들리는지 들어 주세요. 영어가 어색한지는 느낌만 말씀해 주셔도 됩니다.</p>
+<div class="item"><p class="say" id="en-1" lang="en">Dad, it&#39;s me. I&#39;m at the terminal. Take the first bus, okay? I&#39;ll wait where it comes in.</p><div class="row" role="group" aria-labelledby="en-1"><button type="button" aria-pressed="false" data-src="v92_voice/ko-01-ra1.m4a">한국어</button><button type="button" aria-pressed="false" data-src="v92_voice/en-01-ra1.m4a">영어</button></div></div>
+<div class="item"><p class="say" id="en-2" lang="en">Yeah, it&#39;s Dad. I&#39;ll take the first bus.</p><div class="row" role="group" aria-labelledby="en-2"><button type="button" aria-pressed="false" data-src="v92_voice/ko-02-raA.m4a">한국어</button><button type="button" aria-pressed="false" data-src="v92_voice/en-02-raA.m4a">영어</button></div></div>
+<div class="item"><p class="say" id="en-3" lang="en">Not here yet. I&#39;ll get on as soon as it comes.</p><div class="row" role="group" aria-labelledby="en-3"><button type="button" aria-pressed="false" data-src="v92_voice/ko-03-raA.m4a">한국어</button><button type="button" aria-pressed="false" data-src="v92_voice/en-03-raA.m4a">영어</button></div></div>
+<div class="item"><p class="say" id="en-4" lang="en">Two knocks on the wall means it&#39;s me. The door, however many times it knocks, leave it.</p><div class="row" role="group" aria-labelledby="en-4"><button type="button" aria-pressed="false" data-src="v92_voice/ko-04-ra.m4a">한국어</button><button type="button" aria-pressed="false" data-src="v92_voice/en-04-ra.m4a">영어</button></div></div>
+<div class="item"><p class="say" id="en-5" lang="en">I knew. I still kept walking, every day.</p><div class="row" role="group" aria-labelledby="en-5"><button type="button" aria-pressed="false" data-src="v92_voice/ko-05-ra.m4a">한국어</button><button type="button" aria-pressed="false" data-src="v92_voice/en-05-ra.m4a">영어</button></div></div>
+<div class="item"><p class="say" id="en-6" lang="en">You read it. You read it and said nothing.</p><div class="row" role="group" aria-labelledby="en-6"><button type="button" aria-pressed="false" data-src="v92_voice/ko-06-ra.m4a">한국어</button><button type="button" aria-pressed="false" data-src="v92_voice/en-06-ra.m4a">영어</button></div></div>
+<div class="item"><p class="say" id="en-7" lang="en">No. Never mind.</p><div class="row" role="group" aria-labelledby="en-7"><button type="button" aria-pressed="false" data-src="v92_voice/ko-07-ra.m4a">한국어</button><button type="button" aria-pressed="false" data-src="v92_voice/en-07-ra.m4a">영어</button></div></div>
+<div class="item"><p class="say" id="en-9" lang="en">If you go, don&#39;t come back.</p><div class="row" role="group" aria-labelledby="en-9"><button type="button" aria-pressed="false" data-src="v92_voice/ko-09-ra.m4a">한국어</button><button type="button" aria-pressed="false" data-src="v92_voice/en-09-ra.m4a">영어</button></div></div>
+<div class="item"><p class="say" id="en-10" lang="en">Let&#39;s go home. The cabinet, I still haven&#39;t opened it.</p><div class="row" role="group" aria-labelledby="en-10"><button type="button" aria-pressed="false" data-src="v92_voice/ko-10-ra.m4a">한국어</button><button type="button" aria-pressed="false" data-src="v92_voice/en-10-ra.m4a">영어</button></div></div>
+</section>
+
+<p id="status" aria-live="polite"></p>
+
+<audio id="player" preload="none" hidden></audio>
+</main>
+<script>
+(function setupPlayer() {
+  const player = document.getElementById("player");
+  const status = document.getElementById("status");
+  let active = null;
+  let queue = [];
+  let timer = null;
+  let run = 0;
+
+  function stop() {
+    run += 1;
+    clearTimeout(timer);
+    queue = [];
+    player.pause();
+    player.removeAttribute("src");
+    player.load();
+    if (active) active.setAttribute("aria-pressed", "false");
+    active = null;
+  }
+  function playNext() {
+    const file = queue.shift();
+    if (!file) {
+      stop();
+      return;
+    }
+    player.src = file;
+    const started = run;
+    player.play().catch(() => {
+      if (run === started) {
+        stop();
+        status.textContent = "다시 누르세요";
+      }
+    });
+  }
+  document.querySelectorAll("button[data-src]").forEach((button) => {
+    button.addEventListener("click", () => {
+      status.textContent = "";
+      if (active === button) {
+        stop();
+        return;
+      }
+      stop();
+      active = button;
+      active.setAttribute("aria-pressed", "true");
+      queue = button.dataset.src.split(" ");
+      playNext();
+    });
+  });
+  player.addEventListener("ended", () => {
+    if (!active || !player.ended) return;
+    if (queue.length) timer = setTimeout(playNext, 350);
+    else stop();
+  });
+})();
+</script>
+</body>
+</html>
