@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="icon" href="data:,">
+<title>귀 확인 9 — 외국어 목소리</title>
+<style>
+:root{color-scheme:dark;--bg:#0d0f10;--card:#171a1b;--line:#46514e;--ink:#ece4d4;--dim:#c1b9ac;--accent:#c9873f;--button-ink:#1a1208}
+@media(prefers-color-scheme:light){:root{color-scheme:light;--bg:#f4f1ea;--card:#fffdf8;--line:#b2aa9d;--ink:#24231f;--dim:#5e5a51;--accent:#9a5f22;--button-ink:#fff8ee}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;word-break:keep-all;overflow-wrap:anywhere}
+main{max-width:560px;margin:auto;padding:calc(16px + env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) calc(24px + env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left))}
+h1{font-size:20px;margin:4px 0 6px}
+h2{font-size:18px;margin:26px 0 8px}
+h3{font-size:16px;margin:0 0 4px}
+.lead,.status{color:var(--dim);margin:0;font-size:15px}
+article{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+.say{margin:0 0 10px;white-space:pre-wrap}
+button{width:100%;min-height:58px;padding:4px 12px;border:0;border-radius:12px;background:var(--accent);color:var(--button-ink);font:inherit;font-weight:700;cursor:pointer;touch-action:manipulation}
+button:focus-visible,button[aria-pressed="true"],label:has(input:focus-visible){outline:3px solid var(--ink);outline-offset:2px}
+fieldset{min-width:0;border:0;padding:0;margin:14px 0 0}
+legend{padding:0;margin-bottom:4px}
+.choices{display:flex;flex-wrap:wrap;gap:6px}
+.choices label{display:flex;align-items:center;gap:4px;min-height:44px;padding:3px 8px;border:1px solid var(--line);border-radius:8px;cursor:pointer}
+.choices input{margin:0;accent-color:var(--accent)}
+.status:not(:empty){margin-top:4px}
+</style>
+</head>
+<body>
+<main>
+<h1>귀 확인 9 — 외국어 목소리</h1>
+<p class="lead">목소리를 듣고 두 항목을 골라 주세요. 같은 단추를 다시 누르면 재생이 멈춥니다.</p>
+<section aria-labelledby="terminal">
+<h2 id="terminal">터미널 안내 방송</h2>
+<article aria-labelledby="terminal-en-language">
+<h3 id="terminal-en-language">영어</h3>
+<p id="terminal-en-text" class="say" lang="en">Passengers for the first bus, please wait in the waiting room.</p>
+<button type="button" aria-pressed="false" aria-controls="terminal-en-audio" aria-describedby="terminal-en-text">영어 듣기</button>
+<audio id="terminal-en-audio" src="v94_voice9/terminal-en.m4a" preload="none" hidden></audio>
+<p class="status" role="status"></p>
+<fieldset><legend>사람이 말하는 것처럼 들리나요?</legend><div class="choices"><label><input type="radio" name="terminal-en-natural" value="예"> 예</label><label><input type="radio" name="terminal-en-natural" value="아니요"> 아니요</label><label><input type="radio" name="terminal-en-natural" value="모르겠어요"> 모르겠어요</label></div></fieldset>
+<fieldset><legend>말하는 빠르기는 어떤가요?</legend><div class="choices"><label><input type="radio" name="terminal-en-speed" value="느려요"> 느려요</label><label><input type="radio" name="terminal-en-speed" value="알맞아요"> 알맞아요</label><label><input type="radio" name="terminal-en-speed" value="빨라요"> 빨라요</label></div></fieldset>
+</article>
+<article aria-labelledby="terminal-zh-language">
+<h3 id="terminal-zh-language">중국어 간체</h3>
+<p id="terminal-zh-text" class="say" lang="zh-Hans">乘坐首班车的旅客，请在候车室等候。</p>
+<button type="button" aria-pressed="false" aria-controls="terminal-zh-audio" aria-describedby="terminal-zh-text">중국어 간체 듣기</button>
+<audio id="terminal-zh-audio" src="v94_voice9/terminal-zh.m4a" preload="none" hidden></audio>
+<p class="status" role="status"></p>
+<fieldset><legend>사람이 말하는 것처럼 들리나요?</legend><div class="choices"><label><input type="radio" name="terminal-zh-natural" value="예"> 예</label><label><input type="radio" name="terminal-zh-natural" value="아니요"> 아니요</label><label><input type="radio" name="terminal-zh-natural" value="모르겠어요"> 모르겠어요</label></div></fieldset>
+<fieldset><legend>말하는 빠르기는 어떤가요?</legend><div class="choices"><label><input type="radio" name="terminal-zh-speed" value="느려요"> 느려요</label><label><input type="radio" name="terminal-zh-speed" value="알맞아요"> 알맞아요</label><label><input type="radio" name="terminal-zh-speed" value="빨라요"> 빨라요</label></div></fieldset>
+</article>
+<article aria-labelledby="terminal-ja-language">
+<h3 id="terminal-ja-language">일본어</h3>
+<p id="terminal-ja-text" class="say" lang="ja">始発をご利用のお客様は、待合室でお待ちください。</p>
+<button type="button" aria-pressed="false" aria-controls="terminal-ja-audio" aria-describedby="terminal-ja-text">일본어 듣기</button>
+<audio id="terminal-ja-audio" src="v94_voice9/terminal-ja.m4a" preload="none" hidden></audio>
+<p class="status" role="status"></p>
+<fieldset><legend>사람이 말하는 것처럼 들리나요?</legend><div class="choices"><label><input type="radio" name="terminal-ja-natural" value="예"> 예</label><label><input type="radio" name="terminal-ja-natural" value="아니요"> 아니요</label><label><input type="radio" name="terminal-ja-natural" value="모르겠어요"> 모르겠어요</label></div></fieldset>
+<fieldset><legend>말하는 빠르기는 어떤가요?</legend><div class="choices"><label><input type="radio" name="terminal-ja-speed" value="느려요"> 느려요</label><label><input type="radio" name="terminal-ja-speed" value="알맞아요"> 알맞아요</label><label><input type="radio" name="terminal-ja-speed" value="빨라요"> 빨라요</label></div></fieldset>
+</article>
+</section>
+<section aria-labelledby="driver">
+<h2 id="driver">첫차 기사</h2>
+<article aria-labelledby="driver-en-language">
+<h3 id="driver-en-language">영어</h3>
+<p id="driver-en-text" class="say" lang="en">Yes, this is the first bus. It goes to Seoul.</p>
+<button type="button" aria-pressed="false" aria-controls="driver-en-audio" aria-describedby="driver-en-text">영어 듣기</button>
+<audio id="driver-en-audio" src="v94_voice9/driver-en.m4a" preload="none" hidden></audio>
+<p class="status" role="status"></p>
+<fieldset><legend>사람이 말하는 것처럼 들리나요?</legend><div class="choices"><label><input type="radio" name="driver-en-natural" value="예"> 예</label><label><input type="radio" name="driver-en-natural" value="아니요"> 아니요</label><label><input type="radio" name="driver-en-natural" value="모르겠어요"> 모르겠어요</label></div></fieldset>
+<fieldset><legend>말하는 빠르기는 어떤가요?</legend><div class="choices"><label><input type="radio" name="driver-en-speed" value="느려요"> 느려요</label><label><input type="radio" name="driver-en-speed" value="알맞아요"> 알맞아요</label><label><input type="radio" name="driver-en-speed" value="빨라요"> 빨라요</label></div></fieldset>
+</article>
+<article aria-labelledby="driver-zh-language">
+<h3 id="driver-zh-language">중국어 간체</h3>
+<p id="driver-zh-text" class="say" lang="zh-Hans">没错，是首班车。去首尔的。</p>
+<button type="button" aria-pressed="false" aria-controls="driver-zh-audio" aria-describedby="driver-zh-text">중국어 간체 듣기</button>
+<audio id="driver-zh-audio" src="v94_voice9/driver-zh.m4a" preload="none" hidden></audio>
+<p class="status" role="status"></p>
+<fieldset><legend>사람이 말하는 것처럼 들리나요?</legend><div class="choices"><label><input type="radio" name="driver-zh-natural" value="예"> 예</label><label><input type="radio" name="driver-zh-natural" value="아니요"> 아니요</label><label><input type="radio" name="driver-zh-natural" value="모르겠어요"> 모르겠어요</label></div></fieldset>
+<fieldset><legend>말하는 빠르기는 어떤가요?</legend><div class="choices"><label><input type="radio" name="driver-zh-speed" value="느려요"> 느려요</label><label><input type="radio" name="driver-zh-speed" value="알맞아요"> 알맞아요</label><label><input type="radio" name="driver-zh-speed" value="빨라요"> 빨라요</label></div></fieldset>
+</article>
+<article aria-labelledby="driver-ja-language">
+<h3 id="driver-ja-language">일본어</h3>
+<p id="driver-ja-text" class="say" lang="ja">始発で合ってますよ。ソウル行きです。</p>
+<button type="button" aria-pressed="false" aria-controls="driver-ja-audio" aria-describedby="driver-ja-text">일본어 듣기</button>
+<audio id="driver-ja-audio" src="v94_voice9/driver-ja.m4a" preload="none" hidden></audio>
+<p class="status" role="status"></p>
+<fieldset><legend>사람이 말하는 것처럼 들리나요?</legend><div class="choices"><label><input type="radio" name="driver-ja-natural" value="예"> 예</label><label><input type="radio" name="driver-ja-natural" value="아니요"> 아니요</label><label><input type="radio" name="driver-ja-natural" value="모르겠어요"> 모르겠어요</label></div></fieldset>
+<fieldset><legend>말하는 빠르기는 어떤가요?</legend><div class="choices"><label><input type="radio" name="driver-ja-speed" value="느려요"> 느려요</label><label><input type="radio" name="driver-ja-speed" value="알맞아요"> 알맞아요</label><label><input type="radio" name="driver-ja-speed" value="빨라요"> 빨라요</label></div></fieldset>
+</article>
+</section>
+<section aria-labelledby="chapel">
+<h2 id="chapel">예배 앞쪽 화자</h2>
+<article aria-labelledby="chapel-en-language">
+<h3 id="chapel-en-language">영어</h3>
+<p id="chapel-en-text" class="say" lang="en">Back row, third from the left.</p>
+<button type="button" aria-pressed="false" aria-controls="chapel-en-audio" aria-describedby="chapel-en-text">영어 듣기</button>
+<audio id="chapel-en-audio" src="v94_voice9/chapel-en.m4a" preload="none" hidden></audio>
+<p class="status" role="status"></p>
+<fieldset><legend>사람이 말하는 것처럼 들리나요?</legend><div class="choices"><label><input type="radio" name="chapel-en-natural" value="예"> 예</label><label><input type="radio" name="chapel-en-natural" value="아니요"> 아니요</label><label><input type="radio" name="chapel-en-natural" value="모르겠어요"> 모르겠어요</label></div></fieldset>
+<fieldset><legend>말하는 빠르기는 어떤가요?</legend><div class="choices"><label><input type="radio" name="chapel-en-speed" value="느려요"> 느려요</label><label><input type="radio" name="chapel-en-speed" value="알맞아요"> 알맞아요</label><label><input type="radio" name="chapel-en-speed" value="빨라요"> 빨라요</label></div></fieldset>
+</article>
+<article aria-labelledby="chapel-zh-language">
+<h3 id="chapel-zh-language">중국어 간체</h3>
+<p id="chapel-zh-text" class="say" lang="zh-Hans">最后一排，从左边起第三个。</p>
+<button type="button" aria-pressed="false" aria-controls="chapel-zh-audio" aria-describedby="chapel-zh-text">중국어 간체 듣기</button>
+<audio id="chapel-zh-audio" src="v94_voice9/chapel-zh.m4a" preload="none" hidden></audio>
+<p class="status" role="status"></p>
+<fieldset><legend>사람이 말하는 것처럼 들리나요?</legend><div class="choices"><label><input type="radio" name="chapel-zh-natural" value="예"> 예</label><label><input type="radio" name="chapel-zh-natural" value="아니요"> 아니요</label><label><input type="radio" name="chapel-zh-natural" value="모르겠어요"> 모르겠어요</label></div></fieldset>
+<fieldset><legend>말하는 빠르기는 어떤가요?</legend><div class="choices"><label><input type="radio" name="chapel-zh-speed" value="느려요"> 느려요</label><label><input type="radio" name="chapel-zh-speed" value="알맞아요"> 알맞아요</label><label><input type="radio" name="chapel-zh-speed" value="빨라요"> 빨라요</label></div></fieldset>
+</article>
+<article aria-labelledby="chapel-ja-language">
+<h3 id="chapel-ja-language">일본어</h3>
+<p id="chapel-ja-text" class="say" lang="ja">いちばん後ろの列、左から三番目。</p>
+<button type="button" aria-pressed="false" aria-controls="chapel-ja-audio" aria-describedby="chapel-ja-text">일본어 듣기</button>
+<audio id="chapel-ja-audio" src="v94_voice9/chapel-ja.m4a" preload="none" hidden></audio>
+<p class="status" role="status"></p>
+<fieldset><legend>사람이 말하는 것처럼 들리나요?</legend><div class="choices"><label><input type="radio" name="chapel-ja-natural" value="예"> 예</label><label><input type="radio" name="chapel-ja-natural" value="아니요"> 아니요</label><label><input type="radio" name="chapel-ja-natural" value="모르겠어요"> 모르겠어요</label></div></fieldset>
+<fieldset><legend>말하는 빠르기는 어떤가요?</legend><div class="choices"><label><input type="radio" name="chapel-ja-speed" value="느려요"> 느려요</label><label><input type="radio" name="chapel-ja-speed" value="알맞아요"> 알맞아요</label><label><input type="radio" name="chapel-ja-speed" value="빨라요"> 빨라요</label></div></fieldset>
+</article>
+</section>
+<section aria-labelledby="relief">
+<h2 id="relief">철문 밖 교대자</h2>
+<article aria-labelledby="relief-en-language">
+<h3 id="relief-en-language">영어</h3>
+<p id="relief-en-text" class="say" lang="en">I&#39;m here for the shift change. Could you open the door, please?</p>
+<button type="button" aria-pressed="false" aria-controls="relief-en-audio" aria-describedby="relief-en-text">영어 듣기</button>
+<audio id="relief-en-audio" src="v94_voice9/relief-en.m4a" preload="none" hidden></audio>
+<p class="status" role="status"></p>
+<fieldset><legend>사람이 말하는 것처럼 들리나요?</legend><div class="choices"><label><input type="radio" name="relief-en-natural" value="예"> 예</label><label><input type="radio" name="relief-en-natural" value="아니요"> 아니요</label><label><input type="radio" name="relief-en-natural" value="모르겠어요"> 모르겠어요</label></div></fieldset>
+<fieldset><legend>말하는 빠르기는 어떤가요?</legend><div class="choices"><label><input type="radio" name="relief-en-speed" value="느려요"> 느려요</label><label><input type="radio" name="relief-en-speed" value="알맞아요"> 알맞아요</label><label><input type="radio" name="relief-en-speed" value="빨라요"> 빨라요</label></div></fieldset>
+</article>
+<article aria-labelledby="relief-zh-language">
+<h3 id="relief-zh-language">중국어 간체</h3>
+<p id="relief-zh-text" class="say" lang="zh-Hans">我站了好久了。浑身都淋透了。</p>
+<button type="button" aria-pressed="false" aria-controls="relief-zh-audio" aria-describedby="relief-zh-text">중국어 간체 듣기</button>
+<audio id="relief-zh-audio" src="v94_voice9/relief-zh.m4a" preload="none" hidden></audio>
+<p class="status" role="status"></p>
+<fieldset><legend>사람이 말하는 것처럼 들리나요?</legend><div class="choices"><label><input type="radio" name="relief-zh-natural" value="예"> 예</label><label><input type="radio" name="relief-zh-natural" value="아니요"> 아니요</label><label><input type="radio" name="relief-zh-natural" value="모르겠어요"> 모르겠어요</label></div></fieldset>
+<fieldset><legend>말하는 빠르기는 어떤가요?</legend><div class="choices"><label><input type="radio" name="relief-zh-speed" value="느려요"> 느려요</label><label><input type="radio" name="relief-zh-speed" value="알맞아요"> 알맞아요</label><label><input type="radio" name="relief-zh-speed" value="빨라요"> 빨라요</label></div></fieldset>
+</article>
+<article aria-labelledby="relief-ja-language">
+<h3 id="relief-ja-language">일본어</h3>
+<p id="relief-ja-text" class="say" lang="ja">交代に来ました。扉、開けてもらえますか。</p>
+<button type="button" aria-pressed="false" aria-controls="relief-ja-audio" aria-describedby="relief-ja-text">일본어 듣기</button>
+<audio id="relief-ja-audio" src="v94_voice9/relief-ja.m4a" preload="none" hidden></audio>
+<p class="status" role="status"></p>
+<fieldset><legend>사람이 말하는 것처럼 들리나요?</legend><div class="choices"><label><input type="radio" name="relief-ja-natural" value="예"> 예</label><label><input type="radio" name="relief-ja-natural" value="아니요"> 아니요</label><label><input type="radio" name="relief-ja-natural" value="모르겠어요"> 모르겠어요</label></div></fieldset>
+<fieldset><legend>말하는 빠르기는 어떤가요?</legend><div class="choices"><label><input type="radio" name="relief-ja-speed" value="느려요"> 느려요</label><label><input type="radio" name="relief-ja-speed" value="알맞아요"> 알맞아요</label><label><input type="radio" name="relief-ja-speed" value="빨라요"> 빨라요</label></div></fieldset>
+</article>
+</section>
+<section aria-labelledby="whisper">
+<h2 id="whisper">문 너머 속삭임</h2>
+<article aria-labelledby="whisper-en-language">
+<h3 id="whisper-en-language">영어</h3>
+<p id="whisper-en-text" class="say" lang="en">Attention, passenger…</p>
+<button type="button" aria-pressed="false" aria-controls="whisper-en-audio" aria-describedby="whisper-en-text">영어 듣기</button>
+<audio id="whisper-en-audio" src="v94_voice9/whisper-en.m4a" preload="none" hidden></audio>
+<p class="status" role="status"></p>
+<fieldset><legend>사람이 말하는 것처럼 들리나요?</legend><div class="choices"><label><input type="radio" name="whisper-en-natural" value="예"> 예</label><label><input type="radio" name="whisper-en-natural" value="아니요"> 아니요</label><label><input type="radio" name="whisper-en-natural" value="모르겠어요"> 모르겠어요</label></div></fieldset>
+<fieldset><legend>말하는 빠르기는 어떤가요?</legend><div class="choices"><label><input type="radio" name="whisper-en-speed" value="느려요"> 느려요</label><label><input type="radio" name="whisper-en-speed" value="알맞아요"> 알맞아요</label><label><input type="radio" name="whisper-en-speed" value="빨라요"> 빨라요</label></div></fieldset>
+</article>
+<article aria-labelledby="whisper-zh-language">
+<h3 id="whisper-zh-language">중국어 간체</h3>
+<p id="whisper-zh-text" class="say" lang="zh-Hans">一位旅客……</p>
+<button type="button" aria-pressed="false" aria-controls="whisper-zh-audio" aria-describedby="whisper-zh-text">중국어 간체 듣기</button>
+<audio id="whisper-zh-audio" src="v94_voice9/whisper-zh.m4a" preload="none" hidden></audio>
+<p class="status" role="status"></p>
+<fieldset><legend>사람이 말하는 것처럼 들리나요?</legend><div class="choices"><label><input type="radio" name="whisper-zh-natural" value="예"> 예</label><label><input type="radio" name="whisper-zh-natural" value="아니요"> 아니요</label><label><input type="radio" name="whisper-zh-natural" value="모르겠어요"> 모르겠어요</label></div></fieldset>
+<fieldset><legend>말하는 빠르기는 어떤가요?</legend><div class="choices"><label><input type="radio" name="whisper-zh-speed" value="느려요"> 느려요</label><label><input type="radio" name="whisper-zh-speed" value="알맞아요"> 알맞아요</label><label><input type="radio" name="whisper-zh-speed" value="빨라요"> 빨라요</label></div></fieldset>
+</article>
+<article aria-labelledby="whisper-ja-language">
+<h3 id="whisper-ja-language">일본어</h3>
+<p id="whisper-ja-text" class="say" lang="ja">お客様おひとり……</p>
+<button type="button" aria-pressed="false" aria-controls="whisper-ja-audio" aria-describedby="whisper-ja-text">일본어 듣기</button>
+<audio id="whisper-ja-audio" src="v94_voice9/whisper-ja.m4a" preload="none" hidden></audio>
+<p class="status" role="status"></p>
+<fieldset><legend>사람이 말하는 것처럼 들리나요?</legend><div class="choices"><label><input type="radio" name="whisper-ja-natural" value="예"> 예</label><label><input type="radio" name="whisper-ja-natural" value="아니요"> 아니요</label><label><input type="radio" name="whisper-ja-natural" value="모르겠어요"> 모르겠어요</label></div></fieldset>
+<fieldset><legend>말하는 빠르기는 어떤가요?</legend><div class="choices"><label><input type="radio" name="whisper-ja-speed" value="느려요"> 느려요</label><label><input type="radio" name="whisper-ja-speed" value="알맞아요"> 알맞아요</label><label><input type="radio" name="whisper-ja-speed" value="빨라요"> 빨라요</label></div></fieldset>
+</article>
+</section>
+<section aria-labelledby="caretaker">
+<h2 id="caretaker">신발장 앞 화자</h2>
+<article aria-labelledby="caretaker-en-language">
+<h3 id="caretaker-en-language">영어</h3>
+<p id="caretaker-en-text" class="say" lang="en">…Twelve.</p>
+<button type="button" aria-pressed="false" aria-controls="caretaker-en-audio" aria-describedby="caretaker-en-text">영어 듣기</button>
+<audio id="caretaker-en-audio" src="v94_voice9/caretaker-en.m4a" preload="none" hidden></audio>
+<p class="status" role="status"></p>
+<fieldset><legend>사람이 말하는 것처럼 들리나요?</legend><div class="choices"><label><input type="radio" name="caretaker-en-natural" value="예"> 예</label><label><input type="radio" name="caretaker-en-natural" value="아니요"> 아니요</label><label><input type="radio" name="caretaker-en-natural" value="모르겠어요"> 모르겠어요</label></div></fieldset>
+<fieldset><legend>말하는 빠르기는 어떤가요?</legend><div class="choices"><label><input type="radio" name="caretaker-en-speed" value="느려요"> 느려요</label><label><input type="radio" name="caretaker-en-speed" value="알맞아요"> 알맞아요</label><label><input type="radio" name="caretaker-en-speed" value="빨라요"> 빨라요</label></div></fieldset>
+</article>
+<article aria-labelledby="caretaker-zh-language">
+<h3 id="caretaker-zh-language">중국어 간체</h3>
+<p id="caretaker-zh-text" class="say" lang="zh-Hans">……正锡的位子。</p>
+<button type="button" aria-pressed="false" aria-controls="caretaker-zh-audio" aria-describedby="caretaker-zh-text">중국어 간체 듣기</button>
+<audio id="caretaker-zh-audio" src="v94_voice9/caretaker-zh.m4a" preload="none" hidden></audio>
+<p class="status" role="status"></p>
+<fieldset><legend>사람이 말하는 것처럼 들리나요?</legend><div class="choices"><label><input type="radio" name="caretaker-zh-natural" value="예"> 예</label><label><input type="radio" name="caretaker-zh-natural" value="아니요"> 아니요</label><label><input type="radio" name="caretaker-zh-natural" value="모르겠어요"> 모르겠어요</label></div></fieldset>
+<fieldset><legend>말하는 빠르기는 어떤가요?</legend><div class="choices"><label><input type="radio" name="caretaker-zh-speed" value="느려요"> 느려요</label><label><input type="radio" name="caretaker-zh-speed" value="알맞아요"> 알맞아요</label><label><input type="radio" name="caretaker-zh-speed" value="빨라요"> 빨라요</label></div></fieldset>
+</article>
+<article aria-labelledby="caretaker-ja-language">
+<h3 id="caretaker-ja-language">일본어</h3>
+<p id="caretaker-ja-text" class="say" lang="ja">……じゅうに。</p>
+<button type="button" aria-pressed="false" aria-controls="caretaker-ja-audio" aria-describedby="caretaker-ja-text">일본어 듣기</button>
+<audio id="caretaker-ja-audio" src="v94_voice9/caretaker-ja.m4a" preload="none" hidden></audio>
+<p class="status" role="status"></p>
+<fieldset><legend>사람이 말하는 것처럼 들리나요?</legend><div class="choices"><label><input type="radio" name="caretaker-ja-natural" value="예"> 예</label><label><input type="radio" name="caretaker-ja-natural" value="아니요"> 아니요</label><label><input type="radio" name="caretaker-ja-natural" value="모르겠어요"> 모르겠어요</label></div></fieldset>
+<fieldset><legend>말하는 빠르기는 어떤가요?</legend><div class="choices"><label><input type="radio" name="caretaker-ja-speed" value="느려요"> 느려요</label><label><input type="radio" name="caretaker-ja-speed" value="알맞아요"> 알맞아요</label><label><input type="radio" name="caretaker-ja-speed" value="빨라요"> 빨라요</label></div></fieldset>
+</article>
+</section>
+</main>
+<script>
+let active;
+
+function stop() {
+  if (!active) return;
+  const { button, audio } = active;
+  active = undefined;
+  button.setAttribute("aria-pressed", "false");
+  audio.pause();
+  audio.currentTime = 0;
+}
+
+for (const button of document.querySelectorAll("article button")) {
+  const audio = document.getElementById(button.getAttribute("aria-controls"));
+  const status = button.parentElement.querySelector(".status");
+  const failed = () => {
+    if (active?.button !== button) return;
+    stop();
+    status.textContent = "목소리를 재생하지 못했어요. 다시 눌러 주세요.";
+  };
+  button.addEventListener("click", () => {
+    const wasPlaying = active?.button === button;
+    stop();
+    if (wasPlaying) return;
+    const playback = { button, audio };
+    active = playback;
+    status.textContent = "";
+    button.setAttribute("aria-pressed", "true");
+    audio.play().catch(() => {
+      if (active === playback) failed();
+    });
+  });
+  audio.addEventListener("ended", () => {
+    if (active?.button === button) stop();
+  });
+  audio.addEventListener("error", failed);
+}
+window.addEventListener("pagehide", stop);
+</script>
+</body>
+</html>
