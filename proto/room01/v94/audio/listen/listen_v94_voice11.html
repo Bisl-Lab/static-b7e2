@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="icon" href="data:,">
+<title>귀 확인 11 — 목소리 고르기</title>
+<style>
+:root { color-scheme: dark; --bg: #0d0f10; --card: #171a1b; --line: #69736f; --ink: #ece4d4; --dim: #c1b9ac; --accent: #e0a15e; --button-ink: #1a1208; }
+@media (prefers-color-scheme: light) {
+  :root { color-scheme: light; --bg: #f4f1ea; --card: #fffdf8; --line: #827d76; --ink: #24231f; --dim: #5e5a51; --accent: #874a15; --button-ink: #fff8ee; }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.6 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif; word-break: keep-all; overflow-wrap: anywhere; }
+main { max-width: 590px; margin: auto; padding: calc(16px + env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) calc(24px + env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); }
+h1 { font-size: 23px; margin: 4px 0 8px; }
+h2 { font-size: 19px; margin: 30px 0 6px; }
+h3 { font-size: 17px; margin: 0 0 8px; }
+.lead, .lines, .status { color: var(--dim); font-size: 15px; }
+.lead, .status { margin: 0; }
+.lines { padding-left: 24px; margin: 0 0 12px; }
+.lines li + li { margin-top: 4px; }
+article { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px; margin-bottom: 8px; }
+.clips { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+button { width: 100%; min-height: 48px; padding: 4px 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--ink); font: inherit; font-weight: 700; cursor: pointer; touch-action: manipulation; }
+button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--button-ink); }
+button:focus-visible, label:has(input:focus-visible) { outline: 3px solid var(--ink); outline-offset: 2px; }
+fieldset { min-width: 0; border: 0; padding: 0; margin: 8px 0 0; }
+.choices { display: flex; flex-wrap: wrap; gap: 6px; }
+.choices label { display: flex; align-items: center; gap: 5px; min-height: 44px; padding: 3px 10px; border: 1px solid var(--line); border-radius: 8px; cursor: pointer; }
+.choices input { margin: 0; accent-color: var(--accent); }
+.status:not(:empty) { margin-top: 4px; }
+</style>
+</head>
+<body>
+<main>
+<h1>귀 확인 11 — 목소리 고르기</h1>
+<p class="lead">같은 번호의 두 줄을 듣고 골라 주세요. 같은 단추를 다시 누르면 재생이 멈춥니다.</p>
+<section aria-labelledby="shop-title">
+<h2 id="shop-title">매점의 그 사람</h2>
+<ol class="lines"><li id="shop-line-0">돌아왔구나. 나도 그렇게 몇 번이나 돌아왔는데, 아직도 여기 있어.</li>
+<li id="shop-line-1">난 그날 여기 앉아서 물만 한 잔 마셨어.</li></ol>
+<article aria-labelledby="shop-01-heading">
+<h3 id="shop-01-heading">1번</h3>
+<div class="clips"><div class="clip">
+<button type="button" aria-label="매점의 그 사람 1번 첫째 줄 듣기"
+  aria-controls="shop-01-01-audio" aria-describedby="shop-line-0" aria-pressed="false">첫째 줄 듣기</button>
+<audio id="shop-01-01-audio" src="v94_voice11/shop-01-01.m4a" preload="none" hidden></audio>
+<p class="status" role="status"></p>
+</div>
+<div class="clip">
+<button type="button" aria-label="매점의 그 사람 1번 둘째 줄 듣기"
+  aria-controls="shop-01-02-audio" aria-describedby="shop-line-1" aria-pressed="false">둘째 줄 듣기</button>
+<audio id="shop-01-02-audio" src="v94_voice11/shop-01-02.m4a" preload="none" hidden></audio>
+<p class="status" role="status"></p>
+</div></div>
+<fieldset aria-label="매점의 그 사람 1번 고르기">
+<div class="choices"><label><input type="radio" name="shop-01-choice" value="이 사람으로"> 이 사람으로</label><label><input type="radio" name="shop-01-choice" value="아님"> 아님</label></div>
+</fieldset>
+</article>
+<article aria-labelledby="shop-02-heading">
+<h3 id="shop-02-heading">2번</h3>
+<div class="clips"><div class="clip">
+<button type="button" aria-label="매점의 그 사람 2번 첫째 줄 듣기"
+  aria-controls="shop-02-01-audio" aria-describedby="shop-line-0" aria-pressed="false">첫째 줄 듣기</button>
+<audio id="shop-02-01-audio" src="v94_voice11/shop-02-01.m4a" preload="none" hidden></audio>
+<p class="status" role="status"></p>
+</div>
+<div class="clip">
+<button type="button" aria-label="매점의 그 사람 2번 둘째 줄 듣기"
+  aria-controls="shop-02-02-audio" aria-describedby="shop-line-1" aria-pressed="false">둘째 줄 듣기</button>
+<audio id="shop-02-02-audio" src="v94_voice11/shop-02-02.m4a" preload="none" hidden></audio>
+<p class="status" role="status"></p>
+</div></div>
+<fieldset aria-label="매점의 그 사람 2번 고르기">
+<div class="choices"><label><input type="radio" name="shop-02-choice" value="이 사람으로"> 이 사람으로</label><label><input type="radio" name="shop-02-choice" value="아님"> 아님</label></div>
+</fieldset>
+</article>
+<article aria-labelledby="shop-03-heading">
+<h3 id="shop-03-heading">3번</h3>
+<div class="clips"><div class="clip">
+<button type="button" aria-label="매점의 그 사람 3번 첫째 줄 듣기"
+  aria-controls="shop-03-01-audio" aria-describedby="shop-line-0" aria-pressed="false">첫째 줄 듣기</button>
+<audio id="shop-03-01-audio" src="v94_voice11/shop-03-01.m4a" preload="none" hidden></audio>
+<p class="status" role="status"></p>
+</div>
+<div class="clip">
+<button type="button" aria-label="매점의 그 사람 3번 둘째 줄 듣기"
+  aria-controls="shop-03-02-audio" aria-describedby="shop-line-1" aria-pressed="false">둘째 줄 듣기</button>
+<audio id="shop-03-02-audio" src="v94_voice11/shop-03-02.m4a" preload="none" hidden></audio>
+<p class="status" role="status"></p>
+</div></div>
+<fieldset aria-label="매점의 그 사람 3번 고르기">
+<div class="choices"><label><input type="radio" name="shop-03-choice" value="이 사람으로"> 이 사람으로</label><label><input type="radio" name="shop-03-choice" value="아님"> 아님</label></div>
+</fieldset>
+</article>
+<article aria-labelledby="shop-04-heading">
+<h3 id="shop-04-heading">4번</h3>
+<div class="clips"><div class="clip">
+<button type="button" aria-label="매점의 그 사람 4번 첫째 줄 듣기"
+  aria-controls="shop-04-01-audio" aria-describedby="shop-line-0" aria-pressed="false">첫째 줄 듣기</button>
+<audio id="shop-04-01-audio" src="v94_voice11/shop-04-01.m4a" preload="none" hidden></audio>
+<p class="status" role="status"></p>
+</div>
+<div class="clip">
+<button type="button" aria-label="매점의 그 사람 4번 둘째 줄 듣기"
+  aria-controls="shop-04-02-audio" aria-describedby="shop-line-1" aria-pressed="false">둘째 줄 듣기</button>
+<audio id="shop-04-02-audio" src="v94_voice11/shop-04-02.m4a" preload="none" hidden></audio>
+<p class="status" role="status"></p>
+</div></div>
+<fieldset aria-label="매점의 그 사람 4번 고르기">
+<div class="choices"><label><input type="radio" name="shop-04-choice" value="이 사람으로"> 이 사람으로</label><label><input type="radio" name="shop-04-choice" value="아님"> 아님</label></div>
+</fieldset>
+</article>
+</section>
+<section aria-labelledby="relay-title">
+<h2 id="relay-title">본부 무전</h2>
+<ol class="lines"><li id="relay-line-0">근무자, 여기 본부다. 정시 보고하라.</li>
+<li id="relay-line-1">보고가 틀렸다. 사람을 보낸다.</li></ol>
+<article aria-labelledby="relay-01-heading">
+<h3 id="relay-01-heading">1번</h3>
+<div class="clips"><div class="clip">
+<button type="button" aria-label="본부 무전 1번 첫째 줄 듣기"
+  aria-controls="relay-01-01-audio" aria-describedby="relay-line-0" aria-pressed="false">첫째 줄 듣기</button>
+<audio id="relay-01-01-audio" src="v94_voice11/relay-01-01.m4a" preload="none" hidden></audio>
+<p class="status" role="status"></p>
+</div>
+<div class="clip">
+<button type="button" aria-label="본부 무전 1번 둘째 줄 듣기"
+  aria-controls="relay-01-02-audio" aria-describedby="relay-line-1" aria-pressed="false">둘째 줄 듣기</button>
+<audio id="relay-01-02-audio" src="v94_voice11/relay-01-02.m4a" preload="none" hidden></audio>
+<p class="status" role="status"></p>
+</div></div>
+<fieldset aria-label="본부 무전 1번 고르기">
+<div class="choices"><label><input type="radio" name="relay-01-choice" value="이 사람으로"> 이 사람으로</label><label><input type="radio" name="relay-01-choice" value="아님"> 아님</label></div>
+</fieldset>
+</article>
+<article aria-labelledby="relay-02-heading">
+<h3 id="relay-02-heading">2번</h3>
+<div class="clips"><div class="clip">
+<button type="button" aria-label="본부 무전 2번 첫째 줄 듣기"
+  aria-controls="relay-02-01-audio" aria-describedby="relay-line-0" aria-pressed="false">첫째 줄 듣기</button>
+<audio id="relay-02-01-audio" src="v94_voice11/relay-02-01.m4a" preload="none" hidden></audio>
+<p class="status" role="status"></p>
+</div>
+<div class="clip">
+<button type="button" aria-label="본부 무전 2번 둘째 줄 듣기"
+  aria-controls="relay-02-02-audio" aria-describedby="relay-line-1" aria-pressed="false">둘째 줄 듣기</button>
+<audio id="relay-02-02-audio" src="v94_voice11/relay-02-02.m4a" preload="none" hidden></audio>
+<p class="status" role="status"></p>
+</div></div>
+<fieldset aria-label="본부 무전 2번 고르기">
+<div class="choices"><label><input type="radio" name="relay-02-choice" value="이 사람으로"> 이 사람으로</label><label><input type="radio" name="relay-02-choice" value="아님"> 아님</label></div>
+</fieldset>
+</article>
+<article aria-labelledby="relay-03-heading">
+<h3 id="relay-03-heading">3번</h3>
+<div class="clips"><div class="clip">
+<button type="button" aria-label="본부 무전 3번 첫째 줄 듣기"
+  aria-controls="relay-03-01-audio" aria-describedby="relay-line-0" aria-pressed="false">첫째 줄 듣기</button>
+<audio id="relay-03-01-audio" src="v94_voice11/relay-03-01.m4a" preload="none" hidden></audio>
+<p class="status" role="status"></p>
+</div>
+<div class="clip">
+<button type="button" aria-label="본부 무전 3번 둘째 줄 듣기"
+  aria-controls="relay-03-02-audio" aria-describedby="relay-line-1" aria-pressed="false">둘째 줄 듣기</button>
+<audio id="relay-03-02-audio" src="v94_voice11/relay-03-02.m4a" preload="none" hidden></audio>
+<p class="status" role="status"></p>
+</div></div>
+<fieldset aria-label="본부 무전 3번 고르기">
+<div class="choices"><label><input type="radio" name="relay-03-choice" value="이 사람으로"> 이 사람으로</label><label><input type="radio" name="relay-03-choice" value="아님"> 아님</label></div>
+</fieldset>
+</article>
+<article aria-labelledby="relay-04-heading">
+<h3 id="relay-04-heading">4번</h3>
+<div class="clips"><div class="clip">
+<button type="button" aria-label="본부 무전 4번 첫째 줄 듣기"
+  aria-controls="relay-04-01-audio" aria-describedby="relay-line-0" aria-pressed="false">첫째 줄 듣기</button>
+<audio id="relay-04-01-audio" src="v94_voice11/relay-04-01.m4a" preload="none" hidden></audio>
+<p class="status" role="status"></p>
+</div>
+<div class="clip">
+<button type="button" aria-label="본부 무전 4번 둘째 줄 듣기"
+  aria-controls="relay-04-02-audio" aria-describedby="relay-line-1" aria-pressed="false">둘째 줄 듣기</button>
+<audio id="relay-04-02-audio" src="v94_voice11/relay-04-02.m4a" preload="none" hidden></audio>
+<p class="status" role="status"></p>
+</div></div>
+<fieldset aria-label="본부 무전 4번 고르기">
+<div class="choices"><label><input type="radio" name="relay-04-choice" value="이 사람으로"> 이 사람으로</label><label><input type="radio" name="relay-04-choice" value="아님"> 아님</label></div>
+</fieldset>
+</article>
+</section>
+<section aria-labelledby="driver-title">
+<h2 id="driver-title">첫차 기사</h2>
+<ol class="lines"><li id="driver-line-0">다음 차는 안 와요. 이 차 타세요.</li>
+<li id="driver-line-1">맨 앞자리 비워 뒀어요. 여기 앉아요.</li></ol>
+<article aria-labelledby="driver-01-heading">
+<h3 id="driver-01-heading">1번</h3>
+<div class="clips"><div class="clip">
+<button type="button" aria-label="첫차 기사 1번 첫째 줄 듣기"
+  aria-controls="driver-01-01-audio" aria-describedby="driver-line-0" aria-pressed="false">첫째 줄 듣기</button>
+<audio id="driver-01-01-audio" src="v94_voice11/driver-01-01.m4a" preload="none" hidden></audio>
+<p class="status" role="status"></p>
+</div>
+<div class="clip">
+<button type="button" aria-label="첫차 기사 1번 둘째 줄 듣기"
+  aria-controls="driver-01-02-audio" aria-describedby="driver-line-1" aria-pressed="false">둘째 줄 듣기</button>
+<audio id="driver-01-02-audio" src="v94_voice11/driver-01-02.m4a" preload="none" hidden></audio>
+<p class="status" role="status"></p>
+</div></div>
+<fieldset aria-label="첫차 기사 1번 고르기">
+<div class="choices"><label><input type="radio" name="driver-01-choice" value="이 사람으로"> 이 사람으로</label><label><input type="radio" name="driver-01-choice" value="아님"> 아님</label></div>
+</fieldset>
+</article>
+<article aria-labelledby="driver-02-heading">
+<h3 id="driver-02-heading">2번</h3>
+<div class="clips"><div class="clip">
+<button type="button" aria-label="첫차 기사 2번 첫째 줄 듣기"
+  aria-controls="driver-02-01-audio" aria-describedby="driver-line-0" aria-pressed="false">첫째 줄 듣기</button>
+<audio id="driver-02-01-audio" src="v94_voice11/driver-02-01.m4a" preload="none" hidden></audio>
+<p class="status" role="status"></p>
+</div>
+<div class="clip">
+<button type="button" aria-label="첫차 기사 2번 둘째 줄 듣기"
+  aria-controls="driver-02-02-audio" aria-describedby="driver-line-1" aria-pressed="false">둘째 줄 듣기</button>
+<audio id="driver-02-02-audio" src="v94_voice11/driver-02-02.m4a" preload="none" hidden></audio>
+<p class="status" role="status"></p>
+</div></div>
+<fieldset aria-label="첫차 기사 2번 고르기">
+<div class="choices"><label><input type="radio" name="driver-02-choice" value="이 사람으로"> 이 사람으로</label><label><input type="radio" name="driver-02-choice" value="아님"> 아님</label></div>
+</fieldset>
+</article>
+<article aria-labelledby="driver-03-heading">
+<h3 id="driver-03-heading">3번</h3>
+<div class="clips"><div class="clip">
+<button type="button" aria-label="첫차 기사 3번 첫째 줄 듣기"
+  aria-controls="driver-03-01-audio" aria-describedby="driver-line-0" aria-pressed="false">첫째 줄 듣기</button>
+<audio id="driver-03-01-audio" src="v94_voice11/driver-03-01.m4a" preload="none" hidden></audio>
+<p class="status" role="status"></p>
+</div>
+<div class="clip">
+<button type="button" aria-label="첫차 기사 3번 둘째 줄 듣기"
+  aria-controls="driver-03-02-audio" aria-describedby="driver-line-1" aria-pressed="false">둘째 줄 듣기</button>
+<audio id="driver-03-02-audio" src="v94_voice11/driver-03-02.m4a" preload="none" hidden></audio>
+<p class="status" role="status"></p>
+</div></div>
+<fieldset aria-label="첫차 기사 3번 고르기">
+<div class="choices"><label><input type="radio" name="driver-03-choice" value="이 사람으로"> 이 사람으로</label><label><input type="radio" name="driver-03-choice" value="아님"> 아님</label></div>
+</fieldset>
+</article>
+<article aria-labelledby="driver-04-heading">
+<h3 id="driver-04-heading">4번</h3>
+<div class="clips"><div class="clip">
+<button type="button" aria-label="첫차 기사 4번 첫째 줄 듣기"
+  aria-controls="driver-04-01-audio" aria-describedby="driver-line-0" aria-pressed="false">첫째 줄 듣기</button>
+<audio id="driver-04-01-audio" src="v94_voice11/driver-04-01.m4a" preload="none" hidden></audio>
+<p class="status" role="status"></p>
+</div>
+<div class="clip">
+<button type="button" aria-label="첫차 기사 4번 둘째 줄 듣기"
+  aria-controls="driver-04-02-audio" aria-describedby="driver-line-1" aria-pressed="false">둘째 줄 듣기</button>
+<audio id="driver-04-02-audio" src="v94_voice11/driver-04-02.m4a" preload="none" hidden></audio>
+<p class="status" role="status"></p>
+</div></div>
+<fieldset aria-label="첫차 기사 4번 고르기">
+<div class="choices"><label><input type="radio" name="driver-04-choice" value="이 사람으로"> 이 사람으로</label><label><input type="radio" name="driver-04-choice" value="아님"> 아님</label></div>
+</fieldset>
+</article>
+</section>
+<p class="lead">고른 번호를 인물 이름과 함께 채팅으로 알려 주세요.</p>
+</main>
+<script>
+let active;
+
+function stop() {
+  if (!active) return;
+  const { button, audio } = active;
+  active = undefined;
+  button.setAttribute("aria-pressed", "false");
+  audio.pause();
+  audio.currentTime = 0;
+}
+
+for (const button of document.querySelectorAll("article button")) {
+  const audio = document.getElementById(button.getAttribute("aria-controls"));
+  const status = button.parentElement.querySelector(".status");
+  const failed = () => {
+    if (active?.button !== button) return;
+    stop();
+    status.textContent = "목소리를 재생하지 못했어요. 다시 눌러 주세요.";
+  };
+  button.addEventListener("click", () => {
+    const wasPlaying = active?.button === button;
+    stop();
+    if (wasPlaying) return;
+    const playback = { button, audio };
+    active = playback;
+    status.textContent = "";
+    button.setAttribute("aria-pressed", "true");
+    audio.play().catch(() => {
+      if (active === playback) failed();
+    });
+  });
+  audio.addEventListener("ended", () => {
+    if (active?.button === button) stop();
+  });
+  audio.addEventListener("error", failed);
+}
+window.addEventListener("pagehide", stop);
+</script>
+</body>
+</html>
