@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="icon" href="data:,">
+<title>귀 확인 10 — 한국어 목소리</title>
+<style>
+:root { color-scheme: dark; --bg: #0d0f10; --card: #171a1b; --line: #69736f; --ink: #ece4d4; --dim: #c1b9ac; --accent: #c9873f; --button-ink: #1a1208; }
+@media (prefers-color-scheme: light) {
+  :root { color-scheme: light; --bg: #f4f1ea; --card: #fffdf8; --line: #827d76; --ink: #24231f; --dim: #5e5a51; --accent: #874a15; --button-ink: #fff8ee; }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.6 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif; word-break: keep-all; overflow-wrap: anywhere; }
+main { max-width: 560px; margin: auto; padding: calc(16px + env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) calc(24px + env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); }
+h1 { font-size: 22px; margin: 4px 0 6px; }
+h2 { font-size: 18px; margin: 26px 0 8px; }
+.lead, .status { color: var(--dim); margin: 0; font-size: 15px; }
+article { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px; margin-bottom: 12px; }
+.say { margin: 0 0 10px; white-space: pre-wrap; }
+button { width: 100%; min-height: 58px; padding: 4px 12px; border: 0; border-radius: 12px; background: var(--accent); color: var(--button-ink); font: inherit; font-weight: 700; cursor: pointer; touch-action: manipulation; }
+button:focus-visible, button[aria-pressed="true"], label:has(input:focus-visible) { outline: 3px solid var(--ink); outline-offset: 2px; }
+fieldset { min-width: 0; border: 0; padding: 0; margin: 14px 0 0; }
+legend { padding: 0; margin-bottom: 4px; }
+.choices { display: flex; flex-wrap: wrap; gap: 6px; }
+.choices label { display: flex; align-items: center; gap: 4px; min-height: 44px; padding: 3px 8px; border: 1px solid var(--line); border-radius: 8px; cursor: pointer; }
+.choices input { margin: 0; accent-color: var(--accent); }
+.status:not(:empty) { margin-top: 4px; }
+</style>
+</head>
+<body>
+<main>
+<h1>귀 확인 10 — 한국어 목소리</h1>
+<p class="lead">목소리를 듣고 두 항목에 답해 주세요. 같은 단추를 다시 누르면 재생이 멈춥니다.</p>
+<section aria-labelledby="role-advisor">
+<h2 id="role-advisor">매점의 그 사람</h2>
+<article>
+<p class="say" id="advisor-01-text">돌아왔구나. 나도 그렇게 몇 번이나 돌아왔는데, 아직도 여기 있어.</p>
+<button type="button" aria-label="매점의 그 사람 1번 듣기" aria-pressed="false" aria-controls="advisor-01-audio" aria-describedby="advisor-01-text">듣기</button>
+<audio id="advisor-01-audio" src="v94_voice10/advisor-01.m4a" preload="none" hidden></audio>
+<p class="status" role="status"></p>
+<fieldset><legend>사람이 말하는 것처럼 들리나요?</legend><div class="choices"><label><input type="radio" name="advisor-01-natural" value="예"> 예</label><label><input type="radio" name="advisor-01-natural" value="아니요"> 아니요</label><label><input type="radio" name="advisor-01-natural" value="모르겠어요"> 모르겠어요</label></div></fieldset>
+<fieldset><legend>이 인물에게 어울리는 목소리인가요?</legend><div class="choices"><label><input type="radio" name="advisor-01-actor" value="예"> 예</label><label><input type="radio" name="advisor-01-actor" value="아니요"> 아니요</label><label><input type="radio" name="advisor-01-actor" value="모르겠어요"> 모르겠어요</label></div></fieldset>
+</article>
+<article>
+<p class="say" id="advisor-02-text">둘째 장에도 가짜가 섞여 있는데, 이번엔 어느 줄인지 나도 몰라. 묻지 마라.</p>
+<button type="button" aria-label="매점의 그 사람 2번 듣기" aria-pressed="false" aria-controls="advisor-02-audio" aria-describedby="advisor-02-text">듣기</button>
+<audio id="advisor-02-audio" src="v94_voice10/advisor-02.m4a" preload="none" hidden></audio>
+<p class="status" role="status"></p>
+<fieldset><legend>사람이 말하는 것처럼 들리나요?</legend><div class="choices"><label><input type="radio" name="advisor-02-natural" value="예"> 예</label><label><input type="radio" name="advisor-02-natural" value="아니요"> 아니요</label><label><input type="radio" name="advisor-02-natural" value="모르겠어요"> 모르겠어요</label></div></fieldset>
+<fieldset><legend>이 인물에게 어울리는 목소리인가요?</legend><div class="choices"><label><input type="radio" name="advisor-02-actor" value="예"> 예</label><label><input type="radio" name="advisor-02-actor" value="아니요"> 아니요</label><label><input type="radio" name="advisor-02-actor" value="모르겠어요"> 모르겠어요</label></div></fieldset>
+</article>
+</section>
+<section aria-labelledby="role-relay">
+<h2 id="role-relay">본부 무전</h2>
+<article>
+<p class="say" id="relay-01-text">근무자, 여기 본부다. 정시 보고하라.</p>
+<button type="button" aria-label="본부 무전 1번 듣기" aria-pressed="false" aria-controls="relay-01-audio" aria-describedby="relay-01-text">듣기</button>
+<audio id="relay-01-audio" src="v94_voice10/relay-01.m4a" preload="none" hidden></audio>
+<p class="status" role="status"></p>
+<fieldset><legend>사람이 말하는 것처럼 들리나요?</legend><div class="choices"><label><input type="radio" name="relay-01-natural" value="예"> 예</label><label><input type="radio" name="relay-01-natural" value="아니요"> 아니요</label><label><input type="radio" name="relay-01-natural" value="모르겠어요"> 모르겠어요</label></div></fieldset>
+<fieldset><legend>이 인물에게 어울리는 목소리인가요?</legend><div class="choices"><label><input type="radio" name="relay-01-actor" value="예"> 예</label><label><input type="radio" name="relay-01-actor" value="아니요"> 아니요</label><label><input type="radio" name="relay-01-actor" value="모르겠어요"> 모르겠어요</label></div></fieldset>
+</article>
+<article>
+<p class="say" id="relay-02-text">보고가 틀렸다. 사람을 보낸다.</p>
+<button type="button" aria-label="본부 무전 2번 듣기" aria-pressed="false" aria-controls="relay-02-audio" aria-describedby="relay-02-text">듣기</button>
+<audio id="relay-02-audio" src="v94_voice10/relay-02.m4a" preload="none" hidden></audio>
+<p class="status" role="status"></p>
+<fieldset><legend>사람이 말하는 것처럼 들리나요?</legend><div class="choices"><label><input type="radio" name="relay-02-natural" value="예"> 예</label><label><input type="radio" name="relay-02-natural" value="아니요"> 아니요</label><label><input type="radio" name="relay-02-natural" value="모르겠어요"> 모르겠어요</label></div></fieldset>
+<fieldset><legend>이 인물에게 어울리는 목소리인가요?</legend><div class="choices"><label><input type="radio" name="relay-02-actor" value="예"> 예</label><label><input type="radio" name="relay-02-actor" value="아니요"> 아니요</label><label><input type="radio" name="relay-02-actor" value="모르겠어요"> 모르겠어요</label></div></fieldset>
+</article>
+</section>
+<section aria-labelledby="role-driver">
+<h2 id="role-driver">첫차 기사</h2>
+<article>
+<p class="say" id="driver-01-text">첫차 맞아요. 서울 가요.</p>
+<button type="button" aria-label="첫차 기사 1번 듣기" aria-pressed="false" aria-controls="driver-01-audio" aria-describedby="driver-01-text">듣기</button>
+<audio id="driver-01-audio" src="v94_voice10/driver-01.m4a" preload="none" hidden></audio>
+<p class="status" role="status"></p>
+<fieldset><legend>사람이 말하는 것처럼 들리나요?</legend><div class="choices"><label><input type="radio" name="driver-01-natural" value="예"> 예</label><label><input type="radio" name="driver-01-natural" value="아니요"> 아니요</label><label><input type="radio" name="driver-01-natural" value="모르겠어요"> 모르겠어요</label></div></fieldset>
+<fieldset><legend>이 인물에게 어울리는 목소리인가요?</legend><div class="choices"><label><input type="radio" name="driver-01-actor" value="예"> 예</label><label><input type="radio" name="driver-01-actor" value="아니요"> 아니요</label><label><input type="radio" name="driver-01-actor" value="모르겠어요"> 모르겠어요</label></div></fieldset>
+</article>
+<article>
+<p class="say" id="driver-02-text">표는 타고 주세요. 지금 출발해야 해요.</p>
+<button type="button" aria-label="첫차 기사 2번 듣기" aria-pressed="false" aria-controls="driver-02-audio" aria-describedby="driver-02-text">듣기</button>
+<audio id="driver-02-audio" src="v94_voice10/driver-02.m4a" preload="none" hidden></audio>
+<p class="status" role="status"></p>
+<fieldset><legend>사람이 말하는 것처럼 들리나요?</legend><div class="choices"><label><input type="radio" name="driver-02-natural" value="예"> 예</label><label><input type="radio" name="driver-02-natural" value="아니요"> 아니요</label><label><input type="radio" name="driver-02-natural" value="모르겠어요"> 모르겠어요</label></div></fieldset>
+<fieldset><legend>이 인물에게 어울리는 목소리인가요?</legend><div class="choices"><label><input type="radio" name="driver-02-actor" value="예"> 예</label><label><input type="radio" name="driver-02-actor" value="아니요"> 아니요</label><label><input type="radio" name="driver-02-actor" value="모르겠어요"> 모르겠어요</label></div></fieldset>
+</article>
+</section>
+<p class="lead">걸리는 줄이 있으면 인물 이름과 까닭을 채팅으로 알려 주세요.</p>
+</main>
+<script>
+let active;
+
+function stop() {
+  if (!active) return;
+  const { button, audio } = active;
+  active = undefined;
+  button.setAttribute("aria-pressed", "false");
+  audio.pause();
+  audio.currentTime = 0;
+}
+
+for (const button of document.querySelectorAll("article button")) {
+  const audio = document.getElementById(button.getAttribute("aria-controls"));
+  const status = button.parentElement.querySelector(".status");
+  const failed = () => {
+    if (active?.button !== button) return;
+    stop();
+    status.textContent = "목소리를 재생하지 못했어요. 다시 눌러 주세요.";
+  };
+  button.addEventListener("click", () => {
+    const wasPlaying = active?.button === button;
+    stop();
+    if (wasPlaying) return;
+    const playback = { button, audio };
+    active = playback;
+    status.textContent = "";
+    button.setAttribute("aria-pressed", "true");
+    audio.play().catch(() => {
+      if (active === playback) failed();
+    });
+  });
+  audio.addEventListener("ended", () => {
+    if (active?.button === button) stop();
+  });
+  audio.addEventListener("error", failed);
+}
+window.addEventListener("pagehide", stop);
+</script>
+</body>
+</html>
