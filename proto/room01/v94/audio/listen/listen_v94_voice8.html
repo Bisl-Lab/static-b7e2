@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="icon" href="data:,">
+<title>귀 확인 8 — 외국어 목소리</title>
+<style>
+:root{color-scheme:dark;--bg:#0d0f10;--card:#171a1b;--line:#2c3433;--ink:#ece4d4;--dim:#a39d90;--acc:#c9873f;--acc-ink:#1a1208}
+@media (prefers-color-scheme:light){:root{color-scheme:light;--bg:#f4f1ea;--card:#fffdf8;--line:#d9d3c6;--ink:#24231f;--dim:#5e5a51;--acc:#9a5f22;--acc-ink:#fff8ee}}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;word-break:keep-all;overflow-wrap:break-word}
+main{max-width:560px;margin:0 auto;padding:calc(16px + env(safe-area-inset-top)) 16px calc(24px + env(safe-area-inset-bottom))}
+h1{font-size:20px;margin:4px 0 6px}
+h2{font-size:17px;margin:26px 0 6px}
+.lead,.missing{margin:0;color:var(--dim);font-size:15px}
+.item{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin:0 0 12px}
+.say{margin:0 0 10px}
+button{width:100%;min-height:58px;padding:4px 12px;border:0;border-radius:12px;background:var(--acc);color:var(--acc-ink);font:inherit;font-weight:700;cursor:pointer;touch-action:manipulation}
+button:focus-visible,button[aria-pressed="true"]{outline:3px solid var(--ink);outline-offset:2px}
+fieldset{min-width:0;border:0;padding:0;margin:14px 0 0}
+legend{padding:0;margin-bottom:4px}
+.choices{display:flex;flex-wrap:wrap;gap:6px}
+.choices label{display:flex;align-items:center;gap:4px;min-height:44px;padding:3px 8px;border:1px solid var(--line);border-radius:8px;cursor:pointer}
+input{margin:0;accent-color:var(--acc)}
+.status{margin:4px 0 0;color:var(--dim);font-size:14px}
+.status:empty{display:none}
+</style>
+</head>
+<body>
+<main>
+<h1>귀 확인 8 — 외국어 목소리</h1>
+<p class="lead">한국어 원음과 외국어 목소리를 차례로 들어 보세요. 외국어 목소리마다 두 질문에 답해 주세요. 단추를 한 번 누르면 재생되고 다시 누르면 멈춥니다.</p>
+<div id="samples"></div>
+</main>
+<script>
+const available = new Set(["en-bus","en-diner","en-hq","ja-bus","zh-bus","zh-diner","zh-hq"]);
+const languages = [
+  { key: "en", lang: "en", name: "영어" },
+  { key: "zh", lang: "zh-Hans", name: "중국어 간체" },
+  { key: "ja", lang: "ja", name: "일본어" },
+];
+const samples = [
+  {
+    key: "hq", title: "본부 무전",
+    ko: "근무자, 여기 본부다. 정시 보고하라.",
+    en: "Keeper, this is HQ. Go ahead with your scheduled report.",
+    zh: "值班员，这里是总部。进行定时报告。",
+    ja: "当直、こちら本部。定時報告せよ。",
+  },
+  {
+    key: "bus", title: "첫차 방송",
+    ko: "첫차 승객께서는 대합실에서 기다려 주십시오.",
+    en: "Passengers for the first bus, please wait in the waiting room.",
+    zh: "乘坐首班车的旅客，请在候车室等候。",
+    ja: "始発をご利用のお客様は、待合室でお待ちください。",
+  },
+  {
+    key: "diner", title: "한 사람 더",
+    ko: "한 분 더 오시면 물 한 잔 더 놓을게요.",
+    en: "If one more person is coming, I'll set out another cup of water.",
+    zh: "再来一位的话，我就再摆一杯水。",
+    ja: "もうお一人いらっしゃるなら、お水をもう一杯置いておきますね。",
+  },
+];
+const controls = document.getElementById("samples");
+let activePlayer = null;
+
+function element(tag, text) {
+  const node = document.createElement(tag);
+  if (text) node.textContent = text;
+  return node;
+}
+
+function addPlayer(card, key, name, lang, text) {
+  const speech = element("p", text);
+  speech.className = "say";
+  speech.lang = lang;
+  speech.id = `${key}-text`;
+  const button = element("button", `${name} 듣기`);
+  button.type = "button";
+  button.setAttribute("aria-pressed", "false");
+  button.setAttribute("aria-describedby", speech.id);
+  const audio = element("audio");
+  audio.hidden = true;
+  audio.preload = "none";
+  audio.id = `${key}-audio`;
+  audio.src = `v94_voice8/${key}.m4a`;
+  button.setAttribute("aria-controls", audio.id);
+  const status = element("p");
+  status.className = "status";
+  status.setAttribute("role", "status");
+  const player = { audio, button };
+
+  function reportError() {
+    if (activePlayer !== player) return;
+    stopPlayer();
+    status.textContent = "목소리를 재생하지 못했어요. 다시 눌러 주세요.";
+  }
+
+  button.addEventListener("click", () => {
+    if (activePlayer === player) {
+      stopPlayer();
+      return;
+    }
+    stopPlayer();
+    activePlayer = player;
+    status.textContent = "";
+    button.setAttribute("aria-pressed", "true");
+    audio.play().catch(reportError);
+  });
+  audio.addEventListener("ended", () => {
+    if (activePlayer === player) stopPlayer();
+  });
+  audio.addEventListener("error", reportError);
+  card.append(speech, button, audio, status);
+}
+
+function stopPlayer() {
+  if (!activePlayer) return;
+  const { audio, button } = activePlayer;
+  activePlayer = null;
+  audio.pause();
+  audio.currentTime = 0;
+  button.setAttribute("aria-pressed", "false");
+}
+
+function question(name, prompt) {
+  const field = element("fieldset");
+  const choices = element("div");
+  choices.className = "choices";
+  for (const answer of ["예", "아니요", "모르겠어요"]) {
+    const label = element("label");
+    const radio = element("input");
+    radio.type = "radio";
+    radio.name = name;
+    radio.value = answer;
+    label.append(radio, answer);
+    choices.append(label);
+  }
+  field.append(element("legend", prompt), choices);
+  return field;
+}
+
+for (const sample of samples) {
+  const section = element("section");
+  const heading = element("h2", sample.title);
+  heading.id = sample.key;
+  section.setAttribute("aria-labelledby", heading.id);
+  section.append(heading);
+  const reference = element("div");
+  reference.className = "item";
+  addPlayer(reference, `ko-${sample.key}`, "한국어 원음", "ko", sample.ko);
+  section.append(reference);
+
+  for (const { key: language, lang, name } of languages) {
+    const card = element("div");
+    card.className = "item";
+    const key = `${language}-${sample.key}`;
+    if (available.has(key)) {
+      addPlayer(card, key, name, lang, sample[language]);
+      card.append(question(`${key}-speaker`, "한국어 원음과 같은 사람으로 들리나요?"),
+        question(`${key}-natural`, "사람이 말하는 것처럼 들리나요?"));
+    } else {
+      const note = element("p", `${name} 후보는 이번에 고르지 못했어요.`);
+      note.className = "missing";
+      card.append(note);
+    }
+    section.append(card);
+  }
+  controls.append(section);
+}
+window.addEventListener("pagehide", stopPlayer);
+</script>
+</body>
+</html>
