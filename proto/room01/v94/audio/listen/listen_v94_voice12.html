@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="icon" href="data:,">
+<title>귀 확인 12 — 목소리 듣기</title>
+<style>
+:root { color-scheme: dark; --bg: #0d0f10; --card: #171a1b; --line: #69736f; --ink: #ece4d4; --dim: #c1b9ac; --accent: #e0a15e; --button-ink: #1a1208; }
+@media (prefers-color-scheme: light) {
+  :root { color-scheme: light; --bg: #f4f1ea; --card: #fffdf8; --line: #827d76; --ink: #24231f; --dim: #5e5a51; --accent: #874a15; --button-ink: #fff8ee; }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.6 "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif; word-break: keep-all; overflow-wrap: anywhere; }
+main { max-width: 590px; margin: auto; padding: calc(16px + env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) calc(24px + env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); }
+h1 { font-size: 23px; margin: 4px 0 8px; }
+h2 { font-size: 19px; margin: 30px 0 6px; }
+h3 { font-size: 17px; margin: 0 0 8px; }
+.lead, .lines, .status { color: var(--dim); font-size: 15px; }
+.lead, .status { margin: 0; }
+.lines { padding-left: 24px; margin: 0 0 12px; }
+.lines li + li { margin-top: 4px; }
+article { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px; margin-bottom: 8px; }
+.clips { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+button { width: 100%; min-height: 48px; padding: 4px 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--ink); font: inherit; font-weight: 700; cursor: pointer; touch-action: manipulation; }
+button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--button-ink); }
+button:focus-visible, label:has(input:focus-visible) { outline: 3px solid var(--ink); outline-offset: 2px; }
+fieldset { min-width: 0; border: 0; padding: 0; margin: 8px 0 0; }
+.choices { display: flex; flex-wrap: wrap; gap: 6px; }
+.choices label { display: flex; align-items: center; gap: 5px; min-height: 44px; padding: 3px 10px; border: 1px solid var(--line); border-radius: 8px; cursor: pointer; }
+.choices input { margin: 0; accent-color: var(--accent); }
+.status:not(:empty) { margin-top: 4px; }
+</style>
+</head>
+<body>
+<main>
+<h1>귀 확인 12 — 목소리 듣기</h1>
+<p class="lead">인물마다 번호를 차례로 듣고 두 가지를 골라 주세요. 같은 단추를 다시 누르면 멈춥니다.</p>
+<section aria-labelledby="shop-title">
+<h2 id="shop-title">매점의 그 사람</h2>
+<article aria-labelledby="shop-01-heading">
+<h3 id="shop-01-heading">1번</h3>
+<div class="clip">
+<button type="button" aria-label="매점의 그 사람 1번 듣기"
+  aria-controls="shop-01-audio" aria-pressed="false">듣기</button>
+<audio id="shop-01-audio" src="v94_voice12/shop-01.m4a" preload="none" hidden></audio>
+<p class="status" role="status"></p>
+</div>
+<fieldset><legend>같은 사람으로 들리나요?</legend><div class="choices"><label><input type="radio" name="shop-01-person" value="같은 사람으로 들림"> 같은 사람으로 들림</label><label><input type="radio" name="shop-01-person" value="아님"> 아님</label></div></fieldset>
+<fieldset><legend>어떻게 들리나요?</legend><div class="choices"><label><input type="radio" name="shop-01-natural" value="사람 같음"> 사람 같음</label><label><input type="radio" name="shop-01-natural" value="기계 같음"> 기계 같음</label></div></fieldset>
+</article>
+<article aria-labelledby="shop-02-heading">
+<h3 id="shop-02-heading">2번</h3>
+<div class="clip">
+<button type="button" aria-label="매점의 그 사람 2번 듣기"
+  aria-controls="shop-02-audio" aria-pressed="false">듣기</button>
+<audio id="shop-02-audio" src="v94_voice12/shop-02.m4a" preload="none" hidden></audio>
+<p class="status" role="status"></p>
+</div>
+<fieldset><legend>같은 사람으로 들리나요?</legend><div class="choices"><label><input type="radio" name="shop-02-person" value="같은 사람으로 들림"> 같은 사람으로 들림</label><label><input type="radio" name="shop-02-person" value="아님"> 아님</label></div></fieldset>
+<fieldset><legend>어떻게 들리나요?</legend><div class="choices"><label><input type="radio" name="shop-02-natural" value="사람 같음"> 사람 같음</label><label><input type="radio" name="shop-02-natural" value="기계 같음"> 기계 같음</label></div></fieldset>
+</article>
+<article aria-labelledby="shop-03-heading">
+<h3 id="shop-03-heading">3번</h3>
+<div class="clip">
+<button type="button" aria-label="매점의 그 사람 3번 듣기"
+  aria-controls="shop-03-audio" aria-pressed="false">듣기</button>
+<audio id="shop-03-audio" src="v94_voice12/shop-03.m4a" preload="none" hidden></audio>
+<p class="status" role="status"></p>
+</div>
+<fieldset><legend>같은 사람으로 들리나요?</legend><div class="choices"><label><input type="radio" name="shop-03-person" value="같은 사람으로 들림"> 같은 사람으로 들림</label><label><input type="radio" name="shop-03-person" value="아님"> 아님</label></div></fieldset>
+<fieldset><legend>어떻게 들리나요?</legend><div class="choices"><label><input type="radio" name="shop-03-natural" value="사람 같음"> 사람 같음</label><label><input type="radio" name="shop-03-natural" value="기계 같음"> 기계 같음</label></div></fieldset>
+</article>
+<article aria-labelledby="shop-04-heading">
+<h3 id="shop-04-heading">4번</h3>
+<div class="clip">
+<button type="button" aria-label="매점의 그 사람 4번 듣기"
+  aria-controls="shop-04-audio" aria-pressed="false">듣기</button>
+<audio id="shop-04-audio" src="v94_voice12/shop-04.m4a" preload="none" hidden></audio>
+<p class="status" role="status"></p>
+</div>
+<fieldset><legend>같은 사람으로 들리나요?</legend><div class="choices"><label><input type="radio" name="shop-04-person" value="같은 사람으로 들림"> 같은 사람으로 들림</label><label><input type="radio" name="shop-04-person" value="아님"> 아님</label></div></fieldset>
+<fieldset><legend>어떻게 들리나요?</legend><div class="choices"><label><input type="radio" name="shop-04-natural" value="사람 같음"> 사람 같음</label><label><input type="radio" name="shop-04-natural" value="기계 같음"> 기계 같음</label></div></fieldset>
+</article>
+</section>
+<section aria-labelledby="relay-title">
+<h2 id="relay-title">본부 무전</h2>
+<article aria-labelledby="relay-01-heading">
+<h3 id="relay-01-heading">1번</h3>
+<div class="clip">
+<button type="button" aria-label="본부 무전 1번 듣기"
+  aria-controls="relay-01-audio" aria-pressed="false">듣기</button>
+<audio id="relay-01-audio" src="v94_voice12/relay-01.m4a" preload="none" hidden></audio>
+<p class="status" role="status"></p>
+</div>
+<fieldset><legend>같은 사람으로 들리나요?</legend><div class="choices"><label><input type="radio" name="relay-01-person" value="같은 사람으로 들림"> 같은 사람으로 들림</label><label><input type="radio" name="relay-01-person" value="아님"> 아님</label></div></fieldset>
+<fieldset><legend>어떻게 들리나요?</legend><div class="choices"><label><input type="radio" name="relay-01-natural" value="사람 같음"> 사람 같음</label><label><input type="radio" name="relay-01-natural" value="기계 같음"> 기계 같음</label></div></fieldset>
+</article>
+<article aria-labelledby="relay-02-heading">
+<h3 id="relay-02-heading">2번</h3>
+<div class="clip">
+<button type="button" aria-label="본부 무전 2번 듣기"
+  aria-controls="relay-02-audio" aria-pressed="false">듣기</button>
+<audio id="relay-02-audio" src="v94_voice12/relay-02.m4a" preload="none" hidden></audio>
+<p class="status" role="status"></p>
+</div>
+<fieldset><legend>같은 사람으로 들리나요?</legend><div class="choices"><label><input type="radio" name="relay-02-person" value="같은 사람으로 들림"> 같은 사람으로 들림</label><label><input type="radio" name="relay-02-person" value="아님"> 아님</label></div></fieldset>
+<fieldset><legend>어떻게 들리나요?</legend><div class="choices"><label><input type="radio" name="relay-02-natural" value="사람 같음"> 사람 같음</label><label><input type="radio" name="relay-02-natural" value="기계 같음"> 기계 같음</label></div></fieldset>
+</article>
+<article aria-labelledby="relay-03-heading">
+<h3 id="relay-03-heading">3번</h3>
+<div class="clip">
+<button type="button" aria-label="본부 무전 3번 듣기"
+  aria-controls="relay-03-audio" aria-pressed="false">듣기</button>
+<audio id="relay-03-audio" src="v94_voice12/relay-03.m4a" preload="none" hidden></audio>
+<p class="status" role="status"></p>
+</div>
+<fieldset><legend>같은 사람으로 들리나요?</legend><div class="choices"><label><input type="radio" name="relay-03-person" value="같은 사람으로 들림"> 같은 사람으로 들림</label><label><input type="radio" name="relay-03-person" value="아님"> 아님</label></div></fieldset>
+<fieldset><legend>어떻게 들리나요?</legend><div class="choices"><label><input type="radio" name="relay-03-natural" value="사람 같음"> 사람 같음</label><label><input type="radio" name="relay-03-natural" value="기계 같음"> 기계 같음</label></div></fieldset>
+</article>
+<article aria-labelledby="relay-04-heading">
+<h3 id="relay-04-heading">4번</h3>
+<div class="clip">
+<button type="button" aria-label="본부 무전 4번 듣기"
+  aria-controls="relay-04-audio" aria-pressed="false">듣기</button>
+<audio id="relay-04-audio" src="v94_voice12/relay-04.m4a" preload="none" hidden></audio>
+<p class="status" role="status"></p>
+</div>
+<fieldset><legend>같은 사람으로 들리나요?</legend><div class="choices"><label><input type="radio" name="relay-04-person" value="같은 사람으로 들림"> 같은 사람으로 들림</label><label><input type="radio" name="relay-04-person" value="아님"> 아님</label></div></fieldset>
+<fieldset><legend>어떻게 들리나요?</legend><div class="choices"><label><input type="radio" name="relay-04-natural" value="사람 같음"> 사람 같음</label><label><input type="radio" name="relay-04-natural" value="기계 같음"> 기계 같음</label></div></fieldset>
+</article>
+<article aria-labelledby="relay-05-heading">
+<h3 id="relay-05-heading">5번</h3>
+<div class="clip">
+<button type="button" aria-label="본부 무전 5번 듣기"
+  aria-controls="relay-05-audio" aria-pressed="false">듣기</button>
+<audio id="relay-05-audio" src="v94_voice12/relay-05.m4a" preload="none" hidden></audio>
+<p class="status" role="status"></p>
+</div>
+<fieldset><legend>같은 사람으로 들리나요?</legend><div class="choices"><label><input type="radio" name="relay-05-person" value="같은 사람으로 들림"> 같은 사람으로 들림</label><label><input type="radio" name="relay-05-person" value="아님"> 아님</label></div></fieldset>
+<fieldset><legend>어떻게 들리나요?</legend><div class="choices"><label><input type="radio" name="relay-05-natural" value="사람 같음"> 사람 같음</label><label><input type="radio" name="relay-05-natural" value="기계 같음"> 기계 같음</label></div></fieldset>
+</article>
+<article aria-labelledby="relay-06-heading">
+<h3 id="relay-06-heading">6번</h3>
+<div class="clip">
+<button type="button" aria-label="본부 무전 6번 듣기"
+  aria-controls="relay-06-audio" aria-pressed="false">듣기</button>
+<audio id="relay-06-audio" src="v94_voice12/relay-06.m4a" preload="none" hidden></audio>
+<p class="status" role="status"></p>
+</div>
+<fieldset><legend>같은 사람으로 들리나요?</legend><div class="choices"><label><input type="radio" name="relay-06-person" value="같은 사람으로 들림"> 같은 사람으로 들림</label><label><input type="radio" name="relay-06-person" value="아님"> 아님</label></div></fieldset>
+<fieldset><legend>어떻게 들리나요?</legend><div class="choices"><label><input type="radio" name="relay-06-natural" value="사람 같음"> 사람 같음</label><label><input type="radio" name="relay-06-natural" value="기계 같음"> 기계 같음</label></div></fieldset>
+</article>
+</section>
+<section aria-labelledby="driver-title">
+<h2 id="driver-title">첫차 기사</h2>
+<article aria-labelledby="driver-01-heading">
+<h3 id="driver-01-heading">1번</h3>
+<div class="clip">
+<button type="button" aria-label="첫차 기사 1번 듣기"
+  aria-controls="driver-01-audio" aria-pressed="false">듣기</button>
+<audio id="driver-01-audio" src="v94_voice12/driver-01.m4a" preload="none" hidden></audio>
+<p class="status" role="status"></p>
+</div>
+<fieldset><legend>같은 사람으로 들리나요?</legend><div class="choices"><label><input type="radio" name="driver-01-person" value="같은 사람으로 들림"> 같은 사람으로 들림</label><label><input type="radio" name="driver-01-person" value="아님"> 아님</label></div></fieldset>
+<fieldset><legend>어떻게 들리나요?</legend><div class="choices"><label><input type="radio" name="driver-01-natural" value="사람 같음"> 사람 같음</label><label><input type="radio" name="driver-01-natural" value="기계 같음"> 기계 같음</label></div></fieldset>
+</article>
+<article aria-labelledby="driver-02-heading">
+<h3 id="driver-02-heading">2번</h3>
+<div class="clip">
+<button type="button" aria-label="첫차 기사 2번 듣기"
+  aria-controls="driver-02-audio" aria-pressed="false">듣기</button>
+<audio id="driver-02-audio" src="v94_voice12/driver-02.m4a" preload="none" hidden></audio>
+<p class="status" role="status"></p>
+</div>
+<fieldset><legend>같은 사람으로 들리나요?</legend><div class="choices"><label><input type="radio" name="driver-02-person" value="같은 사람으로 들림"> 같은 사람으로 들림</label><label><input type="radio" name="driver-02-person" value="아님"> 아님</label></div></fieldset>
+<fieldset><legend>어떻게 들리나요?</legend><div class="choices"><label><input type="radio" name="driver-02-natural" value="사람 같음"> 사람 같음</label><label><input type="radio" name="driver-02-natural" value="기계 같음"> 기계 같음</label></div></fieldset>
+</article>
+<article aria-labelledby="driver-03-heading">
+<h3 id="driver-03-heading">3번</h3>
+<div class="clip">
+<button type="button" aria-label="첫차 기사 3번 듣기"
+  aria-controls="driver-03-audio" aria-pressed="false">듣기</button>
+<audio id="driver-03-audio" src="v94_voice12/driver-03.m4a" preload="none" hidden></audio>
+<p class="status" role="status"></p>
+</div>
+<fieldset><legend>같은 사람으로 들리나요?</legend><div class="choices"><label><input type="radio" name="driver-03-person" value="같은 사람으로 들림"> 같은 사람으로 들림</label><label><input type="radio" name="driver-03-person" value="아님"> 아님</label></div></fieldset>
+<fieldset><legend>어떻게 들리나요?</legend><div class="choices"><label><input type="radio" name="driver-03-natural" value="사람 같음"> 사람 같음</label><label><input type="radio" name="driver-03-natural" value="기계 같음"> 기계 같음</label></div></fieldset>
+</article>
+</section>
+<p class="lead">인물 이름과 번호, 고른 답을 채팅으로 알려 주세요.</p>
+</main>
+<script>
+let active;
+
+function stop() {
+  if (!active) return;
+  const { button, audio } = active;
+  active = undefined;
+  button.setAttribute("aria-pressed", "false");
+  audio.pause();
+  audio.currentTime = 0;
+}
+
+for (const button of document.querySelectorAll("article button")) {
+  const audio = document.getElementById(button.getAttribute("aria-controls"));
+  const status = button.parentElement.querySelector(".status");
+  const failed = () => {
+    if (active?.button !== button) return;
+    stop();
+    status.textContent = "목소리를 재생하지 못했어요. 다시 눌러 주세요.";
+  };
+  button.addEventListener("click", () => {
+    const wasPlaying = active?.button === button;
+    stop();
+    if (wasPlaying) return;
+    const playback = { button, audio };
+    active = playback;
+    status.textContent = "";
+    button.setAttribute("aria-pressed", "true");
+    audio.play().catch(() => {
+      if (active === playback) failed();
+    });
+  });
+  audio.addEventListener("ended", () => {
+    if (active?.button === button) stop();
+  });
+  audio.addEventListener("error", failed);
+}
+window.addEventListener("pagehide", stop);
+</script>
+</body>
+</html>
